@@ -107,9 +107,7 @@ describe('ConfigService', () => {
   // Database Configuration
 
   it('should return database URL', () => {
-    expect(service.databaseUrl).toBe(
-      'postgresql://localhost:5432/test',
-    );
+    expect(service.databaseUrl).toBe('postgresql://localhost:5432/test');
   });
 
   // Frontend Configuration

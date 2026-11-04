@@ -27,9 +27,9 @@ Every model you define in your contract can be queried from your app. Your edito
 ```typescript
 import { db } from './src/prisma/db';
 
-const user = await db.orm.public.User
-  .where({ email: 'alice@example.com' })
-  .first();
+const user = await db.orm.public.User.where({
+  email: 'alice@example.com',
+}).first();
 
 // Your editor will show the type of user as
 // { id: number; email: string; username: string | null; name: string | null; createdAt: Date; posts: Post[] } | null
@@ -76,20 +76,34 @@ You can customize how your environment variables are loaded by changing or remov
 ### Commands
 
 ```bash
-pnpm prisma contract emit       # Update contract.json and contract.d.ts
-pnpm prisma db init             # Create tables in the database
-pnpm prisma migration status    # Show migration status
+pnpm prisma contract emit  # Generate contract.json and contract.d.ts
+```
+
+### Migration
+
+```bash
+pnpm prisma migration plan --name init  # Create a migration plan
+pnpm prisma db migrate --advance-ref db  # Apply migration and advance database reference
+pnpm prisma migration status  # Show migration status
+```
+
+### Database Initialization
+
+```bash
+pnpm prisma db init  # Initialize database tables
+```
+
 ```
 
 ### Files
 
-| File | Purpose |
-|---|---|
-| [`src/prisma/contract.prisma`](src/prisma/contract.prisma) | Your data contract — define your models here |
-| [`prisma.config.ts`](prisma.config.ts) | CLI configuration |
-| [`src/prisma/db.ts`](src/prisma/db.ts) | Database client — `import { db } from './src/prisma/db'` |
-| `src/prisma/contract.json` | Compiled contract (generated) |
-| `src/prisma/contract.d.ts` | Contract types (generated) |
+| File                                                       | Purpose                                                  |
+| ---------------------------------------------------------- | -------------------------------------------------------- |
+| [`src/prisma/contract.prisma`](src/prisma/contract.prisma) | Your data contract — define your models here             |
+| [`prisma.config.ts`](prisma.config.ts)                     | CLI configuration                                        |
+| [`src/prisma/db.ts`](src/prisma/db.ts)                     | Database client — `import { db } from './src/prisma/db'` |
+| `src/prisma/contract.json`                                 | Compiled contract (generated)                            |
+| `src/prisma/contract.d.ts`                                 | Contract types (generated)                               |
 
 ### Workflow
 
@@ -104,3 +118,4 @@ If this project lives inside a pnpm workspace, a few things are worth knowing:
 - **Catalogs.** When the workspace's `pnpm-workspace.yaml` defines a `catalogs` entry for `prisma` or `@prisma/orm-postgres`, pnpm uses the catalog version everywhere — `init` does too. If you wanted the published `latest` instead, update or remove the catalog entry, then re-run `pnpm install`.
 - **`pnpm dlx`.** `pnpm dlx prisma@latest orm init …` works in any directory. Inside a workspace, pnpm still resolves dependencies through the workspace's catalog/overrides rather than the registry; expect the installed Prisma ORM packages to reflect the workspace's catalog rather than `latest`.
 - **`pnpm` → `npm` fallback.** If `pnpm` ever fails to install Prisma ORM with a `workspace:*` or `catalog:` resolution error (a leak in a published artefact), `init` falls back to `npm install` and surfaces a warning. Once the offending package republishes a clean version you can switch back with `pnpm install`.
+```

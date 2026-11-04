@@ -20,5 +20,6 @@
     "strictPropertyInitialization": false,
     "types": ["vitest/globals", "node"],
     "resolveJsonModule": true
-  }
+  },
+  "exclude": ["node_modules", "dist", "test", "src/prisma/migrations"]
 }
