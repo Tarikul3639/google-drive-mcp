@@ -4,7 +4,7 @@ import { defineConfig as ormConfig } from '@prisma/orm-postgres/config';
 
 const prismaConfig: ReturnType<typeof definePrismaConfig> = definePrismaConfig({
   orm: ormConfig({
-    contract: "./src/prisma/contract.prisma",
+    contract: "./src/prisma/models/**/*.prisma",
     db: {
       connection: process.env['DATABASE_URL']!,
     },
