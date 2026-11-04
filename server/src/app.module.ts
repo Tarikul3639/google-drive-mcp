@@ -6,6 +6,7 @@ import { McpModule } from './modules/mcp/mcp.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { ConfigModule } from './config/config.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,9 @@ import { ConfigModule } from './config/config.module.js';
     UsersModule,
     HealthModule,
     ConfigModule,
+    PrismaModule,
   ],
+  providers: [],
+  controllers: [],
 })
 export class AppModule {}
