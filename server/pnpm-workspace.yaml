@@ -1,2 +1,10 @@
 allowBuilds:
-  '@scarf/scarf': set this to true or false
+  '@scarf/scarf': true
+  esbuild: true
+overrides:
+  '@prisma/orm-toolchain': 8.0.0-rc.22
+permissions:
+  '@prisma/orm-postgres':
+    skills: false
+  workerd:
+    build: true
