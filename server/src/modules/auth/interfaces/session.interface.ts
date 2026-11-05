@@ -1,4 +1,11 @@
-export interface SessionData {
+export interface CreateSessionInput {
     userId: string;
-    createdAt: string;
+    tokenHash: string;
+    expiresAt: Date;
+}
+
+export interface RotateRefreshTokenInput {
+    oldTokenHash: string;
+    newTokenHash: string;
+    expiresAt: Date;
 }

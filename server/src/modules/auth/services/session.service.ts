@@ -1,133 +1,70 @@
-import {
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException,
-    Logger,
-} from '@nestjs/common';
-import { randomBytes } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
 
-import { RedisService } from '../../../redis/redis.service.js';
-import { SessionData } from '../interfaces/session.interface.js';
-import { ConfigService } from '../../../config/config.service.js';
+import { PrismaService } from '../../../prisma/prisma.service.js';
+import type {
+    CreateSessionInput,
+    RotateRefreshTokenInput,
+} from '../interfaces/session.interface.js';
 
 @Injectable()
 export class SessionService {
-    private readonly logger = new Logger(SessionService.name);
+    constructor(private readonly prisma: PrismaService) { }
 
-    private readonly sessionPrefix = 'session:';
-    private readonly sessionTTL: number;
-
-    constructor(
-        private readonly redis: RedisService,
-        private readonly configService: ConfigService,
-    ) {
-        this.sessionTTL = Math.floor(this.configService.sessionTtl / 1000); // Convert milliseconds to seconds
+    /**
+     * Create a new authentication session.
+     */
+    async create(data: CreateSessionInput): Promise<{ id: string }> {
+        return this.prisma.db.orm.public.AuthSession.select('id').create({
+            userId: data.userId,
+            tokenHash: data.tokenHash,
+            expiresAt: data.expiresAt,
+        });
     }
 
-    // Create a new session
-    async create(userId: string): Promise<string> {
-        if (!userId) {
-            throw new NotFoundException('User ID is required to create a session');
+    /**
+     * Revoke an authentication session.
+     */
+    async revoke(sessionId: string): Promise<void> {
+        await this.prisma.db.orm.public.AuthSession.where({ id: sessionId }).update(
+            {
+                revokedAt: new Date(),
+            },
+        );
+    }
+
+    /**
+     * Find a session by its refresh token hash.
+     */
+    async findByTokenHash(tokenHash: string) {
+        return this.prisma.db.orm.public.AuthSession.where({ tokenHash }).first();
+    }
+
+    /**
+     * Rotate an existing refresh token.
+     */
+    async rotateRefreshToken(
+        data: RotateRefreshTokenInput,
+    ): Promise<{ id: string; userId: string } | null> {
+        const session = await this.findByTokenHash(data.oldTokenHash);
+
+        if (
+            !session ||
+            session.revokedAt ||
+            session.expiresAt.getTime() <= Date.now()
+        ) {
+            return null;
         }
 
-        // Generate a unique session ID
-        const sessionId = randomBytes(32).toString('hex');
+        await this.prisma.db.orm.public.AuthSession.where({
+            tokenHash: data.oldTokenHash,
+        }).update({
+            tokenHash: data.newTokenHash,
+            expiresAt: data.expiresAt,
+        });
 
-        const session: SessionData = {
-            userId,
-            createdAt: new Date().toISOString(),
+        return {
+            id: session.id,
+            userId: session.userId,
         };
-
-        try {
-            await this.redis.set(
-                `${this.sessionPrefix}${sessionId}`,
-                JSON.stringify(session),
-                this.sessionTTL,
-            );
-
-            return sessionId;
-        } catch (error) {
-            this.logger.error('Failed to create session', error);
-            throw new InternalServerErrorException('Could not create session');
-        }
-    }
-
-    // Find a session by ID
-    async findById(sessionId: string): Promise<SessionData | null> {
-        // Validate sessionId
-        if (!sessionId) {
-            throw new NotFoundException('Session ID is required to find a session');
-        }
-
-        try {
-            const session = await this.redis.get(`${this.sessionPrefix}${sessionId}`);
-
-            if (!session) {
-                return null;
-            }
-
-            return JSON.parse(session) as SessionData;
-        } catch (error) {
-            this.logger.error('Failed to retrieve session', error);
-            throw new InternalServerErrorException('Could not retrieve session');
-        }
-    }
-
-    // Validate a session
-    async validate(sessionId: string): Promise<SessionData | null> {
-        // Validate sessionId
-        if (!sessionId) {
-            throw new NotFoundException(
-                'Session ID is required to validate a session',
-            );
-        }
-        // Check if the session exists
-        return this.findById(sessionId);
-    }
-
-    // Destroy a session
-    async destroy(sessionId: string): Promise<void> {
-        // Validate sessionId
-        if (!sessionId) {
-            throw new NotFoundException(
-                'Session ID is required to destroy a session',
-            );
-        }
-
-        try {
-            await this.redis.del(`${this.sessionPrefix}${sessionId}`);
-        } catch (error) {
-            this.logger.error('Failed to destroy session', error);
-            throw new InternalServerErrorException('Could not destroy session');
-        }
-    }
-
-    // Refresh session expiration
-    async refresh(sessionId: string): Promise<boolean> {
-        // Validate sessionId
-        if (sessionId) {
-            throw new NotFoundException(
-                'Session ID is required to refresh a session',
-            );
-        }
-
-        try {
-            const session = await this.findById(sessionId);
-
-            if (!session) {
-                return false;
-            }
-
-            await this.redis.set(
-                `${this.sessionPrefix}${sessionId}`,
-                JSON.stringify(session),
-                this.sessionTTL,
-            );
-
-            return true;
-        } catch (error) {
-            this.logger.error('Failed to refresh session', error);
-            throw error;
-        }
     }
 }

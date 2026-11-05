@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as AppConfigService } from '@nestjs/config';
 import { EnvSchema } from './env.schema.js';
-import ms, { StringValue } from 'ms';
+import ms, { type StringValue } from 'ms';
 
 @Injectable()
 export class ConfigService {
   constructor(
     private readonly appConfigService: AppConfigService<EnvSchema, true>,
-  ) { }
+  ) {}
 
   // Application Configuration
-
+  // NOTE: infer: true is used to ensure that the value is inferred as the correct type from the schema
   get port(): number {
     return this.appConfigService.get('PORT', { infer: true });
   }
@@ -69,7 +69,7 @@ export class ConfigService {
 
   // Session Configuration
 
-  get sessionTtl(): number {
+  get sessionTtlMs(): number {
     const ttl = ms(
       this.appConfigService.get('SESSION_TTL', {
         infer: true,
@@ -78,6 +78,42 @@ export class ConfigService {
 
     if (ttl === undefined || ttl <= 0) {
       throw new Error('Invalid SESSION_TTL configuration');
+    }
+
+    return ttl;
+  }
+
+  // JWT Configuration
+
+  get jwtAccessSecret(): string {
+    return this.appConfigService.get('JWT_ACCESS_SECRET', {
+      infer: true,
+    });
+  }
+
+  get jwtAccessTtlMs(): number {
+    const ttl = ms(
+      this.appConfigService.get('JWT_ACCESS_TTL', {
+        infer: true,
+      }) as StringValue,
+    );
+
+    if (ttl === undefined || ttl <= 0) {
+      throw new Error('Invalid JWT_ACCESS_TTL configuration');
+    }
+
+    return ttl;
+  }
+
+  get refreshTokenTtlMs(): number {
+    const ttl = ms(
+      this.appConfigService.get('REFRESH_TOKEN_TTL', {
+        infer: true,
+      }) as StringValue,
+    );
+
+    if (ttl === undefined || ttl <= 0) {
+      throw new Error('Invalid REFRESH_TOKEN_TTL configuration');
     }
 
     return ttl;
@@ -102,6 +138,19 @@ export class ConfigService {
 
   get jwtSecret(): string {
     return this.appConfigService.get('JWT_SECRET', {
+      infer: true,
+    });
+  }
+
+  // Cookie Names
+  get accessTokenCookieName(): string {
+    return this.appConfigService.get('ACCESS_TOKEN_COOKIE_NAME', {
+      infer: true,
+    });
+  }
+
+  get refreshTokenCookieName(): string {
+    return this.appConfigService.get('REFRESH_TOKEN_COOKIE_NAME', {
       infer: true,
     });
   }

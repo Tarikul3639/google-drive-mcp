@@ -7,7 +7,10 @@ export class LogoutService {
         private readonly sessionService: SessionService,
     ) { }
 
+    /**
+     * Revoke an authentication session.
+     */
     async logout(sessionId: string): Promise<void> {
-        await this.sessionService.destroy(sessionId);
+        await this.sessionService.revoke(sessionId);
     }
 }

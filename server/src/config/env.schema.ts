@@ -60,6 +60,38 @@ export const validationSchema = z.object({
       error: 'SESSION_COOKIE_NAME is required',
     })
     .min(1, 'SESSION_COOKIE_NAME cannot be empty'),
+
+  // JWT Configuration
+  JWT_ACCESS_SECRET: z
+    .string({
+      error: 'JWT_ACCESS_SECRET is required',
+    })
+    .min(1, 'JWT_ACCESS_SECRET cannot be empty'),
+
+  JWT_ACCESS_TTL: z
+    .string({
+      error: 'JWT_ACCESS_TTL is required',
+    })
+    .min(1, 'JWT_ACCESS_TTL cannot be empty'),
+
+  REFRESH_TOKEN_TTL: z
+    .string({
+      error: 'REFRESH_TOKEN_TTL is required',
+    })
+    .min(1, 'REFRESH_TOKEN_TTL cannot be empty'),
+
+  // Cookie Names
+  ACCESS_TOKEN_COOKIE_NAME: z
+    .string({
+      error: 'ACCESS_TOKEN_COOKIE_NAME is required',
+    })
+    .min(1, 'ACCESS_TOKEN_COOKIE_NAME cannot be empty'),
+
+  REFRESH_TOKEN_COOKIE_NAME: z
+    .string({
+      error: 'REFRESH_TOKEN_COOKIE_NAME is required',
+    })
+    .min(1, 'REFRESH_TOKEN_COOKIE_NAME cannot be empty'),
 });
 
 export type EnvSchema = z.infer<typeof validationSchema>;
