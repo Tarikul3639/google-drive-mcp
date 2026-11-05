@@ -3,10 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 import { ConfigService } from './config/config.service.js';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+
+  // Enable cookie parsing middleware
+  app.use(cookieParser());
 
   app.enableCors({
     origin: true,

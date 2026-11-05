@@ -1,7 +1,9 @@
+
 import { Test, TestingModule } from '@nestjs/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { RedisService } from '../../redis/redis.service.js';
 import { UsersService } from './users.service.js';
 
 describe('UsersService', () => {
@@ -14,6 +16,15 @@ describe('UsersService', () => {
         {
           provide: PrismaService,
           useValue: {},
+        },
+        {
+          provide: RedisService,
+          useValue: {
+            get: vi.fn(),
+            set: vi.fn(),
+            del: vi.fn(),
+            exists: vi.fn(),
+          },
         },
       ],
     }).compile();

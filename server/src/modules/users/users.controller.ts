@@ -4,7 +4,10 @@ import {
     Get,
     Patch,
     Req,
+    NotFoundException,
 } from '@nestjs/common';
+import type { Request } from 'express';
+
 import {
     ApiCookieAuth,
     ApiOkResponse,
@@ -25,10 +28,8 @@ export class UsersController {
     @Get('me')
     @ApiOperation({ summary: 'Get current user profile' })
     @ApiOkResponse({ type: UserResponseDto })
-    async getMe(@Req() req: any): Promise<UserResponseDto> {
-        const user = await this.usersService.findById(
-            req.user!.id,
-        );
+    async getMe(@Req() req: Request): Promise<UserResponseDto> {
+        const user = await this.usersService.findById(req.user!.id);
 
         return this.toUserResponse(user);
     }
@@ -37,18 +38,19 @@ export class UsersController {
     @ApiOperation({ summary: 'Update current user profile' })
     @ApiOkResponse({ type: UserResponseDto })
     async updateMe(
-        @Req() req: any,
+        @Req() req: Request,
         @Body() dto: UpdateUserDto,
     ): Promise<UserResponseDto> {
-        const user = await this.usersService.update(
-            req.user!.id,
-            dto,
-        );
+        const user = await this.usersService.update(req.user!.id, dto);
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
 
         return this.toUserResponse(user);
     }
 
-    private toUserResponse(user: any): UserResponseDto {
+    private toUserResponse(user: UserResponseDto): UserResponseDto {
         return {
             id: user.id,
             email: user.email,

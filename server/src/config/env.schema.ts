@@ -48,6 +48,18 @@ export const validationSchema = z.object({
       error: 'JWT_SECRET is required',
     })
     .min(1, 'JWT_SECRET cannot be empty'),
+
+  SESSION_TTL: z
+    .string({
+      error: 'SESSION_TTL is required',
+    })
+    .min(1, 'SESSION_TTL cannot be empty'),
+
+  SESSION_COOKIE_NAME: z
+    .string({
+      error: 'SESSION_COOKIE_NAME is required',
+    })
+    .min(1, 'SESSION_COOKIE_NAME cannot be empty'),
 });
 
 export type EnvSchema = z.infer<typeof validationSchema>;

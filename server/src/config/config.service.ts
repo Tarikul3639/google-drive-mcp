@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as AppConfigService } from '@nestjs/config';
 import { EnvSchema } from './env.schema.js';
+import ms, { StringValue } from 'ms';
 
 @Injectable()
 export class ConfigService {
@@ -58,11 +59,33 @@ export class ConfigService {
     });
   }
 
-
   // Redis Configuration
 
   get redisUrl(): string {
     return this.appConfigService.get('REDIS_URL', {
+      infer: true,
+    });
+  }
+
+  // Session Configuration
+
+  get sessionTtl(): number {
+    const ttl = ms(
+      this.appConfigService.get('SESSION_TTL', {
+        infer: true,
+      }) as StringValue,
+    );
+
+    if (ttl === undefined || ttl <= 0) {
+      throw new Error('Invalid SESSION_TTL configuration');
+    }
+
+    return ttl;
+  }
+
+  // Session Cookie Configuration
+  get sessionCookieName(): string {
+    return this.appConfigService.get('SESSION_COOKIE_NAME', {
       infer: true,
     });
   }
