@@ -13,6 +13,7 @@ describe('ConfigService', () => {
     GOOGLE_CLIENT_SECRET: 'test-client-secret',
     GOOGLE_CALLBACK_URL: 'http://localhost:3000/auth/google/callback',
     DATABASE_URL: 'postgresql://localhost:5432/test',
+    REDIS_URL: 'redis://localhost:6379',
     FRONTEND_URL: 'http://localhost:3001',
     JWT_SECRET: 'test-secret',
   };
@@ -29,6 +30,7 @@ describe('ConfigService', () => {
       GOOGLE_CLIENT_SECRET: 'test-client-secret',
       GOOGLE_CALLBACK_URL: 'http://localhost:3000/auth/google/callback',
       DATABASE_URL: 'postgresql://localhost:5432/test',
+      REDIS_URL: 'redis://localhost:6379',
       FRONTEND_URL: 'http://localhost:3001',
       JWT_SECRET: 'test-secret',
     });
@@ -120,5 +122,11 @@ describe('ConfigService', () => {
 
   it('should return JWT secret', () => {
     expect(service.jwtSecret).toBe('test-secret');
+  });
+
+  // Redis Configuration
+
+  it('should return redis URL', () => {
+    expect(service.redisUrl).toBe('redis://localhost:6379');
   });
 });

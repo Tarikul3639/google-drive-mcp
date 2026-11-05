@@ -31,6 +31,12 @@ export const validationSchema = z.object({
     })
     .min(1, 'DATABASE_URL cannot be empty'),
 
+  REDIS_URL: z
+    .string({
+      error: 'REDIS_URL is required',
+    })
+    .min(1, 'REDIS_URL cannot be empty'),
+
   FRONTEND_URL: z
     .string({
       error: 'FRONTEND_URL is required',

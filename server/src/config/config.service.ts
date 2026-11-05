@@ -6,7 +6,7 @@ import { EnvSchema } from './env.schema.js';
 export class ConfigService {
   constructor(
     private readonly appConfigService: AppConfigService<EnvSchema, true>,
-  ) {}
+  ) { }
 
   // Application Configuration
 
@@ -54,6 +54,15 @@ export class ConfigService {
 
   get databaseUrl(): string {
     return this.appConfigService.get('DATABASE_URL', {
+      infer: true,
+    });
+  }
+
+
+  // Redis Configuration
+
+  get redisUrl(): string {
+    return this.appConfigService.get('REDIS_URL', {
       infer: true,
     });
   }
