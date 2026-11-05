@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../prisma/prisma.service.js';
+import { RedisService } from '../../../redis/redis.service.js';
+
 import type {
     CreateSessionInput,
     RotateRefreshTokenInput,
@@ -8,35 +10,80 @@ import type {
 
 @Injectable()
 export class SessionService {
-    constructor(private readonly prisma: PrismaService) { }
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly redisService: RedisService,
+    ) { }
+
+    private getTokenCacheKey(tokenHash: string): string {
+        return `auth:session:token:${tokenHash}`;
+    }
+
+    private getSessionCacheKey(sessionId: string): string {
+        return `auth:session:id:${sessionId}`;
+    }
 
     /**
      * Create a new authentication session.
      */
     async create(data: CreateSessionInput): Promise<{ id: string }> {
-        return this.prisma.db.orm.public.AuthSession.select('id').create({
+        const session = await this.prisma.db.orm.public.AuthSession.select(
+            'id',
+        ).create({
             userId: data.userId,
             tokenHash: data.tokenHash,
             expiresAt: data.expiresAt,
         });
+
+        await this.redisService.set(
+            this.getSessionCacheKey(session.id),
+            JSON.stringify({
+                id: session.id,
+                userId: data.userId,
+                tokenHash: data.tokenHash,
+                expiresAt: data.expiresAt,
+            }),
+        );
+
+        return session;
     }
 
     /**
      * Revoke an authentication session.
      */
     async revoke(sessionId: string): Promise<void> {
+        const session = await this.prisma.db.orm.public.AuthSession.where({
+            id: sessionId,
+        }).first();
+
         await this.prisma.db.orm.public.AuthSession.where({ id: sessionId }).update(
             {
                 revokedAt: new Date(),
             },
         );
+
+        if (session) {
+            await this.redisService.del(this.getTokenCacheKey(session.tokenHash));
+        }
+
+        await this.redisService.del(this.getSessionCacheKey(sessionId));
     }
 
     /**
      * Find a session by its refresh token hash.
      */
     async findByTokenHash(tokenHash: string) {
-        return this.prisma.db.orm.public.AuthSession.where({ tokenHash }).first();
+        // PostgreSQL remains authoritative for authentication.
+        const session = await this.prisma.db.orm.public.AuthSession.where({
+            tokenHash,
+        }).first();
+
+        if (!session) {
+            await this.redisService.del(this.getTokenCacheKey(tokenHash));
+            return null;
+        }
+
+        return session;
     }
 
     /**
@@ -61,6 +108,19 @@ export class SessionService {
             tokenHash: data.newTokenHash,
             expiresAt: data.expiresAt,
         });
+
+        // Invalidate old cache.
+        await this.redisService.del(this.getTokenCacheKey(data.oldTokenHash));
+
+        await this.redisService.set(
+            this.getSessionCacheKey(session.id),
+            JSON.stringify({
+                id: session.id,
+                userId: session.userId,
+                tokenHash: data.newTokenHash,
+                expiresAt: data.expiresAt,
+            }),
+        );
 
         return {
             id: session.id,
