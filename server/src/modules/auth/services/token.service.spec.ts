@@ -12,8 +12,8 @@ describe('TokenService', () => {
 
     const configService = {
         jwtAccessSecret: 'test-secret',
-        jwtAccessTtl: '15m',
-        refreshTokenTtl: 30 * 24 * 60 * 60 * 1000,
+        jwtAccessTtlMs: 15 * 60 * 1000,
+        refreshTokenTtlMs: 30 * 24 * 60 * 60 * 1000,
     };
 
     beforeEach(async () => {
@@ -64,7 +64,7 @@ describe('TokenService', () => {
                 },
                 {
                     secret: configService.jwtAccessSecret,
-                    expiresIn: configService.jwtAccessTtl,
+                    expiresIn: configService.jwtAccessTtlMs / 1000,
                 },
             );
         });
@@ -86,10 +86,10 @@ describe('TokenService', () => {
             expect(result.hash).toMatch(/^[a-f0-9]{64}$/);
 
             expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(
-                before + configService.refreshTokenTtl,
+                before + configService.refreshTokenTtlMs,
             );
             expect(result.expiresAt.getTime()).toBeLessThanOrEqual(
-                after + configService.refreshTokenTtl,
+                after + configService.refreshTokenTtlMs,
             );
         });
     });

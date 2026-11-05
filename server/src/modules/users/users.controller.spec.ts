@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { UsersController } from './users.controller.js';
 import { UsersService } from './users.service.js';
+import { AccessTokenGuard } from '../auth/guards/access-token.guard.js';
+import { TokenService } from '../auth/services/token.service.js';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -11,6 +13,8 @@ describe('UsersController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
+        { provide: TokenService, useValue: {} },
+        { provide: AccessTokenGuard, useValue: {} },
         {
           provide: UsersService,
           useValue: {
