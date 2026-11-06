@@ -50,6 +50,15 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
+    // Ping Redis server to check if it's alive
+    async ping(): Promise<string> {
+        if (!this.client?.isOpen) {
+            throw new Error('Redis client is not connected.');
+        }
+
+        return await this.client.ping();
+    }
+
 
     // Set a value in Redis with an optional expiration time
     async set(key: string, value: string, expirationInSeconds?: number): Promise<void> {
