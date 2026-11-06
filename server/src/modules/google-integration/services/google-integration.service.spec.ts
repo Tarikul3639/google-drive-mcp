@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleIntegrationService } from './google-integration.service.js';
 import { PrismaService } from '../../../prisma/prisma.service.js';
+import { RedisService } from '../../../redis/redis.service.js';
 import { GoogleTokenService } from './google-token.service.js';
 
 describe('GoogleIntegrationService', () => {
@@ -11,6 +12,7 @@ describe('GoogleIntegrationService', () => {
       providers: [
         GoogleIntegrationService,
         { provide: PrismaService, useValue: {} },
+        { provide: RedisService, useValue: {} },
         { provide: GoogleTokenService, useValue: {} },
       ],
     }).compile();

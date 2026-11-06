@@ -5,7 +5,10 @@ import { AppModule } from './app.module.js';
 import { ConfigService } from './config/config.service.js';
 import cookieParser from 'cookie-parser';
 
+// import { startMemoryMonitor } from './common/utils/memory-monitor.js';
+
 async function bootstrap() {
+  // startMemoryMonitor();
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 

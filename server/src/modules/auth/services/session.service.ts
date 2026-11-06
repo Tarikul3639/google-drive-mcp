@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../prisma/prisma.service.js';
 import { RedisService } from '../../../redis/redis.service.js';
+import { RedisKeys } from '../../../redis/redis.keys.js';
 
 import type {
     CreateSessionInput,
@@ -14,14 +15,6 @@ export class SessionService {
         private readonly prisma: PrismaService,
         private readonly redisService: RedisService,
     ) { }
-
-    private getTokenCacheKey(tokenHash: string): string {
-        return `auth:session:token:${tokenHash}`;
-    }
-
-    private getSessionCacheKey(sessionId: string): string {
-        return `auth:session:id:${sessionId}`;
-    }
 
     /**
      * Create a new authentication session.
@@ -36,7 +29,7 @@ export class SessionService {
         });
 
         await this.redisService.set(
-            this.getSessionCacheKey(session.id),
+            RedisKeys.authSessionById(session.id),
             JSON.stringify({
                 id: session.id,
                 userId: data.userId,
@@ -63,10 +56,12 @@ export class SessionService {
         );
 
         if (session) {
-            await this.redisService.del(this.getTokenCacheKey(session.tokenHash));
+            await this.redisService.del(
+                RedisKeys.authSessionByToken(session.tokenHash),
+            );
         }
 
-        await this.redisService.del(this.getSessionCacheKey(sessionId));
+        await this.redisService.del(RedisKeys.authSessionById(sessionId));
     }
 
     /**
@@ -79,7 +74,7 @@ export class SessionService {
         }).first();
 
         if (!session) {
-            await this.redisService.del(this.getTokenCacheKey(tokenHash));
+            await this.redisService.del(RedisKeys.authSessionByToken(tokenHash));
             return null;
         }
 
@@ -110,10 +105,12 @@ export class SessionService {
         });
 
         // Invalidate old cache.
-        await this.redisService.del(this.getTokenCacheKey(data.oldTokenHash));
+        await this.redisService.del(
+            RedisKeys.authSessionByToken(data.oldTokenHash),
+        );
 
         await this.redisService.set(
-            this.getSessionCacheKey(session.id),
+            RedisKeys.authSessionById(session.id),
             JSON.stringify({
                 id: session.id,
                 userId: session.userId,

@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module.js';
-import { GoogleModule } from './modules/google/google.module.js';
-import { DriveModule } from './modules/drive/drive.module.js';
 import { McpModule } from './modules/mcp/mcp.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { HealthModule } from './modules/health/health.module.js';
@@ -14,8 +12,6 @@ import { GoogleIntegrationModule } from './modules/google-integration/google-int
 @Module({
   imports: [
     AuthModule,
-    GoogleModule,
-    DriveModule,
     McpModule,
     UsersModule,
     HealthModule,

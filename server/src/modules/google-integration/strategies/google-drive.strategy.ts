@@ -1,4 +1,3 @@
-
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '../../../config/config.service.js';
 import { PassportStrategy } from '@nestjs/passport';
@@ -26,6 +25,7 @@ export class GoogleDriveStrategy extends PassportStrategy(
     validate(
         accessToken: string,
         refreshToken: string,
+        params: { expires_in?: number; scope?: string },
         profile: Profile,
     ): GoogleDriveAuthResult {
         const email = profile.emails?.[0]?.value;
@@ -43,6 +43,8 @@ export class GoogleDriveStrategy extends PassportStrategy(
             picture: profile.photos?.[0]?.value,
             accessToken,
             refreshToken: refreshToken || undefined,
+            expiresIn: params.expires_in,
+            scope: params.scope,
         };
     }
 }

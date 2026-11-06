@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 import { RedisService } from '../../../redis/redis.service.js';
+import { RedisKeys } from '../../../redis/redis.keys.js';
 
 interface CreateOAuthStateInput {
     userId?: string;
@@ -22,10 +23,6 @@ export class OAuthStateService {
 
     constructor(private readonly redis: RedisService) { }
 
-    private getStateKey(state: string): string {
-        return `oauth:state:${state}`;
-    }
-
     /**
      * Generate a secure OAuth state and store it in Redis.
      */
@@ -38,7 +35,7 @@ export class OAuthStateService {
         };
 
         await this.redis.set(
-            this.getStateKey(state),
+            RedisKeys.oauthState(state),
             JSON.stringify(value),
             this.stateTtlSeconds,
         );
@@ -56,7 +53,7 @@ export class OAuthStateService {
         }
 
         // GETDEL atomically retrieves and deletes the state.
-        const value = await this.redis.getDel(this.getStateKey(state));
+        const value = await this.redis.getDel(RedisKeys.oauthState(state));
 
         if (!value) {
             throw new UnauthorizedException(
@@ -96,6 +93,6 @@ export class OAuthStateService {
     async delete(state: string): Promise<void> {
         if (!state) return;
 
-        await this.redis.del(this.getStateKey(state));
+        await this.redis.del(RedisKeys.oauthState(state));
     }
 }

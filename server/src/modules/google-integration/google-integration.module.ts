@@ -24,6 +24,7 @@ import { GoogleDriveStrategy } from './strategies/google-drive.strategy.js';
     ],
     exports: [
         GoogleIntegrationService,
+        GoogleTokenService,
     ],
 })
 export class GoogleIntegrationModule {}

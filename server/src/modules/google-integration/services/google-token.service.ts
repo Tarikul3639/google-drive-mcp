@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+
 import { ConfigService } from '../../../config/config.service.js';
 
 @Injectable()
@@ -19,6 +20,12 @@ export class GoogleTokenService {
         this.key = Buffer.from(encryptionKey, 'hex');
     }
 
+    /**
+     * Encrypts a Google OAuth token using AES-256-GCM.
+     *
+     * @param plainText - Original token.
+     * @returns Encrypted token in iv:authTag:cipherText format.
+     */
     encrypt(plainText: string): string {
         if (!plainText) {
             throw new Error('Plain text cannot be empty.');
@@ -35,7 +42,6 @@ export class GoogleTokenService {
 
         const authTag = cipher.getAuthTag();
 
-        // Format: iv:authTag:cipherText
         return [
             iv.toString('hex'),
             authTag.toString('hex'),
@@ -43,6 +49,12 @@ export class GoogleTokenService {
         ].join(':');
     }
 
+    /**
+     * Decrypts an encrypted Google OAuth token.
+     *
+     * @param encryptedText - Encrypted token.
+     * @returns Original token.
+     */
     decrypt(encryptedText: string): string {
         try {
             const parts = encryptedText.split(':');

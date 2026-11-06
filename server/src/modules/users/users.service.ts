@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { RedisService } from '../../redis/redis.service.js';
+import { RedisKeys } from '../../redis/redis.keys.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import type { GoogleUser } from '../auth/interfaces/google-user.interface.js';
 
@@ -23,10 +24,8 @@ export class UsersService {
             throw new NotFoundException('User ID is required');
         }
 
-        const cacheKey = `user:${id}`;
-
         // Check Redis cache first
-        const cachedUser = await this.redis.get(cacheKey);
+        const cachedUser = await this.redis.get(RedisKeys.userById(id));
 
         if (cachedUser) {
             return JSON.parse(cachedUser);
@@ -37,7 +36,11 @@ export class UsersService {
 
         // Store user in Redis
         if (user) {
-            await this.redis.set(cacheKey, JSON.stringify(user), this.cacheTTL);
+            await this.redis.set(
+                RedisKeys.userById(id),
+                JSON.stringify(user),
+                this.cacheTTL,
+            );
         }
 
         return user;
@@ -49,10 +52,8 @@ export class UsersService {
             throw new NotFoundException('User email is required');
         }
 
-        const cacheKey = `user:email:${email}`;
-
         // Check Redis cache first
-        const cachedUser = await this.redis.get(cacheKey);
+        const cachedUser = await this.redis.get(RedisKeys.userByEmail(email));
 
         if (cachedUser) {
             return JSON.parse(cachedUser);
@@ -65,7 +66,11 @@ export class UsersService {
 
         // Store user in Redis
         if (user) {
-            await this.redis.set(cacheKey, JSON.stringify(user), this.cacheTTL);
+            await this.redis.set(
+                RedisKeys.userByEmail(email),
+                JSON.stringify(user),
+                this.cacheTTL,
+            );
         }
 
         return user;
@@ -91,8 +96,8 @@ export class UsersService {
 
         // Invalidate related cache
         await Promise.all([
-            this.redis.del(`user:${id}`),
-            this.redis.del(`user:email:${user.email}`),
+            this.redis.del(RedisKeys.userById(id)),
+            this.redis.del(RedisKeys.userByEmail(user.email)),
         ]);
 
         return updatedUser;
