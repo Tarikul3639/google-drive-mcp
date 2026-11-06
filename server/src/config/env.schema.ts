@@ -26,6 +26,22 @@ export const validationSchema = z.object({
     })
     .min(1, 'GOOGLE_CALLBACK_URL cannot be empty'),
 
+  // Google Drive Integration Configuration
+  GOOGLE_DRIVE_CALLBACK_URL: z
+    .string({
+      error: 'GOOGLE_DRIVE_CALLBACK_URL is required',
+    })
+    .min(1, 'GOOGLE_DRIVE_CALLBACK_URL cannot be empty'),
+
+  GOOGLE_TOKEN_ENCRYPTION_KEY: z
+    .string({
+      error: 'GOOGLE_TOKEN_ENCRYPTION_KEY is required',
+    })
+    .regex(
+      /^[0-9a-fA-F]{64}$/,
+      'GOOGLE_TOKEN_ENCRYPTION_KEY must be a 64-character hexadecimal key.',
+    ),
+
   DATABASE_URL: z
     .string({
       error: 'DATABASE_URL is required',

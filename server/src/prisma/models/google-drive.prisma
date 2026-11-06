@@ -5,8 +5,9 @@ model GoogleAccount {
   googleId     String             @unique @map("google_id")
   email        String
   accessToken  String             @map("access_token")
-  refreshToken String             @map("refresh_token")
-  expiresAt    DateTime           @map("expires_at")
+  refreshToken String?            @map("refresh_token")
+  expiresAt    DateTime?          @map("expires_at")
+  scope        String?
   createdAt    DateTime           @default(now()) @map("created_at")
   updatedAt    temporal.UpdatedAt @map("updated_at")
 

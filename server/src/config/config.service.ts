@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService as AppConfigService } from '@nestjs/config';
+import { ConfigService as config } from '@nestjs/config';
 import { EnvSchema } from './env.schema.js';
 import ms, { type StringValue } from 'ms';
 
 @Injectable()
 export class ConfigService {
   constructor(
-    private readonly appConfigService: AppConfigService<EnvSchema, true>,
-  ) {}
+    private readonly config: config<EnvSchema, true>,
+  ) { }
 
   // Application Configuration
   // NOTE: infer: true is used to ensure that the value is inferred as the correct type from the schema
   get port(): number {
-    return this.appConfigService.get('PORT', { infer: true });
+    return this.config.get('PORT', { infer: true });
   }
 
   get nodeEnv(): EnvSchema['NODE_ENV'] {
-    return this.appConfigService.get('NODE_ENV', { infer: true });
+    return this.config.get('NODE_ENV', { infer: true });
   }
 
   get isDevelopment(): boolean {
@@ -34,27 +34,39 @@ export class ConfigService {
   // Google OAuth Configuration
 
   get googleClientId(): string {
-    return this.appConfigService.get('GOOGLE_CLIENT_ID', {
+    return this.config.get('GOOGLE_CLIENT_ID', {
       infer: true,
     });
   }
 
   get googleClientSecret(): string {
-    return this.appConfigService.get('GOOGLE_CLIENT_SECRET', {
+    return this.config.get('GOOGLE_CLIENT_SECRET', {
       infer: true,
     });
   }
 
   get googleCallbackUrl(): string {
-    return this.appConfigService.get('GOOGLE_CALLBACK_URL', {
+    return this.config.get('GOOGLE_CALLBACK_URL', {
       infer: true,
     });
+  }
+
+  get googleDriveCallbackUrl(): string {
+    return this.config.get<string>('GOOGLE_DRIVE_CALLBACK_URL', {
+      infer: true,
+    });
+  }
+
+  get googleTokenEncryptionKey(): string {
+    return this.config.get<string>(
+      'GOOGLE_TOKEN_ENCRYPTION_KEY',
+    )!;
   }
 
   // Database Configuration
 
   get databaseUrl(): string {
-    return this.appConfigService.get('DATABASE_URL', {
+    return this.config.get('DATABASE_URL', {
       infer: true,
     });
   }
@@ -62,7 +74,7 @@ export class ConfigService {
   // Redis Configuration
 
   get redisUrl(): string {
-    return this.appConfigService.get('REDIS_URL', {
+    return this.config.get('REDIS_URL', {
       infer: true,
     });
   }
@@ -71,7 +83,7 @@ export class ConfigService {
 
   get sessionTtlMs(): number {
     const ttl = ms(
-      this.appConfigService.get('SESSION_TTL', {
+      this.config.get('SESSION_TTL', {
         infer: true,
       }) as StringValue,
     );
@@ -86,14 +98,14 @@ export class ConfigService {
   // JWT Configuration
 
   get jwtAccessSecret(): string {
-    return this.appConfigService.get('JWT_ACCESS_SECRET', {
+    return this.config.get('JWT_ACCESS_SECRET', {
       infer: true,
     });
   }
 
   get jwtAccessTtlMs(): number {
     const ttl = ms(
-      this.appConfigService.get('JWT_ACCESS_TTL', {
+      this.config.get('JWT_ACCESS_TTL', {
         infer: true,
       }) as StringValue,
     );
@@ -107,7 +119,7 @@ export class ConfigService {
 
   get refreshTokenTtlMs(): number {
     const ttl = ms(
-      this.appConfigService.get('REFRESH_TOKEN_TTL', {
+      this.config.get('REFRESH_TOKEN_TTL', {
         infer: true,
       }) as StringValue,
     );
@@ -121,7 +133,7 @@ export class ConfigService {
 
   // Session Cookie Configuration
   get sessionCookieName(): string {
-    return this.appConfigService.get('SESSION_COOKIE_NAME', {
+    return this.config.get('SESSION_COOKIE_NAME', {
       infer: true,
     });
   }
@@ -129,7 +141,7 @@ export class ConfigService {
   // Frontend Configuration
 
   get frontendUrl(): string {
-    return this.appConfigService.get('FRONTEND_URL', {
+    return this.config.get('FRONTEND_URL', {
       infer: true,
     });
   }
@@ -137,20 +149,20 @@ export class ConfigService {
   // Authentication Configuration
 
   get jwtSecret(): string {
-    return this.appConfigService.get('JWT_SECRET', {
+    return this.config.get('JWT_SECRET', {
       infer: true,
     });
   }
 
   // Cookie Names
   get accessTokenCookieName(): string {
-    return this.appConfigService.get('ACCESS_TOKEN_COOKIE_NAME', {
+    return this.config.get('ACCESS_TOKEN_COOKIE_NAME', {
       infer: true,
     });
   }
 
   get refreshTokenCookieName(): string {
-    return this.appConfigService.get('REFRESH_TOKEN_COOKIE_NAME', {
+    return this.config.get('REFRESH_TOKEN_COOKIE_NAME', {
       infer: true,
     });
   }

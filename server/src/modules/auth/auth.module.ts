@@ -44,6 +44,7 @@ import { OAuthStateService } from './services/oauth-state.service.js';
     exports: [
         TokenService,
         SessionService,
+        OAuthStateService
     ],
 })
 export class AuthModule { }

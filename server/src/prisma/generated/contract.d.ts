@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'e14890a9d9a151795694a418d802f83dcfb28b1af43ce71bdc97c65d09e786ef'>;
+  StorageHashBase<'d94ac06585d8696c789207247ab5a736ab6554b2d0313bfef15bc8f548255602'>;
 export type ExecutionHash =
   ExecutionHashBase<'394209edec1743ff0172a740ce77dba0bce0857c151f15d2463b3e52e422f296'>;
 export type ProfileHash =
@@ -327,6 +327,7 @@ export namespace Models {
     googleId: FieldOutputTypes['public']['GoogleAccount']['googleId'];
     id: FieldOutputTypes['public']['GoogleAccount']['id'];
     refreshToken: FieldOutputTypes['public']['GoogleAccount']['refreshToken'];
+    scope: FieldOutputTypes['public']['GoogleAccount']['scope'];
     updatedAt: FieldOutputTypes['public']['GoogleAccount']['updatedAt'];
     userId: FieldOutputTypes['public']['GoogleAccount']['userId'];
     user: public_User;
@@ -533,7 +534,7 @@ type ContractBase = Omit<
                 readonly expires_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
@@ -552,7 +553,13 @@ type ContractBase = Omit<
                 readonly refresh_token: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly scope: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly updated_at: {
@@ -1115,7 +1122,7 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly expiresAt: {
-                readonly nullable: false;
+                readonly nullable: true;
                 readonly type: {
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-date@1';
@@ -1131,7 +1138,11 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly refreshToken: {
-                readonly nullable: false;
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly scope: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly updatedAt: {
@@ -1169,6 +1180,7 @@ type ContractBase = Omit<
                 readonly googleId: { readonly column: 'google_id' };
                 readonly id: { readonly column: 'id' };
                 readonly refreshToken: { readonly column: 'refresh_token' };
+                readonly scope: { readonly column: 'scope' };
                 readonly updatedAt: { readonly column: 'updated_at' };
                 readonly userId: { readonly column: 'user_id' };
               };
