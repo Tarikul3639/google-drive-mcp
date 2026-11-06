@@ -7,6 +7,7 @@ export const validationSchema = z.object({
     .enum(['development', 'production', 'test'])
     .default('development'),
 
+  // Google OAuth Configuration
   GOOGLE_CLIENT_ID: z
     .string({
       error: 'GOOGLE_CLIENT_ID is required',

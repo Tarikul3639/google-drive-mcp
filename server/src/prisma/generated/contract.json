@@ -28,10 +28,6 @@
       "model": "McpRefreshToken",
       "namespace": "public"
     },
-    "oauth_states": {
-      "model": "OAuthState",
-      "namespace": "public"
-    },
     "users": {
       "model": "User",
       "namespace": "public"
@@ -777,90 +773,6 @@
               "table": "mcp_refresh_tokens"
             }
           },
-          "OAuthState": {
-            "fields": {
-              "createdAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "expiresAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "redirectTo": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "state": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "userId": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "user": {
-                "cardinality": "N:1",
-                "nullable": true,
-                "on": {
-                  "localFields": [
-                    "userId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "User",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "createdAt": {
-                  "column": "created_at"
-                },
-                "expiresAt": {
-                  "column": "expires_at"
-                },
-                "redirectTo": {
-                  "column": "redirect_to"
-                },
-                "state": {
-                  "column": "state"
-                },
-                "userId": {
-                  "column": "user_id"
-                }
-              },
-              "namespaceId": "public",
-              "table": "oauth_states"
-            }
-          },
           "User": {
             "fields": {
               "createdAt": {
@@ -993,21 +905,6 @@
                 },
                 "to": {
                   "model": "McpRefreshToken",
-                  "namespace": "public"
-                }
-              },
-              "oauthStates": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "userId"
-                  ]
-                },
-                "to": {
-                  "model": "OAuthState",
                   "namespace": "public"
                 }
               }
@@ -1716,91 +1613,6 @@
                 }
               ]
             },
-            "oauth_states": {
-              "columns": {
-                "created_at": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "expires_at": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "redirect_to": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                },
-                "state": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "user_id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": true
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "oauth_states_user_id_idx_6c952402"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "user_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "oauth_states"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "users"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "expires_at"
-                  ],
-                  "name": "oauth_states_expires_at_idx_35365ada",
-                  "prefix": "oauth_states_expires_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "user_id"
-                  ],
-                  "name": "oauth_states_user_id_idx_6c952402",
-                  "prefix": "oauth_states_user_id_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "state"
-                ]
-              },
-              "uniques": []
-            },
             "users": {
               "columns": {
                 "created_at": {
@@ -1875,7 +1687,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4f6acd32dfd3e27afa8b094bf496747db91e2b184af972e1cfa6b0a5de160415"
+    "storageHash": "e14890a9d9a151795694a418d802f83dcfb28b1af43ce71bdc97c65d09e786ef"
   },
   "execution": {
     "executionHash": "394209edec1743ff0172a740ce77dba0bce0857c151f15d2463b3e52e422f296",

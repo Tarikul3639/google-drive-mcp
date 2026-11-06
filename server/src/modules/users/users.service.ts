@@ -1,8 +1,12 @@
-
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    Injectable,
+    NotFoundException,
+    ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { RedisService } from '../../redis/redis.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
+import type { GoogleUser } from '../auth/interfaces/google-user.interface.js';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +18,6 @@ export class UsersService {
     ) { }
 
     async findById(id: string) {
-
         // Validate the ID
         if (!id) {
             throw new NotFoundException('User ID is required');
@@ -34,18 +37,13 @@ export class UsersService {
 
         // Store user in Redis
         if (user) {
-            await this.redis.set(
-                cacheKey,
-                JSON.stringify(user),
-                this.cacheTTL,
-            );
+            await this.redis.set(cacheKey, JSON.stringify(user), this.cacheTTL);
         }
 
         return user;
     }
 
     async findByEmail(email: string) {
-
         // Validate the email
         if (!email) {
             throw new NotFoundException('User email is required');
@@ -61,24 +59,19 @@ export class UsersService {
         }
 
         // Fetch user from database
-        const user = await this.prisma.db.orm.public.User
-            .whereUnique({ email })
-            .first();
+        const user = await this.prisma.db.orm.public.User.whereUnique({
+            email,
+        }).first();
 
         // Store user in Redis
         if (user) {
-            await this.redis.set(
-                cacheKey,
-                JSON.stringify(user),
-                this.cacheTTL,
-            );
+            await this.redis.set(cacheKey, JSON.stringify(user), this.cacheTTL);
         }
 
         return user;
     }
 
     async update(id: string, dto: UpdateUserDto) {
-
         // Validate the ID
         if (!id) {
             throw new NotFoundException('User ID is required');
@@ -92,9 +85,9 @@ export class UsersService {
         }
 
         // Update user in database
-        const updatedUser = await this.prisma.db.orm.public.User
-            .where({ id })
-            .update(dto);
+        const updatedUser = await this.prisma.db.orm.public.User.where({
+            id,
+        }).update(dto);
 
         // Invalidate related cache
         await Promise.all([
@@ -103,5 +96,42 @@ export class UsersService {
         ]);
 
         return updatedUser;
+    }
+
+    // Find or create a user based on Google OAuth information
+    async findOrCreateGoogleUser(googleUser: GoogleUser) {
+        const { googleId, email, name, picture } = googleUser;
+
+        if (!googleId || !email) {
+            throw new NotFoundException('Google ID and email are required.');
+        }
+
+        // Find user by Google ID.
+        const existingGoogleUser = await this.prisma.db.orm.public.User.whereUnique(
+            { googleId },
+        ).first();
+
+        if (existingGoogleUser) {
+            return existingGoogleUser;
+        }
+
+        // Check whether the email already belongs to another account.
+        const existingEmailUser = await this.prisma.db.orm.public.User.whereUnique({
+            email,
+        }).first();
+
+        if (existingEmailUser) {
+            throw new ConflictException('An account with this email already exists.');
+        }
+
+        // Create a new user.
+        const user = await this.prisma.db.orm.public.User.create({
+            googleId,
+            email,
+            name: name || null,
+            picture: picture || null,
+        });
+
+        return user;
     }
 }

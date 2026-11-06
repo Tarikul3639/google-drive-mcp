@@ -84,6 +84,16 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         await this.client.del(key);
     }
 
+
+    // Get and delete a value atomically from Redis
+    async getDel(key: string): Promise<string | null> {
+        if (!this.client?.isOpen) {
+            throw new Error('Redis client is not connected.');
+        }
+
+        return await this.client.getDel(key);
+    }
+
     // Check if a key exists in Redis
     async exists(key: string): Promise<boolean> {
         if (!this.client?.isOpen) {

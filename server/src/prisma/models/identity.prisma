@@ -10,7 +10,6 @@ model User {
 
   googleAccount         GoogleAccount?
   authSessions          AuthSession[]
-  oauthStates           OAuthState[]
   mcpAuthorizationCodes McpAuthorizationCode[]
   mcpRefreshTokens      McpRefreshToken[]
   mcpClientAccesses     McpClientAccess[]
@@ -35,19 +34,4 @@ model AuthSession {
   @@index([userId])
   @@index([expiresAt])
   @@map("auth_sessions")
-}
-
-// Stores OAuth state values to prevent CSRF attacks.
-model OAuthState {
-  state      String   @id
-  userId     String?  @map("user_id")
-  redirectTo String?  @map("redirect_to")
-  expiresAt  DateTime @map("expires_at")
-  createdAt  DateTime @default(now()) @map("created_at")
-
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([expiresAt])
-  @@map("oauth_states")
 }
