@@ -24,4 +24,4 @@ import { RedisModule } from './redis/redis.module.js';
   providers: [],
   controllers: [],
 })
-export class AppModule {}
+export class AppModule { }

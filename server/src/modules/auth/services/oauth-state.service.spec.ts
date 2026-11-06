@@ -1,15 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthStateService } from './oauth-state.service.js';
+import { RedisService } from '../../../redis/redis.service.js';
+import { OAuthStateService } from './oauth-state.service.js';
 
-describe('OauthStateService', () => {
-  let service: OauthStateService;
+describe('OAuthStateService', () => {
+  let service: OAuthStateService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [OauthStateService],
+      providers: [
+        OAuthStateService,
+        { provide: RedisService, useValue: {} },
+      ],
     }).compile();
 
-    service = module.get<OauthStateService>(OauthStateService);
+    service = module.get<OAuthStateService>(OAuthStateService);
   });
 
   it('should be defined', () => {
