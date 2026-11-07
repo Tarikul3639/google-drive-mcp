@@ -11,7 +11,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 
-import type { Response, Request } from 'express';
+import type { Request, Response } from 'express';
 
 import {
     ApiTags,
@@ -21,23 +21,26 @@ import {
 
 import { ConfigService } from '../../../config/config.service.js';
 
+import { GoogleAuthGuard } from '../guards/google-auth.guard.js';
 import { AccessTokenGuard } from '../guards/access-token.guard.js';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard.js';
-import { GoogleAuthGuard } from '../guards/google-auth.guard.js';
 
 import { CurrentUser } from '../decorators/current-user.decorator.js';
 
+import type { GoogleUser } from '../interfaces/google-user.interface.js';
 import type { UserResponseDto } from '../../users/dto/user-response.dto.js';
 
 import { LogoutService } from '../services/logout.service.js';
 import { RefreshService } from '../services/refresh.service.js';
 import { GoogleAuthService } from '../services/google-auth.service.js';
-import { OAuthStateService } from '../services/oauth-state.service.js';
 
-/**
- * Handles application authentication endpoints, including
- * Google OAuth login, user authentication, token refresh, and logout.
- */
+interface OAuthStateData {
+    userId: string | null;
+    redirectTo: string | null;
+}
+
+
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -45,17 +48,11 @@ export class AuthController {
         private readonly logoutService: LogoutService,
         private readonly refreshService: RefreshService,
         private readonly googleAuthService: GoogleAuthService,
-        private readonly oauthStateService: OAuthStateService,
         private readonly configService: ConfigService,
     ) { }
 
     /**
-     * Returns the common cookie options used for authentication tokens.
-     *
-     * - httpOnly: Prevents JavaScript access to cookies.
-     * - secure: Sends cookies over HTTPS in production.
-     * - sameSite: Helps protect against cross-site request forgery.
-     * - path: Makes cookies available across application routes.
+     * Shared options for authentication cookies.
      */
     private get cookieOptions() {
         return {
@@ -67,63 +64,42 @@ export class AuthController {
     }
 
     /**
-     * Initiates Google OAuth 2.0 authentication.
+     * Initiates Google OAuth authentication.
      *
-     * GoogleAuthGuard redirects the user to Google's authentication page.
-     * No additional controller logic is required.
-     *
-     * @returns Redirects the user to Google OAuth consent screen.
+     * GoogleAuthGuard generates OAuth state and
+     * redirects the browser to Google's authorization page.
      */
     @Get('google')
     @UseGuards(GoogleAuthGuard)
     @ApiOperation({ summary: 'Login with Google' })
-    googleLogin(): void {
-        // Passport handles the redirect to Google.
-    }
+    googleLogin(): void { }
 
     /**
-     * Handles the callback after successful Google OAuth authentication.
+     * Handles Google's OAuth callback.
      *
-     * Passport validates the Google profile and attaches it to request.user.
-     * GoogleAuthService finds or creates the application user,
-     * creates an authentication session, and generates application tokens.
-     *
-     * Both access and refresh tokens are stored in HttpOnly cookies.
-     *
-     * @param request - Express request containing the authenticated Google user.
-     * @param response - Express response used to set authentication cookies.
-     * @returns A success message after authentication.
-     * @throws NotFoundException If the Google user is missing from the request.
+     * Validates the Google profile, creates an application
+     * session, and stores authentication tokens in cookies.
      */
     @Get('google/callback')
     @UseGuards(GoogleAuthGuard)
     @ApiOperation({ summary: 'Google OAuth callback' })
     async googleCallback(
         @Req() request: Request,
-        @Res({ passthrough: true }) response: Response,
-    ): Promise<{ message: string }> {
-        // Extract state returned by Google.
-        const state = request.query.state;
-
-        if (typeof state !== 'string' || !state) {
-            throw new UnauthorizedException('OAuth state is missing.');
-        }
-
-        // Validate and consume the state.state
-        // This also prevents the same state from being reused.
-        await this.oauthStateService.consume(state);
-
-        // Get authenticated Google user.
+        @Res() response: Response,
+    ): Promise<void> {
         const googleUser = request.user;
 
         if (!googleUser) {
-            throw new UnauthorizedException('Google user not found.');
+            throw new UnauthorizedException(
+                'Google user not found.',
+            );
         }
 
-        // Generate application authentication tokens.
-        const tokens = await this.googleAuthService.login(googleUser);
+        const tokens = await this.googleAuthService.login(
+            googleUser,
+        );
 
-        // Set access token cookie.
+        // Set the access token cookie.
         response.cookie(
             this.configService.accessTokenCookieName,
             tokens.accessToken,
@@ -133,7 +109,7 @@ export class AuthController {
             },
         );
 
-        // Set refresh token cookie.
+        // Set the refresh token cookie.
         response.cookie(
             this.configService.refreshTokenCookieName,
             tokens.refreshToken,
@@ -143,37 +119,28 @@ export class AuthController {
             },
         );
 
-        return {
-            message: 'Google authentication successful',
-        };
+        // Redirect to the frontend after successful authentication.
+        response.redirect(
+            request.oauthStateData?.redirectTo ??
+            new URL('/auth/welcome', this.configService.frontendUrl).toString(),
+        );
     }
+
     /**
-     * Returns the currently authenticated user's profile.
-     *
-     * AccessTokenGuard validates the access JWT before this handler executes.
-     *
-     * @param user - Authenticated user provided by CurrentUser decorator.
-     * @returns The authenticated user's public profile.
+     * Returns the authenticated user's profile.
      */
     @Get('me')
     @UseGuards(AccessTokenGuard)
     @ApiCookieAuth()
     @ApiOperation({ summary: 'Get authenticated user' })
-    getMe(@CurrentUser() user: UserResponseDto): UserResponseDto {
+    getMe(
+        @CurrentUser() user: UserResponseDto,
+    ): UserResponseDto {
         return user;
     }
 
     /**
-     * Rotates the current refresh token and issues a new token pair.
-     *
-     * RefreshTokenGuard extracts and validates the refresh token,
-     * then attaches its hash to the request.
-     *
-     * The old refresh token becomes invalid after successful rotation.
-     *
-     * @param request - Express request containing the refresh token hash.
-     * @param response - Express response used to update authentication cookies.
-     * @returns A success message after token rotation.
+     * Rotates the current authentication token pair.
      */
     @Post('refresh')
     @UseGuards(RefreshTokenGuard)
@@ -188,7 +155,6 @@ export class AuthController {
             request.refreshTokenHash!,
         );
 
-        // Replace the existing access token.
         response.cookie(
             this.configService.accessTokenCookieName,
             tokens.accessToken,
@@ -198,7 +164,6 @@ export class AuthController {
             },
         );
 
-        // Replace the existing refresh token after rotation.
         response.cookie(
             this.configService.refreshTokenCookieName,
             tokens.refreshToken,
@@ -214,14 +179,7 @@ export class AuthController {
     }
 
     /**
-     * Logs out the currently authenticated user.
-     *
-     * AccessTokenGuard validates the access JWT.
-     * LogoutService revokes the associated authentication session.
-     * Both authentication cookies are cleared from the browser.
-     *
-     * @param request - Express request containing the authenticated session.
-     * @param response - Express response used to clear authentication cookies.
+     * Revokes the current session and clears authentication cookies.
      */
     @Post('logout')
     @UseGuards(AccessTokenGuard)
@@ -232,16 +190,13 @@ export class AuthController {
         @Req() request: Request,
         @Res({ passthrough: true }) response: Response,
     ): Promise<void> {
-        // Revoke the current authentication session.
         await this.logoutService.logout(request.auth!.sid);
 
-        // Remove the access token cookie.
         response.clearCookie(
             this.configService.accessTokenCookieName,
             this.cookieOptions,
         );
 
-        // Remove the refresh token cookie.
         response.clearCookie(
             this.configService.refreshTokenCookieName,
             this.cookieOptions,

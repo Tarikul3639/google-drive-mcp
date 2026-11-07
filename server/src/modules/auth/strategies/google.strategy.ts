@@ -6,8 +6,6 @@ import type { GoogleUser } from '../interfaces/google-user.interface.js';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-
-    // Inject the ConfigService to access Google OAuth configuration values
     constructor(private readonly configService: ConfigService) {
         super({
             clientID: configService.googleClientId,
@@ -17,7 +15,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         });
     }
 
-    // Validate the Google user profile and return a GoogleUser object
+    /**
+     * Validates the Google profile and returns
+     * the normalized application Google user.
+     */
     validate(
         _accessToken: string,
         _refreshToken: string,
@@ -26,9 +27,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         const email = profile.emails?.[0]?.value;
 
         if (!email) {
-            throw new UnauthorizedException(
-                'Google account email not found.',
-            );
+            throw new UnauthorizedException('Google account email not found.');
         }
 
         return {

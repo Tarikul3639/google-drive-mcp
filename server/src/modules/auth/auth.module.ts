@@ -12,7 +12,6 @@ import { GoogleAuthService } from './services/google-auth.service.js';
 
 import { AccessTokenGuard } from './guards/access-token.guard.js';
 import { RefreshTokenGuard } from './guards/refresh-token.guard.js';
-import { GoogleAuthGuard } from './guards/google-auth.guard.js';
 
 import { GoogleStrategy } from './strategies/google.strategy.js';
 
@@ -41,7 +40,6 @@ import { OAuthStateService } from './services/oauth-state.service.js';
         GoogleStrategy,
         AccessTokenGuard,
         RefreshTokenGuard,
-        GoogleAuthGuard,
         UsersService,
         OAuthStateService,
     ],
@@ -53,7 +51,6 @@ import { OAuthStateService } from './services/oauth-state.service.js';
         RefreshService,
         AccessTokenGuard,
         RefreshTokenGuard,
-        GoogleAuthGuard,
     ],
 })
 export class AuthModule { }

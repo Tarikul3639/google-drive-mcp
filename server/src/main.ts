@@ -63,6 +63,7 @@ async function bootstrap() {
 
   logger.log(`Server is running on http://localhost:${port}/api`);
   logger.log(`Swagger docs are available at http://localhost:${port}/api/docs`);
+  logger.log(`Swagger JSON is available at http://localhost:${port}/api/docs-json`);
 }
 
 await bootstrap();

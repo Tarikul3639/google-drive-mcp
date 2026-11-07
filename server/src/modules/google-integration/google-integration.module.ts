@@ -4,6 +4,7 @@ import { GoogleIntegrationService } from './services/google-integration.service.
 import { GoogleTokenService } from './services/google-token.service.js';
 import { PrismaModule } from '../../prisma/prisma.module.js';
 import { AuthModule } from '../auth/auth.module.js';
+import { UsersModule } from '../users/users.module.js';
 
 import { GoogleDriveGuard } from './guards/google-drive.guard.js';
 import { GoogleDriveStrategy } from './strategies/google-drive.strategy.js';
@@ -12,6 +13,7 @@ import { GoogleDriveStrategy } from './strategies/google-drive.strategy.js';
     imports: [
         PrismaModule,
         AuthModule,
+        UsersModule,
     ],
     controllers: [
         GoogleIntegrationController,
