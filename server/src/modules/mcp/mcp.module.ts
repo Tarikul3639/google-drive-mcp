@@ -1,5 +1,33 @@
 import { Module } from '@nestjs/common';
-import { McpService } from './mcp.service.js';
-import { McpTransport } from './mcp.transport.js';
-@Module({ providers: [McpService, McpTransport], exports: [McpService] })
-export class McpModule {}
+import { McpModule as NestMcpModule } from '@nestjs/mcp';
+
+import { ConfigService } from '../../config/config.service.js';
+import { McpAuthModule } from './auth/mcp-auth.module.js';
+import { IdentityProviderTokenVerifier } from './auth/identity-provider-token.verifier.js';
+import { HealthCheckTool } from './tools/health-check.tool.js';
+
+@Module({
+    imports: [
+        NestMcpModule.forRootAsync({
+            imports: [McpAuthModule],
+            inject: [ConfigService, IdentityProviderTokenVerifier],
+
+            useFactory: (
+                configService: ConfigService,
+                verifier: IdentityProviderTokenVerifier,
+            ) => ({
+                name: 'google-drive-mcp',
+                version: '1.0.0',
+
+                auth: {
+                    verifier,
+                    resource: configService.mcpResource,
+                    authorizationServers: [configService.mcpAuthorizationServer],
+                    scopesSupported: ['drive:read', 'drive:write'],
+                },
+            }),
+        }),
+    ],
+    providers: [HealthCheckTool],
+})
+export class McpModule { }

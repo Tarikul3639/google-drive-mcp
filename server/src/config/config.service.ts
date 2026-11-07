@@ -166,4 +166,25 @@ export class ConfigService {
       infer: true,
     });
   }
+
+
+  // MCP Configuration
+
+  get mcpResource(): string {
+    return this.config.get('MCP_RESOURCE', {
+      infer: true,
+    });
+  }
+
+  get mcpAuthorizationServer(): string {
+    return this.config.get('MCP_AUTHORIZATION_SERVER', {
+      infer: true,
+    });
+  }
+
+  get mcpGoogleCallbackUrl(): string {
+    return this.config.get('MCP_GOOGLE_CALLBACK_URL', {
+      infer: true,
+    });
+  }
 }

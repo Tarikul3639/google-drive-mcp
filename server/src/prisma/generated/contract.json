@@ -12,10 +12,6 @@
       "model": "GoogleAccount",
       "namespace": "public"
     },
-    "mcp_authorization_codes": {
-      "model": "McpAuthorizationCode",
-      "namespace": "public"
-    },
     "mcp_client_accesses": {
       "model": "McpClientAccess",
       "namespace": "public"
@@ -271,159 +267,6 @@
               "table": "google_accounts"
             }
           },
-          "McpAuthorizationCode": {
-            "fields": {
-              "clientId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "codeChallenge": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "codeChallengeMethod": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "codeHash": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "createdAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "expiresAt": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "id": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "redirectUri": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
-              "usedAt": {
-                "nullable": true,
-                "type": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "kind": "scalar",
-                  "typeParams": {
-                    "precision": 3
-                  }
-                }
-              },
-              "userId": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              }
-            },
-            "relations": {
-              "client": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "clientId"
-                  ],
-                  "targetFields": [
-                    "clientId"
-                  ]
-                },
-                "to": {
-                  "model": "McpClient",
-                  "namespace": "public"
-                }
-              },
-              "user": {
-                "cardinality": "N:1",
-                "nullable": false,
-                "on": {
-                  "localFields": [
-                    "userId"
-                  ],
-                  "targetFields": [
-                    "id"
-                  ]
-                },
-                "to": {
-                  "model": "User",
-                  "namespace": "public"
-                }
-              }
-            },
-            "storage": {
-              "fields": {
-                "clientId": {
-                  "column": "client_id"
-                },
-                "codeChallenge": {
-                  "column": "code_challenge"
-                },
-                "codeChallengeMethod": {
-                  "column": "code_challenge_method"
-                },
-                "codeHash": {
-                  "column": "code_hash"
-                },
-                "createdAt": {
-                  "column": "created_at"
-                },
-                "expiresAt": {
-                  "column": "expires_at"
-                },
-                "id": {
-                  "column": "id"
-                },
-                "redirectUri": {
-                  "column": "redirect_uri"
-                },
-                "usedAt": {
-                  "column": "used_at"
-                },
-                "userId": {
-                  "column": "user_id"
-                }
-              },
-              "namespaceId": "public",
-              "table": "mcp_authorization_codes"
-            }
-          },
           "McpClient": {
             "fields": {
               "clientId": {
@@ -486,21 +329,6 @@
               }
             },
             "relations": {
-              "authorizationCodes": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "clientId"
-                  ],
-                  "targetFields": [
-                    "clientId"
-                  ]
-                },
-                "to": {
-                  "model": "McpAuthorizationCode",
-                  "namespace": "public"
-                }
-              },
               "refreshTokens": {
                 "cardinality": "1:N",
                 "on": {
@@ -706,6 +534,13 @@
                   }
                 }
               },
+              "scope": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "tokenHash": {
                 "nullable": false,
                 "type": {
@@ -771,6 +606,9 @@
                 },
                 "revokedAt": {
                   "column": "revoked_at"
+                },
+                "scope": {
+                  "column": "scope"
                 },
                 "tokenHash": {
                   "column": "token_hash"
@@ -870,21 +708,6 @@
                 },
                 "to": {
                   "model": "GoogleAccount",
-                  "namespace": "public"
-                }
-              },
-              "mcpAuthorizationCodes": {
-                "cardinality": "1:N",
-                "on": {
-                  "localFields": [
-                    "id"
-                  ],
-                  "targetFields": [
-                    "userId"
-                  ]
-                },
-                "to": {
-                  "model": "McpAuthorizationCode",
                   "namespace": "public"
                 }
               },
@@ -1164,153 +987,6 @@
                 }
               ]
             },
-            "mcp_authorization_codes": {
-              "columns": {
-                "client_id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "code_challenge": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "code_challenge_method": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "code_hash": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "created_at": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "expires_at": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "nullable": false,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "redirect_uri": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "used_at": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "nullable": true,
-                  "typeParams": {
-                    "precision": 3
-                  }
-                },
-                "user_id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "mcp_authorization_codes_user_id_idx_6c952402"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "user_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "mcp_authorization_codes"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "users"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "mcp_authorization_codes_client_id_idx_1bb5a570"
-                  },
-                  "onDelete": "cascade",
-                  "source": {
-                    "columns": [
-                      "client_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "mcp_authorization_codes"
-                  },
-                  "target": {
-                    "columns": [
-                      "client_id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "mcp_clients"
-                  }
-                }
-              ],
-              "indexes": [
-                {
-                  "columns": [
-                    "client_id"
-                  ],
-                  "name": "mcp_authorization_codes_client_id_idx_1bb5a570",
-                  "prefix": "mcp_authorization_codes_client_id_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "expires_at"
-                  ],
-                  "name": "mcp_authorization_codes_expires_at_idx_35365ada",
-                  "prefix": "mcp_authorization_codes_expires_at_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "user_id"
-                  ],
-                  "name": "mcp_authorization_codes_user_id_idx_6c952402",
-                  "prefix": "mcp_authorization_codes_user_id_idx",
-                  "unique": false
-                }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": [
-                {
-                  "columns": [
-                    "code_hash"
-                  ]
-                }
-              ]
-            },
             "mcp_client_accesses": {
               "columns": {
                 "client_id": {
@@ -1536,6 +1212,11 @@
                     "precision": 3
                   }
                 },
+                "scope": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
                 "token_hash": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -1702,10 +1383,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d94ac06585d8696c789207247ab5a736ab6554b2d0313bfef15bc8f548255602"
+    "storageHash": "f251a4935ad5098073e52407e4d4e8f35feafec0bdcc521a4523cdf28c273d98"
   },
   "execution": {
-    "executionHash": "394209edec1743ff0172a740ce77dba0bce0857c151f15d2463b3e52e422f296",
+    "executionHash": "fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e",
     "mutations": {
       "defaults": [
         {
@@ -1748,17 +1429,6 @@
           "ref": {
             "entry": "google_accounts",
             "field": "updated_at",
-            "namespace": "public"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "uuidv4",
-            "kind": "generator"
-          },
-          "ref": {
-            "entry": "mcp_authorization_codes",
-            "field": "id",
             "namespace": "public"
           }
         },

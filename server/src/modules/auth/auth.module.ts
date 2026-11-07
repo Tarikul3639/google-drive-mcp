@@ -35,16 +35,21 @@ import { OAuthStateService } from './services/oauth-state.service.js';
         AccessTokenGuard,
         RefreshTokenGuard,
         GoogleAuthGuard,
-        
+
         // Import UsersService from UsersModule
         UsersService,
-        
+
         OAuthStateService,
     ],
     exports: [
         TokenService,
         SessionService,
-        OAuthStateService
+        OAuthStateService,
+        GoogleAuthService,
+        RefreshService,
+        AccessTokenGuard,
+        RefreshTokenGuard,
+        GoogleAuthGuard,
     ],
 })
 export class AuthModule { }

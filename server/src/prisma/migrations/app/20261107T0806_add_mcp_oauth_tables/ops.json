@@ -1,0 +1,201 @@
+[
+  {
+    "id": "dropTable.oauth_states",
+    "label": "Drop table \"oauth_states\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "oauth_states"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"oauth_states\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_states\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"oauth_states\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"oauth_states\"",
+        "sql": "DROP TABLE \"public\".\"oauth_states\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"oauth_states\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"oauth_states\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"oauth_states\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.google_accounts.scope",
+    "label": "Add column \"scope\" to \"google_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "scope",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"scope\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "scope"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"scope\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"scope\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\" ADD COLUMN \"scope\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"scope\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "scope"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"scope\" on \"google_accounts\""
+        }
+      },
+      {
+        "description": "verify column \"scope\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "scope",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.google_accounts.expires_at",
+    "label": "Drop NOT NULL on \"google_accounts\".\"expires_at\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "expires_at",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"expires_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "expires_at"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"expires_at\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"expires_at\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\" ALTER COLUMN \"expires_at\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"expires_at\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "expires_at",
+          "YES"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "alterNullability.dropNotNull.google_accounts.refresh_token",
+    "label": "Drop NOT NULL on \"google_accounts\".\"refresh_token\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "refresh_token",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"refresh_token\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "refresh_token"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"refresh_token\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop NOT NULL on \"refresh_token\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\" ALTER COLUMN \"refresh_token\" DROP NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"refresh_token\" is nullable",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "google_accounts",
+          "refresh_token",
+          "YES"
+        ]
+      }
+    ]
+  }
+]

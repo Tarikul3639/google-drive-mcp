@@ -10,7 +10,6 @@ model User {
 
   googleAccount         GoogleAccount?
   authSessions          AuthSession[]
-  mcpAuthorizationCodes McpAuthorizationCode[]
   mcpRefreshTokens      McpRefreshToken[]
   mcpClientAccesses     McpClientAccess[]
 

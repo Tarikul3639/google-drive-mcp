@@ -23,9 +23,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d94ac06585d8696c789207247ab5a736ab6554b2d0313bfef15bc8f548255602'>;
+  StorageHashBase<'f251a4935ad5098073e52407e4d4e8f35feafec0bdcc521a4523cdf28c273d98'>;
 export type ExecutionHash =
-  ExecutionHashBase<'394209edec1743ff0172a740ce77dba0bce0857c151f15d2463b3e52e422f296'>;
+  ExecutionHashBase<'fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -333,21 +333,6 @@ export namespace Models {
     user: public_User;
     readonly [RelationKeys]?: 'user';
   };
-  export type public_McpAuthorizationCode = {
-    clientId: FieldOutputTypes['public']['McpAuthorizationCode']['clientId'];
-    codeChallenge: FieldOutputTypes['public']['McpAuthorizationCode']['codeChallenge'];
-    codeChallengeMethod: FieldOutputTypes['public']['McpAuthorizationCode']['codeChallengeMethod'];
-    codeHash: FieldOutputTypes['public']['McpAuthorizationCode']['codeHash'];
-    createdAt: FieldOutputTypes['public']['McpAuthorizationCode']['createdAt'];
-    expiresAt: FieldOutputTypes['public']['McpAuthorizationCode']['expiresAt'];
-    id: FieldOutputTypes['public']['McpAuthorizationCode']['id'];
-    redirectUri: FieldOutputTypes['public']['McpAuthorizationCode']['redirectUri'];
-    usedAt: FieldOutputTypes['public']['McpAuthorizationCode']['usedAt'];
-    userId: FieldOutputTypes['public']['McpAuthorizationCode']['userId'];
-    client: public_McpClient;
-    user: public_User;
-    readonly [RelationKeys]?: 'client' | 'user';
-  };
   export type public_McpClient = {
     clientId: FieldOutputTypes['public']['McpClient']['clientId'];
     clientSecretHash: FieldOutputTypes['public']['McpClient']['clientSecretHash'];
@@ -356,10 +341,9 @@ export namespace Models {
     name: FieldOutputTypes['public']['McpClient']['name'];
     redirectUris: FieldOutputTypes['public']['McpClient']['redirectUris'];
     updatedAt: FieldOutputTypes['public']['McpClient']['updatedAt'];
-    authorizationCodes: public_McpAuthorizationCode[];
     refreshTokens: public_McpRefreshToken[];
     userAccesses: public_McpClientAccess[];
-    readonly [RelationKeys]?: 'authorizationCodes' | 'refreshTokens' | 'userAccesses';
+    readonly [RelationKeys]?: 'refreshTokens' | 'userAccesses';
   };
   export type public_McpClientAccess = {
     clientId: FieldOutputTypes['public']['McpClientAccess']['clientId'];
@@ -377,6 +361,7 @@ export namespace Models {
     expiresAt: FieldOutputTypes['public']['McpRefreshToken']['expiresAt'];
     id: FieldOutputTypes['public']['McpRefreshToken']['id'];
     revokedAt: FieldOutputTypes['public']['McpRefreshToken']['revokedAt'];
+    scope: FieldOutputTypes['public']['McpRefreshToken']['scope'];
     tokenHash: FieldOutputTypes['public']['McpRefreshToken']['tokenHash'];
     userId: FieldOutputTypes['public']['McpRefreshToken']['userId'];
     client: public_McpClient;
@@ -393,15 +378,10 @@ export namespace Models {
     updatedAt: FieldOutputTypes['public']['User']['updatedAt'];
     authSessions: public_AuthSession[];
     googleAccount: public_GoogleAccount | null;
-    mcpAuthorizationCodes: public_McpAuthorizationCode[];
     mcpClientAccesses: public_McpClientAccess[];
     mcpRefreshTokens: public_McpRefreshToken[];
     readonly [RelationKeys]?:
-      | 'authSessions'
-      | 'googleAccount'
-      | 'mcpAuthorizationCodes'
-      | 'mcpClientAccesses'
-      | 'mcpRefreshTokens';
+      'authSessions' | 'googleAccount' | 'mcpClientAccesses' | 'mcpRefreshTokens';
   };
 }
 
@@ -409,7 +389,6 @@ export declare const models: {
   public: {
     AuthSession: Models.public_AuthSession;
     GoogleAccount: Models.public_GoogleAccount;
-    McpAuthorizationCode: Models.public_McpAuthorizationCode;
     McpClient: Models.public_McpClient;
     McpClientAccess: Models.public_McpClientAccess;
     McpRefreshToken: Models.public_McpRefreshToken;
@@ -597,122 +576,6 @@ type ContractBase = Omit<
                 },
               ];
             };
-            readonly mcp_authorization_codes: {
-              columns: {
-                readonly client_id: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly code_challenge: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly code_challenge_method: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly code_hash: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly created_at: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly nullable: false;
-                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
-                  readonly typeParams: { readonly precision: 3 };
-                  readonly many: false;
-                };
-                readonly expires_at: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly nullable: false;
-                  readonly typeParams: { readonly precision: 3 };
-                  readonly many: false;
-                };
-                readonly id: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly redirect_uri: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-                readonly used_at: {
-                  readonly dataType: 'pg/timestamptz';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly nullable: true;
-                  readonly typeParams: { readonly precision: 3 };
-                  readonly many: false;
-                };
-                readonly user_id: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly many: false;
-                };
-              };
-              primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['code_hash'] }];
-              indexes: readonly [
-                {
-                  readonly name: 'mcp_authorization_codes_client_id_idx_1bb5a570';
-                  readonly prefix: 'mcp_authorization_codes_client_id_idx';
-                  readonly columns: readonly ['client_id'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'mcp_authorization_codes_expires_at_idx_35365ada';
-                  readonly prefix: 'mcp_authorization_codes_expires_at_idx';
-                  readonly columns: readonly ['expires_at'];
-                  readonly unique: false;
-                },
-                {
-                  readonly name: 'mcp_authorization_codes_user_id_idx_6c952402';
-                  readonly prefix: 'mcp_authorization_codes_user_id_idx';
-                  readonly columns: readonly ['user_id'];
-                  readonly unique: false;
-                },
-              ];
-              foreignKeys: readonly [
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'mcp_authorization_codes';
-                    readonly columns: readonly ['user_id'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'users';
-                    readonly columns: readonly ['id'];
-                  };
-                },
-                {
-                  readonly source: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'mcp_authorization_codes';
-                    readonly columns: readonly ['client_id'];
-                  };
-                  readonly target: {
-                    readonly namespaceId: 'public' & NamespaceId;
-                    readonly tableName: 'mcp_clients';
-                    readonly columns: readonly ['client_id'];
-                  };
-                },
-              ];
-            };
             readonly mcp_client_accesses: {
               columns: {
                 readonly client_id: {
@@ -881,6 +744,12 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
+                readonly scope: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
                 readonly token_hash: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -1017,10 +886,6 @@ type ContractBase = Omit<
     readonly google_accounts: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'GoogleAccount';
-    };
-    readonly mcp_authorization_codes: {
-      readonly namespace: 'public' & NamespaceId;
-      readonly model: 'McpAuthorizationCode';
     };
     readonly mcp_client_accesses: {
       readonly namespace: 'public' & NamespaceId;
@@ -1186,101 +1051,6 @@ type ContractBase = Omit<
               };
             };
           };
-          readonly McpAuthorizationCode: {
-            readonly fields: {
-              readonly clientId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly codeChallenge: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly codeChallengeMethod: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly codeHash: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly createdAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly typeParams: { readonly precision: 3 };
-                };
-              };
-              readonly expiresAt: {
-                readonly nullable: false;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly typeParams: { readonly precision: 3 };
-                };
-              };
-              readonly id: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly redirectUri: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-              readonly usedAt: {
-                readonly nullable: true;
-                readonly type: {
-                  readonly kind: 'scalar';
-                  readonly codecId: 'pg/timestamptz-date@1';
-                  readonly typeParams: { readonly precision: 3 };
-                };
-              };
-              readonly userId: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
-            };
-            readonly relations: {
-              readonly client: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'McpClient';
-                };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['clientId'];
-                  readonly targetFields: readonly ['clientId'];
-                };
-              };
-              readonly user: {
-                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
-                readonly cardinality: 'N:1';
-                readonly nullable: false;
-                readonly on: {
-                  readonly localFields: readonly ['userId'];
-                  readonly targetFields: readonly ['id'];
-                };
-              };
-            };
-            readonly storage: {
-              readonly table: 'mcp_authorization_codes';
-              readonly namespaceId: 'public';
-              readonly fields: {
-                readonly clientId: { readonly column: 'client_id' };
-                readonly codeChallenge: { readonly column: 'code_challenge' };
-                readonly codeChallengeMethod: { readonly column: 'code_challenge_method' };
-                readonly codeHash: { readonly column: 'code_hash' };
-                readonly createdAt: { readonly column: 'created_at' };
-                readonly expiresAt: { readonly column: 'expires_at' };
-                readonly id: { readonly column: 'id' };
-                readonly redirectUri: { readonly column: 'redirect_uri' };
-                readonly usedAt: { readonly column: 'used_at' };
-                readonly userId: { readonly column: 'user_id' };
-              };
-            };
-          };
           readonly McpClient: {
             readonly fields: {
               readonly clientId: {
@@ -1322,17 +1092,6 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
-              readonly authorizationCodes: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'McpAuthorizationCode';
-                };
-                readonly cardinality: '1:N';
-                readonly on: {
-                  readonly localFields: readonly ['clientId'];
-                  readonly targetFields: readonly ['clientId'];
-                };
-              };
               readonly refreshTokens: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -1470,6 +1229,10 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                 };
               };
+              readonly scope: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly tokenHash: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -1511,6 +1274,7 @@ type ContractBase = Omit<
                 readonly expiresAt: { readonly column: 'expires_at' };
                 readonly id: { readonly column: 'id' };
                 readonly revokedAt: { readonly column: 'revoked_at' };
+                readonly scope: { readonly column: 'scope' };
                 readonly tokenHash: { readonly column: 'token_hash' };
                 readonly userId: { readonly column: 'user_id' };
               };
@@ -1574,17 +1338,6 @@ type ContractBase = Omit<
                 };
                 readonly cardinality: '1:1';
                 readonly nullable: true;
-                readonly on: {
-                  readonly localFields: readonly ['id'];
-                  readonly targetFields: readonly ['userId'];
-                };
-              };
-              readonly mcpAuthorizationCodes: {
-                readonly to: {
-                  readonly namespace: 'public' & NamespaceId;
-                  readonly model: 'McpAuthorizationCode';
-                };
-                readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
                   readonly targetFields: readonly ['userId'];
@@ -1693,14 +1446,6 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'google_accounts';
             readonly field: 'updated_at';
-            readonly namespace: 'public';
-          };
-        },
-        {
-          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
-          readonly ref: {
-            readonly entry: 'mcp_authorization_codes';
-            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

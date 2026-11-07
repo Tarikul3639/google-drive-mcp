@@ -109,6 +109,25 @@ export const validationSchema = z.object({
       error: 'REFRESH_TOKEN_COOKIE_NAME is required',
     })
     .min(1, 'REFRESH_TOKEN_COOKIE_NAME cannot be empty'),
+
+  // MCP Configuration
+  MCP_RESOURCE: z
+    .string({
+      error: 'MCP_RESOURCE is required',
+    })
+    .min(1, 'MCP_RESOURCE cannot be empty'),
+
+  MCP_AUTHORIZATION_SERVER: z
+    .string({
+      error: 'MCP_AUTHORIZATION_SERVER is required',
+    })
+    .min(1, 'MCP_AUTHORIZATION_SERVER cannot be empty'),
+
+  MCP_GOOGLE_CALLBACK_URL: z
+    .string({
+      error: 'MCP_GOOGLE_CALLBACK_URL is required',
+    })
+    .min(1, 'MCP_GOOGLE_CALLBACK_URL cannot be empty'),
 });
 
 export type EnvSchema = z.infer<typeof validationSchema>;
