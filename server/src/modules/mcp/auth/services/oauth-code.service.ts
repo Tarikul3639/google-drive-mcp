@@ -1,11 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
 import { PrismaService } from '../../../../prisma/prisma.service.js';
 import { RedisService } from '../../../../redis/redis.service.js';
 import { RedisKeys } from '../../../../redis/redis.keys.js';
-import { toMcpScopes, toOAuthScope } from '../../../../common/constants/mcp-scopes.js';
+import { ConfigService } from '../../../../config/config.service.js';
 
 import type { TokenRequestDto } from '../dto/token-request.dto.js';
 import type { McpAccessTokenPayload } from '../interfaces/mcp-access-token-payload.interface.js';
@@ -15,7 +15,6 @@ interface AuthorizationCodeData {
     userId: string;
     redirectUri: string;
     codeChallenge: string;
-    scope: string;
 }
 
 @Injectable()
@@ -24,12 +23,14 @@ export class OAuthCodeService {
         private readonly redis: RedisService,
         private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
     ) { }
 
     /**
      * Exchange authorization code for MCP tokens.
      */
     async exchangeAuthorizationCode(body: TokenRequestDto) {
+        this.validateResource(body.resource);
         const { code, client_id, redirect_uri, code_verifier } = body;
 
         const codeHash = this.hash(code!);
@@ -51,15 +52,16 @@ export class OAuthCodeService {
 
         this.verifyPkce(code_verifier!, data.codeChallenge);
 
-        await this.assertActiveGrant(data.userId, data.clientId, data.scope);
+        await this.assertActiveGrant(data.userId, data.clientId);
 
-        return this.issueTokens(data.userId, data.clientId, data.scope);
+        return this.issueTokens(data.userId, data.clientId);
     }
 
     /**
      * Exchange refresh token for new MCP tokens.
      */
     async refreshAccessToken(body: TokenRequestDto) {
+        this.validateResource(body.resource);
         const { refresh_token, client_id } = body;
 
         const tokenHash = this.hash(refresh_token!);
@@ -78,11 +80,7 @@ export class OAuthCodeService {
             throw new UnauthorizedException('Invalid or expired refresh token.');
         }
 
-        await this.assertActiveGrant(
-            existingToken.userId,
-            existingToken.clientId,
-            toOAuthScope(existingToken.scope),
-        );
+        await this.assertActiveGrant(existingToken.userId, existingToken.clientId);
 
         const newRefreshToken = randomBytes(64).toString('base64url');
 
@@ -95,8 +93,7 @@ export class OAuthCodeService {
         const accessToken = await this.jwtService.signAsync<McpAccessTokenPayload>({
             sub: existingToken.userId,
             client_id: existingToken.clientId,
-            scope: toOAuthScope(existingToken.scope),
-        });
+        }, { audience: this.configService.mcpResource });
 
         // Revoke old refresh token.
         await this.prisma.db.orm.public.McpRefreshToken.where({
@@ -110,7 +107,6 @@ export class OAuthCodeService {
             tokenHash: newRefreshTokenHash,
             clientId: existingToken.clientId,
             userId: existingToken.userId,
-            scope: existingToken.scope,
             expiresAt: newRefreshTokenExpiresAt,
         });
 
@@ -119,14 +115,19 @@ export class OAuthCodeService {
             refresh_token: newRefreshToken,
             token_type: 'Bearer',
             expires_in: 900,
-            scope: toOAuthScope(existingToken.scope),
         };
+    }
+
+    private validateResource(resource?: string): void {
+        if (resource && resource !== this.configService.mcpResource) {
+            throw new BadRequestException('Unsupported OAuth resource.');
+        }
     }
 
     /**
      * Issue MCP access and refresh tokens.
      */
-    private async issueTokens(userId: string, clientId: string, scope: string) {
+    private async issueTokens(userId: string, clientId: string) {
         const refreshToken = randomBytes(64).toString('base64url');
 
         const refreshTokenHash = this.hash(refreshToken);
@@ -138,16 +139,12 @@ export class OAuthCodeService {
         const accessToken = await this.jwtService.signAsync<McpAccessTokenPayload>({
             sub: userId,
             client_id: clientId,
-            scope,
-        });
-
-        const scopes = toMcpScopes(scope);
+        }, { audience: this.configService.mcpResource });
 
         await this.prisma.db.orm.public.McpRefreshToken.create({
             tokenHash: refreshTokenHash,
             clientId,
             userId,
-            scope: scopes,
             expiresAt: refreshTokenExpiresAt,
         });
 
@@ -156,14 +153,12 @@ export class OAuthCodeService {
             refresh_token: refreshToken,
             token_type: 'Bearer',
             expires_in: 900,
-            scope,
         };
     }
 
     private async assertActiveGrant(
         userId: string,
         clientId: string,
-        scope: string,
     ): Promise<void> {
         const grant = await this.prisma.db.orm.public.McpClientAccess
             .where({ userId, clientId })
@@ -171,11 +166,6 @@ export class OAuthCodeService {
 
         if (!grant || grant.revokedAt) {
             throw new UnauthorizedException('MCP client access was revoked.');
-        }
-
-        const allowedScopes = new Set(grant.scopes);
-        if (toMcpScopes(scope).some((requested) => !allowedScopes.has(requested))) {
-            throw new UnauthorizedException('MCP client scope is no longer allowed.');
         }
     }
 
@@ -197,8 +187,7 @@ export class OAuthCodeService {
             !('clientId' in data) ||
             !('userId' in data) ||
             !('redirectUri' in data) ||
-            !('codeChallenge' in data) ||
-            !('scope' in data)
+            !('codeChallenge' in data)
         ) {
             throw new UnauthorizedException('Invalid authorization code data.');
         }
@@ -209,8 +198,7 @@ export class OAuthCodeService {
             typeof result.clientId !== 'string' ||
             typeof result.userId !== 'string' ||
             typeof result.redirectUri !== 'string' ||
-            typeof result.codeChallenge !== 'string' ||
-            typeof result.scope !== 'string'
+            typeof result.codeChallenge !== 'string'
         ) {
             throw new UnauthorizedException('Invalid authorization code data.');
         }

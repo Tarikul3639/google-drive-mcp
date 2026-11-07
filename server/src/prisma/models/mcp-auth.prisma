@@ -1,12 +1,5 @@
 // use prisma-8
 
-// MCP application-level permissions.
-// These represent permissions granted to an MCP client by a user.
-enum McpScope {
-  DRIVE_READ
-  DRIVE_WRITE
-}
-
 // Stores registered MCP client information.
 model McpClient {
   id               String             @id @onCreate(uuid())
@@ -14,7 +7,6 @@ model McpClient {
   clientSecretHash String?            @map("client_secret_hash")
   name             String
   redirectUris     String[]           @map("redirect_uris")
-  scopes           McpScope[]         @default([])
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        temporal.UpdatedAt @map("updated_at")
 
@@ -33,7 +25,6 @@ model McpRefreshToken {
   tokenHash String     @unique @map("token_hash")
   clientId  String     @map("client_id")
   userId    String     @map("user_id")
-  scope     McpScope[] @default([])
   expiresAt DateTime   @map("expires_at")
   revokedAt DateTime?  @map("revoked_at")
   createdAt DateTime   @default(now()) @map("created_at")
@@ -55,7 +46,6 @@ model McpClientAccess {
   id        String     @id @onCreate(uuid())
   userId    String     @map("user_id")
   clientId  String     @map("client_id")
-  scopes    McpScope[] @default([])
   grantedAt DateTime   @default(now()) @map("granted_at")
   revokedAt DateTime?  @map("revoked_at")
 

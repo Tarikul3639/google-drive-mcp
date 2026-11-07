@@ -1,0 +1,452 @@
+[
+  {
+    "id": "dropCheckConstraint.mcp_client_accesses.mcp_client_accesses_scopes_check_5643ef4f",
+    "label": "Drop check constraint \"mcp_client_accesses_scopes_check_5643ef4f\" on \"mcp_client_accesses\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_client_accesses_scopes_check_5643ef4f",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_client_accesses_scopes_check_5643ef4f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_scopes_check_5643ef4f",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_client_accesses_scopes_check_5643ef4f\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_client_accesses_scopes_check_5643ef4f\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\" DROP CONSTRAINT \"mcp_client_accesses_scopes_check_5643ef4f\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_client_accesses_scopes_check_5643ef4f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_scopes_check_5643ef4f",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_client_accesses_scopes_check_5643ef4f\" on \"mcp_client_accesses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.mcp_client_accesses.mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
+    "label": "Drop check constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\" on \"mcp_client_accesses\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\" DROP CONSTRAINT \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_client_accesses_scopes_elem_not_null_de6fcc8e\" on \"mcp_client_accesses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.mcp_client_accesses.scopes",
+    "label": "Drop column \"scopes\" from \"mcp_client_accesses\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "scopes",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"scopes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_client_accesses",
+          "scopes"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"scopes\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"scopes\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\" DROP COLUMN \"scopes\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"scopes\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_client_accesses",
+          "scopes"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"scopes\" on \"mcp_client_accesses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.mcp_clients.mcp_clients_scopes_check_5643ef4f",
+    "label": "Drop check constraint \"mcp_clients_scopes_check_5643ef4f\" on \"mcp_clients\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_clients_scopes_check_5643ef4f",
+        "table": "mcp_clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_clients_scopes_check_5643ef4f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_clients_scopes_check_5643ef4f",
+          "public",
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_clients_scopes_check_5643ef4f\" on \"mcp_clients\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_clients_scopes_check_5643ef4f\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_clients\" DROP CONSTRAINT \"mcp_clients_scopes_check_5643ef4f\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_clients_scopes_check_5643ef4f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_clients_scopes_check_5643ef4f",
+          "public",
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_clients_scopes_check_5643ef4f\" on \"mcp_clients\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.mcp_clients.mcp_clients_scopes_elem_not_null_de6fcc8e",
+    "label": "Drop check constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\" on \"mcp_clients\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_clients_scopes_elem_not_null_de6fcc8e",
+        "table": "mcp_clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_clients_scopes_elem_not_null_de6fcc8e",
+          "public",
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\" on \"mcp_clients\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_clients\" DROP CONSTRAINT \"mcp_clients_scopes_elem_not_null_de6fcc8e\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_clients_scopes_elem_not_null_de6fcc8e",
+          "public",
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_clients_scopes_elem_not_null_de6fcc8e\" on \"mcp_clients\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.mcp_clients.scopes",
+    "label": "Drop column \"scopes\" from \"mcp_clients\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "scopes",
+        "table": "mcp_clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"scopes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_clients",
+          "scopes"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"scopes\" on \"mcp_clients\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"scopes\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_clients\" DROP COLUMN \"scopes\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"scopes\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_clients",
+          "scopes"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"scopes\" on \"mcp_clients\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.mcp_refresh_tokens.mcp_refresh_tokens_scope_check_9799e96d",
+    "label": "Drop check constraint \"mcp_refresh_tokens_scope_check_9799e96d\" on \"mcp_refresh_tokens\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_refresh_tokens_scope_check_9799e96d",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_refresh_tokens_scope_check_9799e96d\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_scope_check_9799e96d",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_refresh_tokens_scope_check_9799e96d\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_refresh_tokens_scope_check_9799e96d\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\" DROP CONSTRAINT \"mcp_refresh_tokens_scope_check_9799e96d\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_refresh_tokens_scope_check_9799e96d\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_scope_check_9799e96d",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_refresh_tokens_scope_check_9799e96d\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropCheckConstraint.mcp_refresh_tokens.mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
+    "label": "Drop check constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\" on \"mcp_refresh_tokens\"",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop check constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\" DROP CONSTRAINT \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_refresh_tokens_scope_elem_not_null_e633fc0c\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.mcp_refresh_tokens.scope",
+    "label": "Drop column \"scope\" from \"mcp_refresh_tokens\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "scope",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"scope\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_refresh_tokens",
+          "scope"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"scope\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"scope\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\" DROP COLUMN \"scope\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"scope\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "mcp_refresh_tokens",
+          "scope"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"scope\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ]
+  }
+]

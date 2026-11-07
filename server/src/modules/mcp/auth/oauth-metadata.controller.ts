@@ -1,21 +1,24 @@
 import { Controller, Get } from '@nestjs/common';
 
 import { ConfigService } from '../../../config/config.service.js';
-import { McpScope } from '../../../common/constants/prisma-enums.js';
 
 import type {
     OAuthAuthorizationServerMetadata,
     OpenIdConfiguration,
 } from './interfaces/oauth-metadata.interface.js';
 
-@Controller('.well-known')
+@Controller()
 export class OAuthMetadataController {
     constructor(private readonly configService: ConfigService) { }
 
-    @Get('oauth-authorization-server')
+    @Get([
+        '.well-known/oauth-authorization-server',
+        '.well-known/oauth-authorization-server/api/mcp/oauth',
+        'mcp/oauth/.well-known/oauth-authorization-server',
+    ])
     getAuthorizationServerMetadata(): OAuthAuthorizationServerMetadata {
         const issuer = this.configService.mcpAuthorizationServer;
-        const oauthBaseUrl = `${issuer}/api/mcp/oauth`;
+        const oauthBaseUrl = issuer;
 
         return {
             issuer,
@@ -27,14 +30,17 @@ export class OAuthMetadataController {
             grant_types_supported: ['authorization_code', 'refresh_token'],
             token_endpoint_auth_methods_supported: ['none'],
             code_challenge_methods_supported: ['S256'],
-            scopes_supported: [McpScope.DRIVE_READ, McpScope.DRIVE_WRITE],
         };
     }
 
-    @Get('openid-configuration')
+    @Get([
+        '.well-known/openid-configuration',
+        '.well-known/openid-configuration/api/mcp/oauth',
+        'mcp/oauth/.well-known/openid-configuration',
+    ])
     getOpenIdConfiguration(): OpenIdConfiguration {
         const issuer = this.configService.mcpAuthorizationServer;
-        const oauthBaseUrl = `${issuer}/api/mcp/oauth`;
+        const oauthBaseUrl = issuer;
 
         return {
             issuer,
@@ -45,7 +51,6 @@ export class OAuthMetadataController {
             response_types_supported: ['code'],
             subject_types_supported: ['public'],
             id_token_signing_alg_values_supported: ['RS256'],
-            scopes_supported: ['openid', McpScope.DRIVE_READ, McpScope.DRIVE_WRITE],
             token_endpoint_auth_methods_supported: ['none'],
             code_challenge_methods_supported: ['S256'],
         };

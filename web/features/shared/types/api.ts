@@ -30,6 +30,5 @@ export type GoogleDriveConnection = {
 export type AuthorizedMcpClient = {
   clientId: string
   name: string
-  scopes: string
   grantedAt: string
 }

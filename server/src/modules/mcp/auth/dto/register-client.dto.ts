@@ -6,11 +6,9 @@ import {
     IsUrl,
     ArrayNotEmpty,
     ArrayUnique,
-    Matches,
-    IsEnum,
+    MaxLength,
+    Allow,
 } from 'class-validator';
-
-import { McpScope } from '../../../../common/constants/prisma-enums.js';
 
 export class RegisterClientDto {
     @IsArray()
@@ -27,7 +25,7 @@ export class RegisterClientDto {
 
     @IsOptional()
     @IsString()
-    @Matches(/^[\w\s.-]{1,100}$/)
+    @MaxLength(100)
     client_name?: string;
 
     @IsOptional()
@@ -48,10 +46,58 @@ export class RegisterClientDto {
     @IsIn(['none'])
     token_endpoint_auth_method?: string;
 
+    // Ignore registration scope metadata; every approved MCP client receives
+    // the same full Drivebridge access.
+    @IsOptional()
+    @Allow()
+    scope?: unknown;
+
+    @IsOptional()
+    @IsIn(['web', 'native'])
+    application_type?: string;
+
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    resource?: string;
+
+    // Standard OAuth Dynamic Client Registration metadata that this server
+    // does not need to persist, but should accept from interoperable clients.
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    client_uri?: string;
+
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    logo_uri?: string;
+
     @IsOptional()
     @IsArray()
-    @ArrayNotEmpty()
-    @ArrayUnique()
-    @IsEnum(McpScope, { each: true })
-    scope?: McpScope[];
+    @IsString({ each: true })
+    contacts?: string[];
+
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    tos_uri?: string;
+
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    policy_uri?: string;
+
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    jwks_uri?: string;
+
+    @IsOptional()
+    @Allow()
+    jwks?: Record<string, unknown>;
+
+    @IsOptional()
+    @IsString()
+    @MaxLength(255)
+    software_id?: string;
+
+    @IsOptional()
+    @IsString()
+    @MaxLength(255)
+    software_version?: string;
 }

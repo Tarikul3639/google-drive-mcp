@@ -2,7 +2,14 @@
 
 import { useEffect, useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Check, LoaderCircle, Save, ShieldCheck } from "lucide-react"
+import {
+  ArrowLeft,
+  Check,
+  LoaderCircle,
+  LogOut,
+  Save,
+  ShieldCheck,
+} from "lucide-react"
 
 import { DashboardShell } from "@/features/dashboard/components/DashboardShell"
 import { authApi } from "@/features/shared/api/client"
@@ -15,8 +22,20 @@ export default function AccountPage() {
   const [name, setName] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
   const [message, setMessage] = useState("")
   const [error, setError] = useState("")
+
+  async function signOut() {
+    setSigningOut(true)
+    try {
+      await authApi.logout()
+    } catch {
+      // Return to the public page even if the session already expired.
+    } finally {
+      router.replace("/")
+    }
+  }
 
   useEffect(() => {
     let active = true
@@ -193,6 +212,28 @@ export default function AccountPage() {
               Go to workspace
             </button>
           </div>
+        </section>
+
+        <section className="mt-4 flex flex-col gap-4 rounded-[20px] border border-foreground/[0.08] bg-background p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div>
+            <h2 className="text-[11px] font-semibold">Session</h2>
+            <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
+              Sign out of your Drivebridge account on this browser.
+            </p>
+          </div>
+          <button
+            className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-foreground/10 px-4 text-[10px] font-medium transition hover:border-[#b96351]/40 hover:bg-[#b96351]/[0.06] hover:text-[#a64d3d] disabled:cursor-wait disabled:opacity-60"
+            disabled={signingOut}
+            onClick={signOut}
+            type="button"
+          >
+            {signingOut ? (
+              <LoaderCircle className="size-3.5 animate-spin" />
+            ) : (
+              <LogOut className="size-3.5" />
+            )}
+            {signingOut ? "Signing out…" : "Sign out"}
+          </button>
         </section>
       </div>
     </DashboardShell>

@@ -8,6 +8,7 @@ import { ConfigService } from '../../../config/config.service.js';
 import { IdentityProviderTokenVerifier } from './identity-provider-token.verifier.js';
 import { OAuthMetadataController } from './oauth-metadata.controller.js';
 import { OAuthController } from './oauth.controller.js';
+import { McpGoogleStrategy } from './strategies/mcp-google.strategy.js';
 
 import { OAuthClientService } from './services/oauth-client.service.js';
 import { OAuthAuthorizationService } from './services/oauth-authorization.service.js';
@@ -34,6 +35,7 @@ import { OAuthCodeService } from './services/oauth-code.service.js';
     controllers: [OAuthMetadataController, OAuthController],
     providers: [
         IdentityProviderTokenVerifier,
+        McpGoogleStrategy,
         OAuthClientService,
         OAuthAuthorizationService,
         OAuthCodeService,

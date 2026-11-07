@@ -21,7 +21,8 @@ apiClient.interceptors.response.use(
       request &&
       !request._retry &&
       !url.includes("/api/auth/refresh") &&
-      !url.includes("/api/auth/logout")
+      !url.includes("/api/auth/logout") &&
+      !url.includes("/api/mcp/oauth/consent")
 
     if (!canRefresh) return Promise.reject(error)
 
@@ -64,4 +65,16 @@ export const mcpAccessApi = {
     apiClient.delete<void>(
       `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}`,
     ),
+}
+
+export const mcpConsentApi = {
+  get: (transaction: string) =>
+    apiClient.get<unknown>("/api/mcp/oauth/consent", {
+      params: { transaction },
+    }),
+  submit: (transaction: string, decision: "allow" | "deny") =>
+    apiClient.post<{ redirectUrl: string }>("/api/mcp/oauth/consent", {
+      transaction,
+      decision,
+    }),
 }

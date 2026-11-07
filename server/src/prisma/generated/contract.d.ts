@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'57e76f7f931c9c6efa2ce786bf6aa69169d234cae79255305ffdd292257f2be5'>;
+  StorageHashBase<'9c1d6f113b5dc3704391fcb92d6cf270c7c3d199a866673a80bae5e76e12ce2a'>;
 export type ExecutionHash =
   ExecutionHashBase<'fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e'>;
 export type ProfileHash =
@@ -275,30 +275,7 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
   : Encoded;
 type ParameterizedOutputTypeFunctions = PgParameterizedOutputTypes;
 
-type FieldTypeOverrides = {
-  readonly public: {
-    readonly models: {
-      readonly McpClient: {
-        readonly scopes: {
-          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-        };
-      };
-      readonly McpClientAccess: {
-        readonly scopes: {
-          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-        };
-      };
-      readonly McpRefreshToken: {
-        readonly scope: {
-          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-        };
-      };
-    };
-  };
-};
+type FieldTypeOverrides = {};
 export type FieldOutputTypes = FieldTypesFromDomain<
   ContractBase['domain']['namespaces'],
   CodecTypes,
@@ -315,28 +292,7 @@ export type FieldInputTypes = FieldTypesFromDomain<
   'input',
   ContractBase['storage']['namespaces']
 >;
-type ColumnTypeOverrides = {
-  readonly public: {
-    readonly mcp_client_accesses: {
-      readonly scopes: {
-        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-      };
-    };
-    readonly mcp_clients: {
-      readonly scopes: {
-        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-      };
-    };
-    readonly mcp_refresh_tokens: {
-      readonly scope: {
-        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
-        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
-      };
-    };
-  };
-};
+type ColumnTypeOverrides = {};
 export type StorageColumnTypes = ColumnTypesFromStorage<
   ContractBase['storage'],
   CodecTypes,
@@ -383,7 +339,6 @@ export namespace Models {
     id: FieldOutputTypes['public']['McpClient']['id'];
     name: FieldOutputTypes['public']['McpClient']['name'];
     redirectUris: FieldOutputTypes['public']['McpClient']['redirectUris'];
-    scopes: FieldOutputTypes['public']['McpClient']['scopes'];
     updatedAt: FieldOutputTypes['public']['McpClient']['updatedAt'];
     refreshTokens: public_McpRefreshToken[];
     userAccesses: public_McpClientAccess[];
@@ -394,7 +349,6 @@ export namespace Models {
     grantedAt: FieldOutputTypes['public']['McpClientAccess']['grantedAt'];
     id: FieldOutputTypes['public']['McpClientAccess']['id'];
     revokedAt: FieldOutputTypes['public']['McpClientAccess']['revokedAt'];
-    scopes: FieldOutputTypes['public']['McpClientAccess']['scopes'];
     userId: FieldOutputTypes['public']['McpClientAccess']['userId'];
     client: public_McpClient;
     user: public_User;
@@ -406,7 +360,6 @@ export namespace Models {
     expiresAt: FieldOutputTypes['public']['McpRefreshToken']['expiresAt'];
     id: FieldOutputTypes['public']['McpRefreshToken']['id'];
     revokedAt: FieldOutputTypes['public']['McpRefreshToken']['revokedAt'];
-    scope: FieldOutputTypes['public']['McpRefreshToken']['scope'];
     tokenHash: FieldOutputTypes['public']['McpRefreshToken']['tokenHash'];
     userId: FieldOutputTypes['public']['McpRefreshToken']['userId'];
     client: public_McpClient;
@@ -644,16 +597,6 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
-                readonly scopes: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
-                  };
-                  readonly many: { readonly elementNullable: false };
-                };
                 readonly user_id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -744,16 +687,6 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: { readonly elementNullable: false };
                 };
-                readonly scopes: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
-                  };
-                  readonly many: { readonly elementNullable: false };
-                };
                 readonly updated_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
@@ -802,16 +735,6 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
-                };
-                readonly scope: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
-                  };
-                  readonly many: { readonly elementNullable: false };
                 };
                 readonly token_hash: {
                   readonly dataType: 'pg/text';
@@ -930,12 +853,6 @@ type ContractBase = Omit<
               ];
               indexes: readonly [];
               foreignKeys: readonly [];
-            };
-          };
-          readonly valueSet: {
-            readonly McpScope: {
-              readonly kind: 'valueSet';
-              readonly values: readonly ['DRIVE_READ', 'DRIVE_WRITE'];
             };
           };
         };
@@ -1146,11 +1063,6 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
                 readonly many: { readonly elementNullable: false };
               };
-              readonly scopes: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-                readonly many: { readonly elementNullable: false };
-              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1194,7 +1106,6 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly redirectUris: { readonly column: 'redirect_uris' };
-                readonly scopes: { readonly column: 'scopes' };
                 readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
@@ -1224,11 +1135,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-date@1';
                   readonly typeParams: { readonly precision: 3 };
                 };
-              };
-              readonly scopes: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-                readonly many: { readonly elementNullable: false };
               };
               readonly userId: {
                 readonly nullable: false;
@@ -1266,7 +1172,6 @@ type ContractBase = Omit<
                 readonly grantedAt: { readonly column: 'granted_at' };
                 readonly id: { readonly column: 'id' };
                 readonly revokedAt: { readonly column: 'revoked_at' };
-                readonly scopes: { readonly column: 'scopes' };
                 readonly userId: { readonly column: 'user_id' };
               };
             };
@@ -1304,11 +1209,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-date@1';
                   readonly typeParams: { readonly precision: 3 };
                 };
-              };
-              readonly scope: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-                readonly many: { readonly elementNullable: false };
               };
               readonly tokenHash: {
                 readonly nullable: false;
@@ -1351,7 +1251,6 @@ type ContractBase = Omit<
                 readonly expiresAt: { readonly column: 'expires_at' };
                 readonly id: { readonly column: 'id' };
                 readonly revokedAt: { readonly column: 'revoked_at' };
-                readonly scope: { readonly column: 'scope' };
                 readonly tokenHash: { readonly column: 'token_hash' };
                 readonly userId: { readonly column: 'user_id' };
               };
@@ -1457,21 +1356,6 @@ type ContractBase = Omit<
               };
             };
           };
-        };
-        readonly enum: {
-          readonly McpScope: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'DRIVE_READ'; readonly value: 'DRIVE_READ' },
-              { readonly name: 'DRIVE_WRITE'; readonly value: 'DRIVE_WRITE' },
-            ];
-          };
-        };
-        readonly enumMemberTypes?: {
-          readonly McpScope: readonly [
-            { readonly name: 'DRIVE_READ'; readonly value: 'DRIVE_READ' },
-            { readonly name: 'DRIVE_WRITE'; readonly value: 'DRIVE_WRITE' },
-          ];
         };
       };
     };

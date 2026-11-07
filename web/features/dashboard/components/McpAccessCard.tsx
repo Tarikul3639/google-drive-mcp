@@ -14,7 +14,6 @@ function readClients(value: unknown): AuthorizedMcpClient[] {
       item !== null &&
       typeof (item as AuthorizedMcpClient).clientId === "string" &&
       typeof (item as AuthorizedMcpClient).name === "string" &&
-      typeof (item as AuthorizedMcpClient).scopes === "string" &&
       typeof (item as AuthorizedMcpClient).grantedAt === "string",
   )
 }
@@ -98,7 +97,7 @@ export function McpAccessCard() {
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-[12px] font-semibold">{client.name}</h3>
                 <p className="mt-1 text-[10px] text-muted-foreground">
-                  Permissions: {client.scopes.split(" ").join(", ") || "None"}
+                  Full Drivebridge access
                 </p>
                 <p className="mt-1 text-[9px] text-muted-foreground/80">
                   Approved {new Date(client.grantedAt).toLocaleDateString()}

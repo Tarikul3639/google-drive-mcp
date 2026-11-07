@@ -5,9 +5,15 @@ import {
     Length,
     Matches,
     ValidateIf,
+    IsOptional,
+    IsUrl,
 } from 'class-validator';
 
 export class TokenRequestDto {
+    @IsOptional()
+    @IsUrl({ require_protocol: true, require_tld: false })
+    resource?: string;
+
     @IsIn(['authorization_code', 'refresh_token'])
     grant_type!: 'authorization_code' | 'refresh_token';
 

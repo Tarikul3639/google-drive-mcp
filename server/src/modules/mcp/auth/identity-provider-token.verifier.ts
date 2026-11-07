@@ -1,65 +1,45 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../../prisma/prisma.service.js';
 
 import type { McpTokenVerifier } from '@nestjs/mcp';
 import type { AuthInfo } from '@modelcontextprotocol/server';
-import { toMcpScopes } from '../../../common/constants/mcp-scopes.js';
+
+import { ConfigService } from '../../../config/config.service.js';
 
 import type { McpAccessTokenPayload } from './interfaces/mcp-access-token-payload.interface.js';
 
 @Injectable()
 export class IdentityProviderTokenVerifier implements McpTokenVerifier {
-    private readonly logger = new Logger(IdentityProviderTokenVerifier.name);
-
     constructor(
         private readonly jwtService: JwtService,
-        private readonly prisma: PrismaService,
+        private readonly configService: ConfigService,
     ) { }
 
-    /**
-     * Verify MCP access token and extract authentication information.
-     */
     async verifyAccessToken(token: string): Promise<AuthInfo | null> {
         try {
             const payload =
                 await this.jwtService.verifyAsync<McpAccessTokenPayload>(token);
 
-            if (!payload.sub || !payload.client_id || !payload.scope) {
+            if (!payload.sub || !payload.client_id || !payload.exp) {
                 return null;
             }
 
-            const grant = await this.prisma.db.orm.public.McpClientAccess
-                .where({ userId: payload.sub, clientId: payload.client_id })
-                .first();
+            const audiences = Array.isArray(payload.aud)
+                ? payload.aud
+                : [payload.aud];
 
-            if (grant?.revokedAt) return null;
-
-            const legacyToken = grant
-                ? null
-                : await this.prisma.db.orm.public.McpRefreshToken
-                    .where({
-                        userId: payload.sub,
-                        clientId: payload.client_id,
-                        revokedAt: null,
-                    })
-                    .first();
-            if (!grant && !legacyToken) return null;
-
-            const tokenScopes = payload.scope.split(' ').filter(Boolean);
-            const tokenMcpScopes = toMcpScopes(payload.scope);
-            const grantedScopes = new Set(grant?.scopes ?? legacyToken?.scope ?? []);
-            if (tokenMcpScopes.some((scope) => !grantedScopes.has(scope))) {
+            if (!audiences.includes(this.configService.mcpResource)) {
                 return null;
             }
 
             return {
                 token,
                 clientId: payload.client_id,
-                scopes: tokenScopes,
+                scopes: [],
+                resource: new URL(this.configService.mcpResource),
+                expiresAt: payload.exp,
             };
         } catch {
-            this.logger.debug('MCP access token verification failed.');
             return null;
         }
     }

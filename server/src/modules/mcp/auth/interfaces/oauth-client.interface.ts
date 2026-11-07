@@ -5,5 +5,4 @@ export interface OAuthClient {
     grant_types: readonly string[];
     response_types: readonly string[];
     token_endpoint_auth_method: string;
-    scope: string;
 }

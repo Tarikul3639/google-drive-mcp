@@ -23,7 +23,6 @@ import { HealthCheckTool } from './tools/health-check.tool.js';
                     verifier,
                     resource: configService.mcpResource,
                     authorizationServers: [configService.mcpAuthorizationServer],
-                    scopesSupported: ['drive:read', 'drive:write'],
                 },
             }),
         }),

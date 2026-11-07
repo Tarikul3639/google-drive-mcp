@@ -32,21 +32,6 @@
   "domain": {
     "namespaces": {
       "public": {
-        "enum": {
-          "McpScope": {
-            "codecId": "pg/text@1",
-            "members": [
-              {
-                "name": "DRIVE_READ",
-                "value": "DRIVE_READ"
-              },
-              {
-                "name": "DRIVE_WRITE",
-                "value": "DRIVE_WRITE"
-              }
-            ]
-          }
-        },
         "models": {
           "AuthSession": {
             "fields": {
@@ -322,22 +307,6 @@
                   "kind": "scalar"
                 }
               },
-              "scopes": {
-                "many": {
-                  "elementNullable": false
-                },
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "McpScope",
-                  "namespaceId": "public",
-                  "plane": "domain"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -401,9 +370,6 @@
                 "redirectUris": {
                   "column": "redirect_uris"
                 },
-                "scopes": {
-                  "column": "scopes"
-                },
                 "updatedAt": {
                   "column": "updated_at"
                 }
@@ -446,22 +412,6 @@
                   "typeParams": {
                     "precision": 3
                   }
-                }
-              },
-              "scopes": {
-                "many": {
-                  "elementNullable": false
-                },
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "McpScope",
-                  "namespaceId": "public",
-                  "plane": "domain"
                 }
               },
               "userId": {
@@ -520,9 +470,6 @@
                 "revokedAt": {
                   "column": "revoked_at"
                 },
-                "scopes": {
-                  "column": "scopes"
-                },
                 "userId": {
                   "column": "user_id"
                 }
@@ -575,22 +522,6 @@
                   "typeParams": {
                     "precision": 3
                   }
-                }
-              },
-              "scope": {
-                "many": {
-                  "elementNullable": false
-                },
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "McpScope",
-                  "namespaceId": "public",
-                  "plane": "domain"
                 }
               },
               "tokenHash": {
@@ -658,9 +589,6 @@
                 },
                 "revokedAt": {
                   "column": "revoked_at"
-                },
-                "scope": {
-                  "column": "scope"
                 },
                 "tokenHash": {
                   "column": "token_hash"
@@ -1035,18 +963,6 @@
               ]
             },
             "mcp_client_accesses": {
-              "checks": [
-                {
-                  "expression": "array_remove(\"scopes\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
-                  "name": "mcp_client_accesses_scopes_check_5643ef4f",
-                  "prefix": "mcp_client_accesses_scopes_check"
-                },
-                {
-                  "expression": "array_position(\"scopes\", NULL) IS NULL",
-                  "name": "mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
-                  "prefix": "mcp_client_accesses_scopes_elem_not_null"
-                }
-              ],
               "columns": {
                 "client_id": {
                   "codecId": "pg/text@1",
@@ -1076,24 +992,6 @@
                   "nullable": true,
                   "typeParams": {
                     "precision": 3
-                  }
-                },
-                "scopes": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "default": {
-                    "kind": "literal",
-                    "value": []
-                  },
-                  "many": {
-                    "elementNullable": false
-                  },
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "McpScope",
-                    "namespaceId": "public",
-                    "plane": "storage"
                   }
                 },
                 "user_id": {
@@ -1182,16 +1080,6 @@
                   "expression": "array_position(\"redirect_uris\", NULL) IS NULL",
                   "name": "mcp_clients_redirect_uris_elem_not_null_3825312c",
                   "prefix": "mcp_clients_redirect_uris_elem_not_null"
-                },
-                {
-                  "expression": "array_remove(\"scopes\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
-                  "name": "mcp_clients_scopes_check_5643ef4f",
-                  "prefix": "mcp_clients_scopes_check"
-                },
-                {
-                  "expression": "array_position(\"scopes\", NULL) IS NULL",
-                  "name": "mcp_clients_scopes_elem_not_null_de6fcc8e",
-                  "prefix": "mcp_clients_scopes_elem_not_null"
                 }
               ],
               "columns": {
@@ -1235,24 +1123,6 @@
                   },
                   "nullable": false
                 },
-                "scopes": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "default": {
-                    "kind": "literal",
-                    "value": []
-                  },
-                  "many": {
-                    "elementNullable": false
-                  },
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "McpScope",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
-                },
                 "updated_at": {
                   "codecId": "pg/timestamptz-date@1",
                   "dataType": "pg/timestamptz",
@@ -1278,18 +1148,6 @@
               ]
             },
             "mcp_refresh_tokens": {
-              "checks": [
-                {
-                  "expression": "array_remove(\"scope\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
-                  "name": "mcp_refresh_tokens_scope_check_9799e96d",
-                  "prefix": "mcp_refresh_tokens_scope_check"
-                },
-                {
-                  "expression": "array_position(\"scope\", NULL) IS NULL",
-                  "name": "mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
-                  "prefix": "mcp_refresh_tokens_scope_elem_not_null"
-                }
-              ],
               "columns": {
                 "client_id": {
                   "codecId": "pg/text@1",
@@ -1327,24 +1185,6 @@
                   "nullable": true,
                   "typeParams": {
                     "precision": 3
-                  }
-                },
-                "scope": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "default": {
-                    "kind": "literal",
-                    "value": []
-                  },
-                  "many": {
-                    "elementNullable": false
-                  },
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "McpScope",
-                    "namespaceId": "public",
-                    "plane": "storage"
                   }
                 },
                 "token_hash": {
@@ -1507,22 +1347,13 @@
                 }
               ]
             }
-          },
-          "valueSet": {
-            "McpScope": {
-              "kind": "valueSet",
-              "values": [
-                "DRIVE_READ",
-                "DRIVE_WRITE"
-              ]
-            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "57e76f7f931c9c6efa2ce786bf6aa69169d234cae79255305ffdd292257f2be5"
+    "storageHash": "9c1d6f113b5dc3704391fcb92d6cf270c7c3d199a866673a80bae5e76e12ce2a"
   },
   "execution": {
     "executionHash": "fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e",

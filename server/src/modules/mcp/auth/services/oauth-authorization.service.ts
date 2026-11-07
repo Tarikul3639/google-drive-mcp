@@ -19,19 +19,11 @@ import type { GoogleUser } from '../../../auth/interfaces/google-user.interface.
 import type { ConsentRequestDto } from '../dto/consent-request.dto.js';
 import type { AuthorizationRequest } from '../interfaces/authorization-request.interface.js';
 
-import {
-  MCP_SCOPE_MAP,
-  toMcpScopes,
-  toOAuthScope,
-} from '../../../../common/constants/mcp-scopes.js';
-import type { McpScope } from '../../../../common/constants/prisma-enums.js';
-
 interface AuthorizationState {
   clientId: string;
   redirectUri: string;
   codeChallenge: string;
   clientState: string | null;
-  scopes: McpScope[];
 }
 
 interface PendingConsent {
@@ -39,7 +31,6 @@ interface PendingConsent {
   redirectUri: string;
   codeChallenge: string;
   clientState: string | null;
-  scopes: McpScope[];
   googleUser: GoogleUser;
 }
 
@@ -49,15 +40,13 @@ export class OAuthAuthorizationService {
   private readonly consentTtl = 300;
   private readonly codeTtl = 300;
 
-  private readonly supportedScopes = Object.values(MCP_SCOPE_MAP);
-
   constructor(
     private readonly configService: ConfigService,
     private readonly redis: RedisService,
     private readonly prisma: PrismaService,
     private readonly oauthClientService: OAuthClientService,
     private readonly googleAuthService: GoogleAuthService,
-  ) {}
+  ) { }
 
   /**
    * Validates the OAuth authorization request and redirects
@@ -71,7 +60,7 @@ export class OAuthAuthorizationService {
       code_challenge,
       code_challenge_method,
       state,
-      scope,
+      resource,
     } = query;
 
     // Validate required OAuth parameters.
@@ -83,6 +72,10 @@ export class OAuthAuthorizationService {
       code_challenge_method !== 'S256'
     ) {
       throw new BadRequestException('Invalid OAuth authorization request.');
+    }
+
+    if (resource && resource !== this.configService.mcpResource) {
+      throw new BadRequestException('Unsupported OAuth resource.');
     }
 
     // Validate PKCE S256 challenge format.
@@ -97,33 +90,6 @@ export class OAuthAuthorizationService {
       throw new UnauthorizedException('Invalid OAuth client.');
     }
 
-    // Validate requested scopes.
-    const requestedOAuthScopes = scope
-      ? [...new Set(scope.split(/\s+/).filter(Boolean))]
-      : ['drive:read'];
-
-    if (
-      requestedOAuthScopes.some(
-        (requestedScope) => !this.supportedScopes.includes(requestedScope),
-      )
-    ) {
-      throw new BadRequestException('Unsupported OAuth scope.');
-    }
-
-    const requestedScopes = toMcpScopes(requestedOAuthScopes.join(' '));
-
-    const clientScopes = client.scope.split(/\s+/).filter(Boolean);
-
-    if (
-      requestedOAuthScopes.some(
-        (requestedScope) => !clientScopes.includes(requestedScope),
-      )
-    ) {
-      throw new BadRequestException(
-        'Requested scope is not registered for this OAuth client.',
-      );
-    }
-
     // Generate a cryptographically secure state for Google's OAuth flow.
     const googleState = randomBytes(32).toString('base64url');
 
@@ -132,7 +98,6 @@ export class OAuthAuthorizationService {
       redirectUri: redirect_uri,
       codeChallenge: code_challenge,
       clientState: state || null,
-      scopes: requestedScopes,
     };
 
     // Store the original authorization request temporarily in Redis.
@@ -202,9 +167,7 @@ export class OAuthAuthorizationService {
     );
 
     // Redirect the authenticated user to the consent page.
-    const consentUrl = new URL(
-      `${this.configService.mcpAuthorizationServer}/api/mcp/oauth/consent`,
-    );
+    const consentUrl = new URL('/mcp/consent', this.configService.frontendUrl);
 
     consentUrl.searchParams.set('transaction', transaction);
 
@@ -248,7 +211,7 @@ export class OAuthAuthorizationService {
         clientId: client.client_id,
         name: client.client_name,
       },
-      scopes: consentData.scopes.map((mcpScope) => MCP_SCOPE_MAP[mcpScope]),
+      access: 'full',
     };
   }
 
@@ -316,7 +279,6 @@ export class OAuthAuthorizationService {
       await this.prisma.db.orm.public.McpClientAccess.where({
         id: existingGrant.id,
       }).update({
-        scopes: consentData.scopes,
         grantedAt: new Date(),
         revokedAt: null,
       });
@@ -324,7 +286,6 @@ export class OAuthAuthorizationService {
       await this.prisma.db.orm.public.McpClientAccess.create({
         userId,
         clientId: consentData.clientId,
-        scopes: consentData.scopes,
       });
     }
 
@@ -350,7 +311,6 @@ export class OAuthAuthorizationService {
         userId,
         redirectUri: consentData.redirectUri,
         codeChallenge: consentData.codeChallenge,
-        scope: toOAuthScope(consentData.scopes),
       }),
       this.codeTtl,
     );
@@ -375,17 +335,11 @@ export class OAuthAuthorizationService {
       .where({ userId })
       .all();
     const grantsByClient = new Map(grants.map((grant) => [grant.clientId, grant]));
-    const clients = new Map<
-      string,
-      { scopes: readonly McpScope[]; grantedAt: Date }
-    >();
+    const clients = new Map<string, { grantedAt: Date }>();
 
     for (const grant of grants) {
       if (!grant.revokedAt) {
-        clients.set(grant.clientId, {
-          scopes: grant.scopes,
-          grantedAt: grant.grantedAt,
-        });
+        clients.set(grant.clientId, { grantedAt: grant.grantedAt });
       }
     }
 
@@ -399,22 +353,20 @@ export class OAuthAuthorizationService {
         continue;
       }
       clients.set(token.clientId, {
-        scopes: token.scope,
         grantedAt: token.createdAt,
       });
     }
 
     return Promise.all(
       [...clients.entries()].map(async ([clientId, grant]) => {
-          const client = await this.oauthClientService.getClient(clientId);
+        const client = await this.oauthClientService.getClient(clientId);
 
-          return {
-            clientId,
-            name: client?.client_name ?? 'MCP client',
-            scopes: toOAuthScope(grant.scopes),
-            grantedAt: grant.grantedAt,
-          };
-        }),
+        return {
+          clientId,
+          name: client?.client_name ?? 'MCP client',
+          grantedAt: grant.grantedAt,
+        };
+      }),
     );
   }
 
