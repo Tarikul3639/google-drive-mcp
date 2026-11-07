@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
+import { ConfigService } from '../../config/config.service.js';
 import { AuthController } from './controller/auth.controller.js';
 
-import { TokenService } from './services/token.service.js';
 import { SessionService } from './services/session.service.js';
 import { LoginService } from './services/login.service.js';
 import { LogoutService } from './services/logout.service.js';
@@ -21,11 +21,18 @@ import { OAuthStateService } from './services/oauth-state.service.js';
 
 @Module({
     imports: [
-        JwtModule.register({}),
+        JwtModule.registerAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService) => ({
+                secret: configService.jwtAccessSecret,
+                signOptions: {
+                    expiresIn: configService.jwtAccessTtlMs / 1000,
+                },
+            }),
+        }),
     ],
     controllers: [AuthController],
     providers: [
-        TokenService,
         SessionService,
         LoginService,
         LogoutService,
@@ -35,14 +42,11 @@ import { OAuthStateService } from './services/oauth-state.service.js';
         AccessTokenGuard,
         RefreshTokenGuard,
         GoogleAuthGuard,
-
-        // Import UsersService from UsersModule
         UsersService,
-
         OAuthStateService,
     ],
     exports: [
-        TokenService,
+        JwtModule,
         SessionService,
         OAuthStateService,
         GoogleAuthService,

@@ -4,19 +4,17 @@ import {
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
-import { TokenService } from '../services/token.service.js';
+import type { AccessTokenPayload } from '../interfaces/token-payload.interface.js';
 
 @Injectable()
 export class AccessTokenGuard implements CanActivate {
-    constructor(
-        private readonly tokenService: TokenService,
-    ) {}
+    constructor(private readonly jwtService: JwtService) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>();
-
         const token = request.cookies?.access_token;
 
         if (!token || typeof token !== 'string') {
@@ -25,7 +23,7 @@ export class AccessTokenGuard implements CanActivate {
 
         try {
             const payload =
-                await this.tokenService.verifyAccessToken(token);
+                await this.jwtService.verifyAsync<AccessTokenPayload>(token);
 
             if (
                 typeof payload.sub !== 'string' ||

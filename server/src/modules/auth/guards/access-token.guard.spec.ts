@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { JwtService } from '@nestjs/jwt';
 
 import { AccessTokenGuard } from './access-token.guard.js';
-import { TokenService } from '../services/token.service.js';
 
 describe('AccessTokenGuard', () => {
   let guard: AccessTokenGuard;
 
-  const tokenService = {
-    verifyAccessToken: vi.fn(),
+  const jwtService = {
+    verifyAsync: vi.fn(),
   };
 
   beforeEach(async () => {
@@ -18,8 +18,8 @@ describe('AccessTokenGuard', () => {
       providers: [
         AccessTokenGuard,
         {
-          provide: TokenService,
-          useValue: tokenService,
+          provide: JwtService,
+          useValue: jwtService,
         },
       ],
     }).compile();
@@ -38,7 +38,7 @@ describe('AccessTokenGuard', () => {
         sid: 'session-123',
       };
 
-      tokenService.verifyAccessToken.mockResolvedValue(payload);
+      jwtService.verifyAsync.mockResolvedValue(payload);
 
       const request = {
         cookies: {
@@ -57,7 +57,7 @@ describe('AccessTokenGuard', () => {
       expect(result).toBe(true);
       expect(request).toHaveProperty('auth', payload);
 
-      expect(tokenService.verifyAccessToken).toHaveBeenCalledWith(
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith(
         'valid-access-token',
       );
     });
@@ -77,11 +77,11 @@ describe('AccessTokenGuard', () => {
         'Access token is missing',
       );
 
-      expect(tokenService.verifyAccessToken).not.toHaveBeenCalled();
+      expect(jwtService.verifyAsync).not.toHaveBeenCalled();
     });
 
     it('should throw UnauthorizedException when token is invalid', async () => {
-      tokenService.verifyAccessToken.mockRejectedValue(
+      jwtService.verifyAsync.mockRejectedValue(
         new Error('Invalid token'),
       );
 
@@ -103,7 +103,7 @@ describe('AccessTokenGuard', () => {
     });
 
     it('should reject an invalid token payload', async () => {
-      tokenService.verifyAccessToken.mockResolvedValue({
+      jwtService.verifyAsync.mockResolvedValue({
         sub: '',
         sid: 'session-123',
       });

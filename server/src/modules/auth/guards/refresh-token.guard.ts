@@ -4,17 +4,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import type { Request } from 'express';
 
-import { TokenService } from '../services/token.service.js';
 import { SessionService } from '../services/session.service.js';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(
-    private readonly tokenService: TokenService,
-    private readonly sessionService: SessionService,
-  ) { }
+  constructor(private readonly sessionService: SessionService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -25,9 +22,10 @@ export class RefreshTokenGuard implements CanActivate {
       throw new UnauthorizedException('Refresh token is missing');
     }
 
-    // Hash the refresh token
-    const tokenHash = this.tokenService.hashRefreshToken(refreshToken);
-    // Find the session by the refresh token hash
+    // Hash refresh token.
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
+
+    // Find session by refresh token hash.
     const session = await this.sessionService.findByTokenHash(tokenHash);
 
     if (

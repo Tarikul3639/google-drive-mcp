@@ -20,6 +20,7 @@ import { OAuthCodeService } from './services/oauth-code.service.js';
             useFactory: (configService: ConfigService) => ({
                 secret: configService.jwtAccessSecret,
                 signOptions: {
+                    expiresIn: configService.jwtAccessTtlMs / 1000,
                     audience: configService.mcpResource,
                 },
                 verifyOptions: {

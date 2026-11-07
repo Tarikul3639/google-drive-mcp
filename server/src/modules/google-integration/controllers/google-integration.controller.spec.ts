@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
 import { GoogleIntegrationController } from './google-integration.controller.js';
 import { GoogleIntegrationService } from '../services/google-integration.service.js';
 import { AccessTokenGuard } from '../../auth/guards/access-token.guard.js';
 import { GoogleDriveGuard } from '../guards/google-drive.guard.js';
-import { TokenService } from '../../auth/services/token.service.js';
 import { OAuthStateService } from '../../auth/services/oauth-state.service.js';
-import { SessionService } from '../../auth/services/session.service.js';
 
 describe('GoogleIntegrationController', () => {
   let controller: GoogleIntegrationController;
@@ -15,9 +14,8 @@ describe('GoogleIntegrationController', () => {
       controllers: [GoogleIntegrationController],
       providers: [
         { provide: GoogleIntegrationService, useValue: {} },
-        { provide: TokenService, useValue: {} },
-        { provide: SessionService, useValue: {} },
         { provide: OAuthStateService, useValue: {} },
+        { provide: JwtService, useValue: {} },
         { provide: AccessTokenGuard, useValue: {} },
         { provide: GoogleDriveGuard, useValue: {} },
       ],

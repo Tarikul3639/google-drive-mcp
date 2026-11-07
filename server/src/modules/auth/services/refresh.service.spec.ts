@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '../../../config/config.service.js';
 import { RefreshService } from './refresh.service.js';
-import { TokenService } from './token.service.js';
 import { SessionService } from './session.service.js';
 
 describe('RefreshService', () => {
@@ -10,7 +11,8 @@ describe('RefreshService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RefreshService,
-        { provide: TokenService, useValue: {} },
+        { provide: JwtService, useValue: {} },
+        { provide: ConfigService, useValue: {} },
         { provide: SessionService, useValue: {} },
       ],
     }).compile();
