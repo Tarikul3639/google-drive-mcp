@@ -32,6 +32,66 @@
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "GoogleDriveScope": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "DRIVE",
+                "value": "DRIVE"
+              },
+              {
+                "name": "DRIVE_APPDATA",
+                "value": "DRIVE_APPDATA"
+              },
+              {
+                "name": "DRIVE_APPS_READONLY",
+                "value": "DRIVE_APPS_READONLY"
+              },
+              {
+                "name": "DRIVE_FILE",
+                "value": "DRIVE_FILE"
+              },
+              {
+                "name": "DRIVE_MEET_READONLY",
+                "value": "DRIVE_MEET_READONLY"
+              },
+              {
+                "name": "DRIVE_METADATA",
+                "value": "DRIVE_METADATA"
+              },
+              {
+                "name": "DRIVE_METADATA_READONLY",
+                "value": "DRIVE_METADATA_READONLY"
+              },
+              {
+                "name": "DRIVE_PHOTOS_READONLY",
+                "value": "DRIVE_PHOTOS_READONLY"
+              },
+              {
+                "name": "DRIVE_READONLY",
+                "value": "DRIVE_READONLY"
+              },
+              {
+                "name": "DRIVE_SCRIPTS",
+                "value": "DRIVE_SCRIPTS"
+              }
+            ]
+          },
+          "McpScope": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "DRIVE_READ",
+                "value": "DRIVE_READ"
+              },
+              {
+                "name": "DRIVE_WRITE",
+                "value": "DRIVE_WRITE"
+              }
+            ]
+          }
+        },
         "models": {
           "AuthSession": {
             "fields": {
@@ -188,10 +248,19 @@
                 }
               },
               "scope": {
-                "nullable": true,
+                "many": {
+                  "elementNullable": false
+                },
+                "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "GoogleDriveScope",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "updatedAt": {
@@ -317,6 +386,22 @@
                   "kind": "scalar"
                 }
               },
+              "scopes": {
+                "many": {
+                  "elementNullable": false
+                },
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "McpScope",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -380,6 +465,9 @@
                 "redirectUris": {
                   "column": "redirect_uris"
                 },
+                "scopes": {
+                  "column": "scopes"
+                },
                 "updatedAt": {
                   "column": "updated_at"
                 }
@@ -422,6 +510,22 @@
                   "typeParams": {
                     "precision": 3
                   }
+                }
+              },
+              "scopes": {
+                "many": {
+                  "elementNullable": false
+                },
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "McpScope",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "userId": {
@@ -480,6 +584,9 @@
                 "revokedAt": {
                   "column": "revoked_at"
                 },
+                "scopes": {
+                  "column": "scopes"
+                },
                 "userId": {
                   "column": "user_id"
                 }
@@ -535,10 +642,19 @@
                 }
               },
               "scope": {
+                "many": {
+                  "elementNullable": false
+                },
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "McpScope",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "tokenHash": {
@@ -879,6 +995,18 @@
               ]
             },
             "google_accounts": {
+              "checks": [
+                {
+                  "expression": "array_remove(\"scope\", NULL) <@ '{\"DRIVE\",\"DRIVE_APPDATA\",\"DRIVE_APPS_READONLY\",\"DRIVE_FILE\",\"DRIVE_MEET_READONLY\",\"DRIVE_METADATA\",\"DRIVE_METADATA_READONLY\",\"DRIVE_PHOTOS_READONLY\",\"DRIVE_READONLY\",\"DRIVE_SCRIPTS\"}'",
+                  "name": "google_accounts_scope_check_8a6a01ae",
+                  "prefix": "google_accounts_scope_check"
+                },
+                {
+                  "expression": "array_position(\"scope\", NULL) IS NULL",
+                  "name": "google_accounts_scope_elem_not_null_e633fc0c",
+                  "prefix": "google_accounts_scope_elem_not_null"
+                }
+              ],
               "columns": {
                 "access_token": {
                   "codecId": "pg/text@1",
@@ -928,7 +1056,20 @@
                 "scope": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": true
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": {
+                    "elementNullable": false
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "GoogleDriveScope",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "updated_at": {
                   "codecId": "pg/timestamptz-date@1",
@@ -988,6 +1129,18 @@
               ]
             },
             "mcp_client_accesses": {
+              "checks": [
+                {
+                  "expression": "array_remove(\"scopes\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
+                  "name": "mcp_client_accesses_scopes_check_5643ef4f",
+                  "prefix": "mcp_client_accesses_scopes_check"
+                },
+                {
+                  "expression": "array_position(\"scopes\", NULL) IS NULL",
+                  "name": "mcp_client_accesses_scopes_elem_not_null_de6fcc8e",
+                  "prefix": "mcp_client_accesses_scopes_elem_not_null"
+                }
+              ],
               "columns": {
                 "client_id": {
                   "codecId": "pg/text@1",
@@ -1017,6 +1170,24 @@
                   "nullable": true,
                   "typeParams": {
                     "precision": 3
+                  }
+                },
+                "scopes": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": {
+                    "elementNullable": false
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "McpScope",
+                    "namespaceId": "public",
+                    "plane": "storage"
                   }
                 },
                 "user_id": {
@@ -1105,6 +1276,16 @@
                   "expression": "array_position(\"redirect_uris\", NULL) IS NULL",
                   "name": "mcp_clients_redirect_uris_elem_not_null_3825312c",
                   "prefix": "mcp_clients_redirect_uris_elem_not_null"
+                },
+                {
+                  "expression": "array_remove(\"scopes\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
+                  "name": "mcp_clients_scopes_check_5643ef4f",
+                  "prefix": "mcp_clients_scopes_check"
+                },
+                {
+                  "expression": "array_position(\"scopes\", NULL) IS NULL",
+                  "name": "mcp_clients_scopes_elem_not_null_de6fcc8e",
+                  "prefix": "mcp_clients_scopes_elem_not_null"
                 }
               ],
               "columns": {
@@ -1148,6 +1329,24 @@
                   },
                   "nullable": false
                 },
+                "scopes": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": {
+                    "elementNullable": false
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "McpScope",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
                 "updated_at": {
                   "codecId": "pg/timestamptz-date@1",
                   "dataType": "pg/timestamptz",
@@ -1173,6 +1372,18 @@
               ]
             },
             "mcp_refresh_tokens": {
+              "checks": [
+                {
+                  "expression": "array_remove(\"scope\", NULL) <@ '{\"DRIVE_READ\",\"DRIVE_WRITE\"}'",
+                  "name": "mcp_refresh_tokens_scope_check_9799e96d",
+                  "prefix": "mcp_refresh_tokens_scope_check"
+                },
+                {
+                  "expression": "array_position(\"scope\", NULL) IS NULL",
+                  "name": "mcp_refresh_tokens_scope_elem_not_null_e633fc0c",
+                  "prefix": "mcp_refresh_tokens_scope_elem_not_null"
+                }
+              ],
               "columns": {
                 "client_id": {
                   "codecId": "pg/text@1",
@@ -1215,7 +1426,20 @@
                 "scope": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
-                  "nullable": false
+                  "default": {
+                    "kind": "literal",
+                    "value": []
+                  },
+                  "many": {
+                    "elementNullable": false
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "McpScope",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "token_hash": {
                   "codecId": "pg/text@1",
@@ -1377,13 +1601,37 @@
                 }
               ]
             }
+          },
+          "valueSet": {
+            "GoogleDriveScope": {
+              "kind": "valueSet",
+              "values": [
+                "DRIVE",
+                "DRIVE_APPDATA",
+                "DRIVE_APPS_READONLY",
+                "DRIVE_FILE",
+                "DRIVE_MEET_READONLY",
+                "DRIVE_METADATA",
+                "DRIVE_METADATA_READONLY",
+                "DRIVE_PHOTOS_READONLY",
+                "DRIVE_READONLY",
+                "DRIVE_SCRIPTS"
+              ]
+            },
+            "McpScope": {
+              "kind": "valueSet",
+              "values": [
+                "DRIVE_READ",
+                "DRIVE_WRITE"
+              ]
+            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "f251a4935ad5098073e52407e4d4e8f35feafec0bdcc521a4523cdf28c273d98"
+    "storageHash": "4ae9a36ae595b281a9b9e06951e600f4683d324a2c9903a5a05f3a1f46952050"
   },
   "execution": {
     "executionHash": "fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e",

@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'f251a4935ad5098073e52407e4d4e8f35feafec0bdcc521a4523cdf28c273d98'>;
+  StorageHashBase<'4ae9a36ae595b281a9b9e06951e600f4683d324a2c9903a5a05f3a1f46952050'>;
 export type ExecutionHash =
   ExecutionHashBase<'fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e'>;
 export type ProfileHash =
@@ -275,7 +275,56 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
   : Encoded;
 type ParameterizedOutputTypeFunctions = PgParameterizedOutputTypes;
 
-type FieldTypeOverrides = {};
+type FieldTypeOverrides = {
+  readonly public: {
+    readonly models: {
+      readonly GoogleAccount: {
+        readonly scope: {
+          readonly output:
+            | 'DRIVE'
+            | 'DRIVE_APPDATA'
+            | 'DRIVE_APPS_READONLY'
+            | 'DRIVE_FILE'
+            | 'DRIVE_MEET_READONLY'
+            | 'DRIVE_METADATA'
+            | 'DRIVE_METADATA_READONLY'
+            | 'DRIVE_PHOTOS_READONLY'
+            | 'DRIVE_READONLY'
+            | 'DRIVE_SCRIPTS';
+          readonly input:
+            | 'DRIVE'
+            | 'DRIVE_APPDATA'
+            | 'DRIVE_APPS_READONLY'
+            | 'DRIVE_FILE'
+            | 'DRIVE_MEET_READONLY'
+            | 'DRIVE_METADATA'
+            | 'DRIVE_METADATA_READONLY'
+            | 'DRIVE_PHOTOS_READONLY'
+            | 'DRIVE_READONLY'
+            | 'DRIVE_SCRIPTS';
+        };
+      };
+      readonly McpClient: {
+        readonly scopes: {
+          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+        };
+      };
+      readonly McpClientAccess: {
+        readonly scopes: {
+          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+        };
+      };
+      readonly McpRefreshToken: {
+        readonly scope: {
+          readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+          readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+        };
+      };
+    };
+  };
+};
 export type FieldOutputTypes = FieldTypesFromDomain<
   ContractBase['domain']['namespaces'],
   CodecTypes,
@@ -292,7 +341,54 @@ export type FieldInputTypes = FieldTypesFromDomain<
   'input',
   ContractBase['storage']['namespaces']
 >;
-type ColumnTypeOverrides = {};
+type ColumnTypeOverrides = {
+  readonly public: {
+    readonly google_accounts: {
+      readonly scope: {
+        readonly output:
+          | 'DRIVE'
+          | 'DRIVE_APPDATA'
+          | 'DRIVE_APPS_READONLY'
+          | 'DRIVE_FILE'
+          | 'DRIVE_MEET_READONLY'
+          | 'DRIVE_METADATA'
+          | 'DRIVE_METADATA_READONLY'
+          | 'DRIVE_PHOTOS_READONLY'
+          | 'DRIVE_READONLY'
+          | 'DRIVE_SCRIPTS';
+        readonly input:
+          | 'DRIVE'
+          | 'DRIVE_APPDATA'
+          | 'DRIVE_APPS_READONLY'
+          | 'DRIVE_FILE'
+          | 'DRIVE_MEET_READONLY'
+          | 'DRIVE_METADATA'
+          | 'DRIVE_METADATA_READONLY'
+          | 'DRIVE_PHOTOS_READONLY'
+          | 'DRIVE_READONLY'
+          | 'DRIVE_SCRIPTS';
+      };
+    };
+    readonly mcp_client_accesses: {
+      readonly scopes: {
+        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+      };
+    };
+    readonly mcp_clients: {
+      readonly scopes: {
+        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+      };
+    };
+    readonly mcp_refresh_tokens: {
+      readonly scope: {
+        readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
+        readonly input: 'DRIVE_READ' | 'DRIVE_WRITE';
+      };
+    };
+  };
+};
 export type StorageColumnTypes = ColumnTypesFromStorage<
   ContractBase['storage'],
   CodecTypes,
@@ -340,6 +436,7 @@ export namespace Models {
     id: FieldOutputTypes['public']['McpClient']['id'];
     name: FieldOutputTypes['public']['McpClient']['name'];
     redirectUris: FieldOutputTypes['public']['McpClient']['redirectUris'];
+    scopes: FieldOutputTypes['public']['McpClient']['scopes'];
     updatedAt: FieldOutputTypes['public']['McpClient']['updatedAt'];
     refreshTokens: public_McpRefreshToken[];
     userAccesses: public_McpClientAccess[];
@@ -350,6 +447,7 @@ export namespace Models {
     grantedAt: FieldOutputTypes['public']['McpClientAccess']['grantedAt'];
     id: FieldOutputTypes['public']['McpClientAccess']['id'];
     revokedAt: FieldOutputTypes['public']['McpClientAccess']['revokedAt'];
+    scopes: FieldOutputTypes['public']['McpClientAccess']['scopes'];
     userId: FieldOutputTypes['public']['McpClientAccess']['userId'];
     client: public_McpClient;
     user: public_User;
@@ -538,8 +636,12 @@ type ContractBase = Omit<
                 readonly scope: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                  readonly many: false;
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+                  };
+                  readonly many: { readonly elementNullable: false };
                 };
                 readonly updated_at: {
                   readonly dataType: 'pg/timestamptz';
@@ -604,6 +706,16 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
+                };
+                readonly scopes: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+                  };
+                  readonly many: { readonly elementNullable: false };
                 };
                 readonly user_id: {
                   readonly dataType: 'pg/text';
@@ -695,6 +807,16 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: { readonly elementNullable: false };
                 };
+                readonly scopes: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+                  };
+                  readonly many: { readonly elementNullable: false };
+                };
                 readonly updated_at: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
@@ -748,7 +870,11 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
-                  readonly many: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
+                  };
+                  readonly many: { readonly elementNullable: false };
                 };
                 readonly token_hash: {
                   readonly dataType: 'pg/text';
@@ -867,6 +993,27 @@ type ContractBase = Omit<
               ];
               indexes: readonly [];
               foreignKeys: readonly [];
+            };
+          };
+          readonly valueSet: {
+            readonly GoogleDriveScope: {
+              readonly kind: 'valueSet';
+              readonly values: readonly [
+                'DRIVE',
+                'DRIVE_APPDATA',
+                'DRIVE_APPS_READONLY',
+                'DRIVE_FILE',
+                'DRIVE_MEET_READONLY',
+                'DRIVE_METADATA',
+                'DRIVE_METADATA_READONLY',
+                'DRIVE_PHOTOS_READONLY',
+                'DRIVE_READONLY',
+                'DRIVE_SCRIPTS',
+              ];
+            };
+            readonly McpScope: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['DRIVE_READ', 'DRIVE_WRITE'];
             };
           };
         };
@@ -1007,8 +1154,9 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly scope: {
-                readonly nullable: true;
+                readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: { readonly elementNullable: false };
               };
               readonly updatedAt: {
                 readonly nullable: false;
@@ -1082,6 +1230,11 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
                 readonly many: { readonly elementNullable: false };
               };
+              readonly scopes: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: { readonly elementNullable: false };
+              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1125,6 +1278,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly redirectUris: { readonly column: 'redirect_uris' };
+                readonly scopes: { readonly column: 'scopes' };
                 readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
@@ -1154,6 +1308,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-date@1';
                   readonly typeParams: { readonly precision: 3 };
                 };
+              };
+              readonly scopes: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: { readonly elementNullable: false };
               };
               readonly userId: {
                 readonly nullable: false;
@@ -1191,6 +1350,7 @@ type ContractBase = Omit<
                 readonly grantedAt: { readonly column: 'granted_at' };
                 readonly id: { readonly column: 'id' };
                 readonly revokedAt: { readonly column: 'revoked_at' };
+                readonly scopes: { readonly column: 'scopes' };
                 readonly userId: { readonly column: 'user_id' };
               };
             };
@@ -1232,6 +1392,7 @@ type ContractBase = Omit<
               readonly scope: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: { readonly elementNullable: false };
               };
               readonly tokenHash: {
                 readonly nullable: false;
@@ -1380,6 +1541,51 @@ type ContractBase = Omit<
               };
             };
           };
+        };
+        readonly enum: {
+          readonly GoogleDriveScope: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'DRIVE'; readonly value: 'DRIVE' },
+              { readonly name: 'DRIVE_APPDATA'; readonly value: 'DRIVE_APPDATA' },
+              { readonly name: 'DRIVE_APPS_READONLY'; readonly value: 'DRIVE_APPS_READONLY' },
+              { readonly name: 'DRIVE_FILE'; readonly value: 'DRIVE_FILE' },
+              { readonly name: 'DRIVE_MEET_READONLY'; readonly value: 'DRIVE_MEET_READONLY' },
+              { readonly name: 'DRIVE_METADATA'; readonly value: 'DRIVE_METADATA' },
+              {
+                readonly name: 'DRIVE_METADATA_READONLY';
+                readonly value: 'DRIVE_METADATA_READONLY';
+              },
+              { readonly name: 'DRIVE_PHOTOS_READONLY'; readonly value: 'DRIVE_PHOTOS_READONLY' },
+              { readonly name: 'DRIVE_READONLY'; readonly value: 'DRIVE_READONLY' },
+              { readonly name: 'DRIVE_SCRIPTS'; readonly value: 'DRIVE_SCRIPTS' },
+            ];
+          };
+          readonly McpScope: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'DRIVE_READ'; readonly value: 'DRIVE_READ' },
+              { readonly name: 'DRIVE_WRITE'; readonly value: 'DRIVE_WRITE' },
+            ];
+          };
+        };
+        readonly enumMemberTypes?: {
+          readonly GoogleDriveScope: readonly [
+            { readonly name: 'DRIVE'; readonly value: 'DRIVE' },
+            { readonly name: 'DRIVE_APPDATA'; readonly value: 'DRIVE_APPDATA' },
+            { readonly name: 'DRIVE_APPS_READONLY'; readonly value: 'DRIVE_APPS_READONLY' },
+            { readonly name: 'DRIVE_FILE'; readonly value: 'DRIVE_FILE' },
+            { readonly name: 'DRIVE_MEET_READONLY'; readonly value: 'DRIVE_MEET_READONLY' },
+            { readonly name: 'DRIVE_METADATA'; readonly value: 'DRIVE_METADATA' },
+            { readonly name: 'DRIVE_METADATA_READONLY'; readonly value: 'DRIVE_METADATA_READONLY' },
+            { readonly name: 'DRIVE_PHOTOS_READONLY'; readonly value: 'DRIVE_PHOTOS_READONLY' },
+            { readonly name: 'DRIVE_READONLY'; readonly value: 'DRIVE_READONLY' },
+            { readonly name: 'DRIVE_SCRIPTS'; readonly value: 'DRIVE_SCRIPTS' },
+          ];
+          readonly McpScope: readonly [
+            { readonly name: 'DRIVE_READ'; readonly value: 'DRIVE_READ' },
+            { readonly name: 'DRIVE_WRITE'; readonly value: 'DRIVE_WRITE' },
+          ];
         };
       };
     };

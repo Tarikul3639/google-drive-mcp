@@ -1,4 +1,17 @@
 // use prisma-8
+enum GoogleDriveScope {
+  DRIVE
+  DRIVE_APPDATA
+  DRIVE_APPS_READONLY
+  DRIVE_FILE
+  DRIVE_MEET_READONLY
+  DRIVE_METADATA
+  DRIVE_METADATA_READONLY
+  DRIVE_PHOTOS_READONLY
+  DRIVE_READONLY
+  DRIVE_SCRIPTS
+}
+
 model GoogleAccount {
   id           String             @id @onCreate(uuid()) @map("id")
   userId       String             @unique @map("user_id")
@@ -7,7 +20,7 @@ model GoogleAccount {
   accessToken  String             @map("access_token")
   refreshToken String?            @map("refresh_token")
   expiresAt    DateTime?          @map("expires_at")
-  scope        String?
+  scope        GoogleDriveScope[] @default([])
   createdAt    DateTime           @default(now()) @map("created_at")
   updatedAt    temporal.UpdatedAt @map("updated_at")
 

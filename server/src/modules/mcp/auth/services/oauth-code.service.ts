@@ -5,6 +5,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { PrismaService } from '../../../../prisma/prisma.service.js';
 import { RedisService } from '../../../../redis/redis.service.js';
 import { RedisKeys } from '../../../../redis/redis.keys.js';
+import { toMcpScopes, toOAuthScope } from '../../../../common/constants/mcp-scopes.js';
 
 import type { TokenRequestDto } from '../dto/token-request.dto.js';
 import type { McpAccessTokenPayload } from '../interfaces/mcp-access-token-payload.interface.js';
@@ -86,7 +87,7 @@ export class OAuthCodeService {
         const accessToken = await this.jwtService.signAsync<McpAccessTokenPayload>({
             sub: existingToken.userId,
             client_id: existingToken.clientId,
-            scope: existingToken.scope,
+            scope: toOAuthScope(existingToken.scope),
         });
 
         // Revoke old refresh token.
@@ -110,7 +111,7 @@ export class OAuthCodeService {
             refresh_token: newRefreshToken,
             token_type: 'Bearer',
             expires_in: 900,
-            scope: existingToken.scope,
+            scope: toOAuthScope(existingToken.scope),
         };
     }
 
@@ -132,11 +133,13 @@ export class OAuthCodeService {
             scope,
         });
 
+        const scopes = toMcpScopes(scope);
+
         await this.prisma.db.orm.public.McpRefreshToken.create({
             tokenHash: refreshTokenHash,
             clientId,
             userId,
-            scope,
+            scope: scopes,
             expiresAt: refreshTokenExpiresAt,
         });
 

@@ -7,7 +7,10 @@ import {
     ArrayNotEmpty,
     ArrayUnique,
     Matches,
+    IsEnum,
 } from 'class-validator';
+
+import { McpScope } from '../../../../common/constants/prisma-enums.js';
 
 export class RegisterClientDto {
     @IsArray()
@@ -46,7 +49,9 @@ export class RegisterClientDto {
     token_endpoint_auth_method?: string;
 
     @IsOptional()
-    @IsString()
-    @Matches(/^(drive:read|drive:write)( drive:read| drive:write)*$/)
-    scope?: string;
+    @IsArray()
+    @ArrayNotEmpty()
+    @ArrayUnique()
+    @IsEnum(McpScope, { each: true })
+    scope?: McpScope[];
 }

@@ -3,6 +3,7 @@ export const RedisKeys = {
     userByEmail: (email: string) => `user:email:${email}`,
     googleAccountByUserId: (userId: string) => `google-account:${userId}`,
 
+    oauthConsent: (transaction: string) => `oauth:consent:${transaction}`,
     oauthState: (state: string) => `oauth:state:${state}`,
     oauthAuthorizationCode: (codeHash: string) => `mcp:oauth:code:${codeHash}`,
 

@@ -2,9 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
 
 import { PrismaService } from '../../../../prisma/prisma.service.js';
+import { MCP_SCOPE_MAP, type McpScope } from '../../../../common/constants/mcp-scopes.js';
 
 import type { RegisterClientDto } from '../dto/register-client.dto.js';
 import type { OAuthClient } from '../interfaces/oauth-client.interface.js';
+
+const DEFAULT_SCOPES: McpScope[] = [
+    'DRIVE_READ',
+    'DRIVE_WRITE',
+];
 
 @Injectable()
 export class OAuthClientService {
@@ -17,13 +23,14 @@ export class OAuthClientService {
         ];
 
         const responseTypes = body.response_types ?? ['code'];
-        const scope = body.scope ?? 'drive:read drive:write';
+        const scopes = body.scope ?? DEFAULT_SCOPES;
         const clientId = randomBytes(24).toString('base64url');
 
         const client = await this.prisma.db.orm.public.McpClient.create({
             clientId,
             name: body.client_name ?? 'MCP Client',
             redirectUris: body.redirect_uris,
+            scopes,
         });
 
         return {
@@ -32,15 +39,18 @@ export class OAuthClientService {
             redirect_uris: client.redirectUris,
             grant_types: grantTypes,
             response_types: responseTypes,
-            token_endpoint_auth_method: body.token_endpoint_auth_method ?? 'none',
-            scope,
+            token_endpoint_auth_method:
+                body.token_endpoint_auth_method ?? 'none',
+            scope: client.scopes
+                .map((item) => MCP_SCOPE_MAP[item])
+                .join(' '),
         };
     }
 
     async getClient(clientId: string): Promise<OAuthClient | null> {
-        const client = await this.prisma.db.orm.public.McpClient.whereUnique({
-            clientId,
-        }).first();
+        const client = await this.prisma.db.orm.public.McpClient
+            .whereUnique({ clientId })
+            .first();
 
         if (!client) {
             return null;
@@ -53,7 +63,9 @@ export class OAuthClientService {
             grant_types: ['authorization_code', 'refresh_token'],
             response_types: ['code'],
             token_endpoint_auth_method: 'none',
-            scope: 'drive:read drive:write',
+            scope: client.scopes
+                .map((item) => MCP_SCOPE_MAP[item])
+                .join(' '),
         };
     }
 }

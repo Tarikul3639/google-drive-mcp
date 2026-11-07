@@ -21,7 +21,10 @@ import { OAuthCodeService } from './services/oauth-code.service.js';
 
 import { RegisterClientDto } from './dto/register-client.dto.js';
 import { TokenRequestDto } from './dto/token-request.dto.js';
+import { ConsentRequestDto } from './dto/consent-request.dto.js';
+
 import { McpGoogleAuthGuard } from './guards/mcp-google-auth.guard.js';
+import type { AuthorizationRequest } from './interfaces/authorization-request.interface.js';
 
 @Controller('mcp/oauth')
 export class OAuthController {
@@ -41,12 +44,12 @@ export class OAuthController {
     }
 
     /**
-     * Validates the authorization request and redirects the user
-     * to the Google authentication flow.
+     * Validates the authorization request and redirects
+     * the user to Google authentication.
      */
     @Get('authorize')
     async authorize(
-        @Query() query: Record<string, string>,
+        @Query() query: AuthorizationRequest,
         @Res() response: Response,
     ): Promise<void> {
         const googleAuthUrl =
@@ -56,9 +59,8 @@ export class OAuthController {
     }
 
     /**
-     * Handles Google's OAuth callback after successful authentication.
-     * Validates the authenticated user and OAuth state, then redirects
-     * the user back to the registered MCP client's redirect URI.
+     * Handles Google's OAuth callback.
+     * Redirects the authenticated user to the consent page.
      */
     @Get('google/callback')
     @UseGuards(McpGoogleAuthGuard)
@@ -77,17 +79,37 @@ export class OAuthController {
             throw new UnauthorizedException('OAuth state is missing.');
         }
 
-        const result = await this.oauthAuthorizationService.completeAuthorization(
+        const result = await this.oauthAuthorizationService.createConsentRequest(
             googleUser,
             state,
         );
 
-        response.redirect(result.redirectUrl);
+        response.redirect(result.consentUrl);
     }
 
     /**
-     * Exchanges an authorization code for access and refresh tokens,
-     * or exchanges a refresh token for a new token pair.
+     * Returns the information required to display the consent page.
+     */
+    @Get('consent')
+    async getConsent(@Query('transaction') transaction: string) {
+        if (!transaction) {
+            throw new BadRequestException('Consent transaction is required.');
+        }
+
+        return this.oauthAuthorizationService.getConsentDetails(transaction);
+    }
+
+    /**
+     * Processes the user's consent decision.
+     */
+    @Post('consent')
+    @HttpCode(HttpStatus.OK)
+    async submitConsent(@Body() body: ConsentRequestDto) {
+        return this.oauthAuthorizationService.completeConsent(body);
+    }
+
+    /**
+     * Exchanges an authorization code or refresh token.
      */
     @Post('token')
     @HttpCode(HttpStatus.OK)
