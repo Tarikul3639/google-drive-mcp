@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AuthModule } from '../../auth/auth.module.js';
+import { UsersModule } from '../../users/users.module.js';
 import { ConfigService } from '../../../config/config.service.js';
 
 import { IdentityProviderTokenVerifier } from './identity-provider-token.verifier.js';
@@ -15,6 +16,7 @@ import { OAuthCodeService } from './services/oauth-code.service.js';
 @Module({
     imports: [
         AuthModule,
+        UsersModule,
         JwtModule.registerAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({

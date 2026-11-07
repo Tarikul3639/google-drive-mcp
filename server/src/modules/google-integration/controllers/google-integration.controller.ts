@@ -7,9 +7,10 @@ import {
     UnauthorizedException,
     HttpCode,
     HttpStatus,
+    Res,
 } from '@nestjs/common';
 
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 import { ApiTags, ApiOperation, ApiCookieAuth } from '@nestjs/swagger';
 
@@ -18,6 +19,7 @@ import { GoogleDriveGuard } from '../guards/google-drive.guard.js';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
 import { GoogleIntegrationService } from '../services/google-integration.service.js';
 import type { UserResponseDto } from '../../users/dto/user-response.dto.js';
+import { ConfigService } from '../../../config/config.service.js';
 
 interface GoogleIntegrationRequest extends Request {
     oauthStateData?: {
@@ -31,6 +33,7 @@ interface GoogleIntegrationRequest extends Request {
 export class GoogleIntegrationController {
     constructor(
         private readonly googleIntegrationService: GoogleIntegrationService,
+        private readonly configService: ConfigService,
     ) { }
 
     /**
@@ -62,7 +65,8 @@ export class GoogleIntegrationController {
     })
     async callback(
         @Req() request: GoogleIntegrationRequest,
-    ): Promise<{ message: string }> {
+        @Res() response: Response,
+    ): Promise<void> {
         const stateData = request.oauthStateData;
 
         if (!stateData?.userId) {
@@ -82,9 +86,9 @@ export class GoogleIntegrationController {
             googleAccount,
         );
 
-        return {
-            message: 'Google Drive connected successfully.',
-        };
+        response.redirect(
+            new URL('/dashboard?drive=connected', this.configService.frontendUrl).toString(),
+        );
     }
 
     /**
@@ -98,10 +102,13 @@ export class GoogleIntegrationController {
     })
     async status(
         @CurrentUser() user: UserResponseDto,
-    ): Promise<{ connected: boolean }> {
-        const connected = await this.googleIntegrationService.isConnected(user.id);
+    ): Promise<{ connected: boolean; email: string | null }> {
+        const account = await this.googleIntegrationService.findByUserId(user.id);
 
-        return { connected };
+        return {
+            connected: Boolean(account),
+            email: account?.email ?? null,
+        };
     }
 
     /**

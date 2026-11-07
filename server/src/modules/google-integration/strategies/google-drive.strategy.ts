@@ -8,6 +8,7 @@ import type { GoogleDriveAuthResult } from '../interfaces/google-drive-auth.inte
 export class GoogleDriveStrategy extends PassportStrategy(
     Strategy,
     'google-drive',
+    5,
 ) {
     constructor(private readonly configService: ConfigService) {
         super({
@@ -17,7 +18,7 @@ export class GoogleDriveStrategy extends PassportStrategy(
             scope: [
                 'email',
                 'profile',
-                'https://www.googleapis.com/auth/drive.file',
+                'https://www.googleapis.com/auth/drive',
             ],
         });
     }
@@ -25,10 +26,10 @@ export class GoogleDriveStrategy extends PassportStrategy(
     validate(
         accessToken: string,
         refreshToken: string,
-        params: { expires_in?: number; scope?: string },
+        params: { expires_in?: number },
         profile: Profile,
     ): GoogleDriveAuthResult {
-        const email = profile.emails?.[0]?.value;
+        const email = profile.emails?.[0]?.value ?? profile._json?.email;
 
         if (!email) {
             throw new UnauthorizedException(
@@ -44,7 +45,6 @@ export class GoogleDriveStrategy extends PassportStrategy(
             accessToken,
             refreshToken: refreshToken || undefined,
             expiresIn: params.expires_in,
-            scope: params.scope,
         };
     }
 }

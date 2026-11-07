@@ -6,5 +6,4 @@ export interface GoogleDriveAuthResult {
     accessToken: string;
     refreshToken?: string;
     expiresIn?: number;
-    scope?: string;
 }

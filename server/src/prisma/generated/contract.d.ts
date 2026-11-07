@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'4ae9a36ae595b281a9b9e06951e600f4683d324a2c9903a5a05f3a1f46952050'>;
+  StorageHashBase<'57e76f7f931c9c6efa2ce786bf6aa69169d234cae79255305ffdd292257f2be5'>;
 export type ExecutionHash =
   ExecutionHashBase<'fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e'>;
 export type ProfileHash =
@@ -278,32 +278,6 @@ type ParameterizedOutputTypeFunctions = PgParameterizedOutputTypes;
 type FieldTypeOverrides = {
   readonly public: {
     readonly models: {
-      readonly GoogleAccount: {
-        readonly scope: {
-          readonly output:
-            | 'DRIVE'
-            | 'DRIVE_APPDATA'
-            | 'DRIVE_APPS_READONLY'
-            | 'DRIVE_FILE'
-            | 'DRIVE_MEET_READONLY'
-            | 'DRIVE_METADATA'
-            | 'DRIVE_METADATA_READONLY'
-            | 'DRIVE_PHOTOS_READONLY'
-            | 'DRIVE_READONLY'
-            | 'DRIVE_SCRIPTS';
-          readonly input:
-            | 'DRIVE'
-            | 'DRIVE_APPDATA'
-            | 'DRIVE_APPS_READONLY'
-            | 'DRIVE_FILE'
-            | 'DRIVE_MEET_READONLY'
-            | 'DRIVE_METADATA'
-            | 'DRIVE_METADATA_READONLY'
-            | 'DRIVE_PHOTOS_READONLY'
-            | 'DRIVE_READONLY'
-            | 'DRIVE_SCRIPTS';
-        };
-      };
       readonly McpClient: {
         readonly scopes: {
           readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
@@ -343,32 +317,6 @@ export type FieldInputTypes = FieldTypesFromDomain<
 >;
 type ColumnTypeOverrides = {
   readonly public: {
-    readonly google_accounts: {
-      readonly scope: {
-        readonly output:
-          | 'DRIVE'
-          | 'DRIVE_APPDATA'
-          | 'DRIVE_APPS_READONLY'
-          | 'DRIVE_FILE'
-          | 'DRIVE_MEET_READONLY'
-          | 'DRIVE_METADATA'
-          | 'DRIVE_METADATA_READONLY'
-          | 'DRIVE_PHOTOS_READONLY'
-          | 'DRIVE_READONLY'
-          | 'DRIVE_SCRIPTS';
-        readonly input:
-          | 'DRIVE'
-          | 'DRIVE_APPDATA'
-          | 'DRIVE_APPS_READONLY'
-          | 'DRIVE_FILE'
-          | 'DRIVE_MEET_READONLY'
-          | 'DRIVE_METADATA'
-          | 'DRIVE_METADATA_READONLY'
-          | 'DRIVE_PHOTOS_READONLY'
-          | 'DRIVE_READONLY'
-          | 'DRIVE_SCRIPTS';
-      };
-    };
     readonly mcp_client_accesses: {
       readonly scopes: {
         readonly output: 'DRIVE_READ' | 'DRIVE_WRITE';
@@ -423,7 +371,6 @@ export namespace Models {
     googleId: FieldOutputTypes['public']['GoogleAccount']['googleId'];
     id: FieldOutputTypes['public']['GoogleAccount']['id'];
     refreshToken: FieldOutputTypes['public']['GoogleAccount']['refreshToken'];
-    scope: FieldOutputTypes['public']['GoogleAccount']['scope'];
     updatedAt: FieldOutputTypes['public']['GoogleAccount']['updatedAt'];
     userId: FieldOutputTypes['public']['GoogleAccount']['userId'];
     user: public_User;
@@ -632,16 +579,6 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                   readonly many: false;
-                };
-                readonly scope: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: false;
-                  readonly default: {
-                    readonly kind: 'literal';
-                    readonly value: DefaultLiteralValue<'pg/text@1', readonly []>;
-                  };
-                  readonly many: { readonly elementNullable: false };
                 };
                 readonly updated_at: {
                   readonly dataType: 'pg/timestamptz';
@@ -996,21 +933,6 @@ type ContractBase = Omit<
             };
           };
           readonly valueSet: {
-            readonly GoogleDriveScope: {
-              readonly kind: 'valueSet';
-              readonly values: readonly [
-                'DRIVE',
-                'DRIVE_APPDATA',
-                'DRIVE_APPS_READONLY',
-                'DRIVE_FILE',
-                'DRIVE_MEET_READONLY',
-                'DRIVE_METADATA',
-                'DRIVE_METADATA_READONLY',
-                'DRIVE_PHOTOS_READONLY',
-                'DRIVE_READONLY',
-                'DRIVE_SCRIPTS',
-              ];
-            };
             readonly McpScope: {
               readonly kind: 'valueSet';
               readonly values: readonly ['DRIVE_READ', 'DRIVE_WRITE'];
@@ -1153,11 +1075,6 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly scope: {
-                readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-                readonly many: { readonly elementNullable: false };
-              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -1193,7 +1110,6 @@ type ContractBase = Omit<
                 readonly googleId: { readonly column: 'google_id' };
                 readonly id: { readonly column: 'id' };
                 readonly refreshToken: { readonly column: 'refresh_token' };
-                readonly scope: { readonly column: 'scope' };
                 readonly updatedAt: { readonly column: 'updated_at' };
                 readonly userId: { readonly column: 'user_id' };
               };
@@ -1543,24 +1459,6 @@ type ContractBase = Omit<
           };
         };
         readonly enum: {
-          readonly GoogleDriveScope: {
-            readonly codecId: 'pg/text@1';
-            readonly members: readonly [
-              { readonly name: 'DRIVE'; readonly value: 'DRIVE' },
-              { readonly name: 'DRIVE_APPDATA'; readonly value: 'DRIVE_APPDATA' },
-              { readonly name: 'DRIVE_APPS_READONLY'; readonly value: 'DRIVE_APPS_READONLY' },
-              { readonly name: 'DRIVE_FILE'; readonly value: 'DRIVE_FILE' },
-              { readonly name: 'DRIVE_MEET_READONLY'; readonly value: 'DRIVE_MEET_READONLY' },
-              { readonly name: 'DRIVE_METADATA'; readonly value: 'DRIVE_METADATA' },
-              {
-                readonly name: 'DRIVE_METADATA_READONLY';
-                readonly value: 'DRIVE_METADATA_READONLY';
-              },
-              { readonly name: 'DRIVE_PHOTOS_READONLY'; readonly value: 'DRIVE_PHOTOS_READONLY' },
-              { readonly name: 'DRIVE_READONLY'; readonly value: 'DRIVE_READONLY' },
-              { readonly name: 'DRIVE_SCRIPTS'; readonly value: 'DRIVE_SCRIPTS' },
-            ];
-          };
           readonly McpScope: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -1570,18 +1468,6 @@ type ContractBase = Omit<
           };
         };
         readonly enumMemberTypes?: {
-          readonly GoogleDriveScope: readonly [
-            { readonly name: 'DRIVE'; readonly value: 'DRIVE' },
-            { readonly name: 'DRIVE_APPDATA'; readonly value: 'DRIVE_APPDATA' },
-            { readonly name: 'DRIVE_APPS_READONLY'; readonly value: 'DRIVE_APPS_READONLY' },
-            { readonly name: 'DRIVE_FILE'; readonly value: 'DRIVE_FILE' },
-            { readonly name: 'DRIVE_MEET_READONLY'; readonly value: 'DRIVE_MEET_READONLY' },
-            { readonly name: 'DRIVE_METADATA'; readonly value: 'DRIVE_METADATA' },
-            { readonly name: 'DRIVE_METADATA_READONLY'; readonly value: 'DRIVE_METADATA_READONLY' },
-            { readonly name: 'DRIVE_PHOTOS_READONLY'; readonly value: 'DRIVE_PHOTOS_READONLY' },
-            { readonly name: 'DRIVE_READONLY'; readonly value: 'DRIVE_READONLY' },
-            { readonly name: 'DRIVE_SCRIPTS'; readonly value: 'DRIVE_SCRIPTS' },
-          ];
           readonly McpScope: readonly [
             { readonly name: 'DRIVE_READ'; readonly value: 'DRIVE_READ' },
             { readonly name: 'DRIVE_WRITE'; readonly value: 'DRIVE_WRITE' },

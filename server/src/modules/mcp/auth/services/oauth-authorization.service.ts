@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { createHash, randomBytes } from 'node:crypto';
@@ -9,6 +10,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { ConfigService } from '../../../../config/config.service.js';
 import { RedisService } from '../../../../redis/redis.service.js';
 import { RedisKeys } from '../../../../redis/redis.keys.js';
+import { PrismaService } from '../../../../prisma/prisma.service.js';
 
 import { GoogleAuthService } from '../../../auth/services/google-auth.service.js';
 import { OAuthClientService } from './oauth-client.service.js';
@@ -52,6 +54,7 @@ export class OAuthAuthorizationService {
   constructor(
     private readonly configService: ConfigService,
     private readonly redis: RedisService,
+    private readonly prisma: PrismaService,
     private readonly oauthClientService: OAuthClientService,
     private readonly googleAuthService: GoogleAuthService,
   ) {}
@@ -305,6 +308,32 @@ export class OAuthAuthorizationService {
       consentData.googleUser,
     );
 
+    const existingGrant = await this.prisma.db.orm.public.McpClientAccess
+      .where({ userId, clientId: consentData.clientId })
+      .first();
+
+    if (existingGrant) {
+      await this.prisma.db.orm.public.McpClientAccess.where({
+        id: existingGrant.id,
+      }).update({
+        scopes: consentData.scopes,
+        grantedAt: new Date(),
+        revokedAt: null,
+      });
+    } else {
+      await this.prisma.db.orm.public.McpClientAccess.create({
+        userId,
+        clientId: consentData.clientId,
+        scopes: consentData.scopes,
+      });
+    }
+
+    // A new grant replaces prior tokens for the same client.
+    await this.prisma.db.orm.public.McpRefreshToken.where({
+      userId,
+      clientId: consentData.clientId,
+    }).update({ revokedAt: new Date() });
+
     // Generate a one-time authorization code.
     const authorizationCode = randomBytes(32).toString('base64url');
 
@@ -336,5 +365,80 @@ export class OAuthAuthorizationService {
     return {
       redirectUrl: redirectUrl.toString(),
     };
+  }
+
+  async listAuthorizedClients(userId: string) {
+    const grants = await this.prisma.db.orm.public.McpClientAccess
+      .where({ userId })
+      .all();
+    const legacyTokens = await this.prisma.db.orm.public.McpRefreshToken
+      .where({ userId })
+      .all();
+    const grantsByClient = new Map(grants.map((grant) => [grant.clientId, grant]));
+    const clients = new Map<
+      string,
+      { scopes: readonly McpScope[]; grantedAt: Date }
+    >();
+
+    for (const grant of grants) {
+      if (!grant.revokedAt) {
+        clients.set(grant.clientId, {
+          scopes: grant.scopes,
+          grantedAt: grant.grantedAt,
+        });
+      }
+    }
+
+    // Show older authorizations that predate the persisted grant records.
+    for (const token of legacyTokens) {
+      if (
+        token.revokedAt ||
+        grantsByClient.has(token.clientId) ||
+        clients.has(token.clientId)
+      ) {
+        continue;
+      }
+      clients.set(token.clientId, {
+        scopes: token.scope,
+        grantedAt: token.createdAt,
+      });
+    }
+
+    return Promise.all(
+      [...clients.entries()].map(async ([clientId, grant]) => {
+          const client = await this.oauthClientService.getClient(clientId);
+
+          return {
+            clientId,
+            name: client?.client_name ?? 'MCP client',
+            scopes: toOAuthScope(grant.scopes),
+            grantedAt: grant.grantedAt,
+          };
+        }),
+    );
+  }
+
+  async revokeClientAccess(userId: string, clientId: string): Promise<void> {
+    const grant = await this.prisma.db.orm.public.McpClientAccess
+      .where({ userId, clientId })
+      .first();
+    const activeTokens = await this.prisma.db.orm.public.McpRefreshToken
+      .where({ userId, clientId })
+      .all();
+
+    if (
+      (!grant || grant.revokedAt) &&
+      !activeTokens.some((token) => !token.revokedAt)
+    ) {
+      throw new NotFoundException('MCP client access was not found.');
+    }
+
+    const revokedAt = new Date();
+    if (grant && !grant.revokedAt) {
+      await this.prisma.db.orm.public.McpClientAccess.where({ id: grant.id })
+        .update({ revokedAt });
+    }
+    await this.prisma.db.orm.public.McpRefreshToken.where({ userId, clientId })
+      .update({ revokedAt });
   }
 }

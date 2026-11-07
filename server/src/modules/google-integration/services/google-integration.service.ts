@@ -3,6 +3,7 @@ import {
     BadRequestException,
     ConflictException,
     NotFoundException,
+    BadGatewayException,
 } from '@nestjs/common';
 
 import { PrismaService } from '../../../prisma/prisma.service.js';
@@ -28,7 +29,7 @@ export class GoogleIntegrationService {
             throw new BadRequestException('User ID is required.');
         }
 
-        const { googleId, email, accessToken, refreshToken, expiresIn, scope } =
+        const { googleId, email, accessToken, refreshToken, expiresIn } =
             googleAccount;
 
         if (!googleId || !email || !accessToken) {
@@ -75,8 +76,9 @@ export class GoogleIntegrationService {
             accessToken: encryptedAccessToken,
             refreshToken: encryptedRefreshToken,
             expiresAt,
-            scope: scope ?? existingAccount?.scope ?? null,
         };
+
+        await this.redisService.del(RedisKeys.googleAccountByUserId(userId));
 
         if (existingAccount) {
             return await this.prisma.db.orm.public.GoogleAccount.where({
@@ -146,6 +148,7 @@ export class GoogleIntegrationService {
         await this.prisma.db.orm.public.GoogleAccount.where({ userId }).update(
             data,
         );
+        await this.redisService.del(RedisKeys.googleAccountByUserId(userId));
     }
 
     /**
@@ -170,8 +173,28 @@ export class GoogleIntegrationService {
             throw new NotFoundException('Google Drive account is not connected.');
         }
 
+        const refreshToken = account.refreshToken
+            ? this.googleTokenService.decrypt(account.refreshToken)
+            : null;
+        if (refreshToken) {
+            const response = await fetch('https://oauth2.googleapis.com/revoke', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ token: refreshToken }),
+            });
+
+            if (!response.ok && response.status !== 400) {
+                throw new BadGatewayException(
+                    'Google did not revoke the account access. Please try again.',
+                );
+            }
+        }
+
         await this.prisma.db.orm.public.GoogleAccount.whereUnique({
             userId,
         }).delete();
+        await this.redisService.del(RedisKeys.googleAccountByUserId(userId));
     }
 }

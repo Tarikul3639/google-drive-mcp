@@ -33,51 +33,6 @@
     "namespaces": {
       "public": {
         "enum": {
-          "GoogleDriveScope": {
-            "codecId": "pg/text@1",
-            "members": [
-              {
-                "name": "DRIVE",
-                "value": "DRIVE"
-              },
-              {
-                "name": "DRIVE_APPDATA",
-                "value": "DRIVE_APPDATA"
-              },
-              {
-                "name": "DRIVE_APPS_READONLY",
-                "value": "DRIVE_APPS_READONLY"
-              },
-              {
-                "name": "DRIVE_FILE",
-                "value": "DRIVE_FILE"
-              },
-              {
-                "name": "DRIVE_MEET_READONLY",
-                "value": "DRIVE_MEET_READONLY"
-              },
-              {
-                "name": "DRIVE_METADATA",
-                "value": "DRIVE_METADATA"
-              },
-              {
-                "name": "DRIVE_METADATA_READONLY",
-                "value": "DRIVE_METADATA_READONLY"
-              },
-              {
-                "name": "DRIVE_PHOTOS_READONLY",
-                "value": "DRIVE_PHOTOS_READONLY"
-              },
-              {
-                "name": "DRIVE_READONLY",
-                "value": "DRIVE_READONLY"
-              },
-              {
-                "name": "DRIVE_SCRIPTS",
-                "value": "DRIVE_SCRIPTS"
-              }
-            ]
-          },
           "McpScope": {
             "codecId": "pg/text@1",
             "members": [
@@ -247,22 +202,6 @@
                   "kind": "scalar"
                 }
               },
-              "scope": {
-                "many": {
-                  "elementNullable": false
-                },
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                },
-                "valueSet": {
-                  "entityKind": "enum",
-                  "entityName": "GoogleDriveScope",
-                  "namespaceId": "public",
-                  "plane": "domain"
-                }
-              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -321,9 +260,6 @@
                 },
                 "refreshToken": {
                   "column": "refresh_token"
-                },
-                "scope": {
-                  "column": "scope"
                 },
                 "updatedAt": {
                   "column": "updated_at"
@@ -995,18 +931,6 @@
               ]
             },
             "google_accounts": {
-              "checks": [
-                {
-                  "expression": "array_remove(\"scope\", NULL) <@ '{\"DRIVE\",\"DRIVE_APPDATA\",\"DRIVE_APPS_READONLY\",\"DRIVE_FILE\",\"DRIVE_MEET_READONLY\",\"DRIVE_METADATA\",\"DRIVE_METADATA_READONLY\",\"DRIVE_PHOTOS_READONLY\",\"DRIVE_READONLY\",\"DRIVE_SCRIPTS\"}'",
-                  "name": "google_accounts_scope_check_8a6a01ae",
-                  "prefix": "google_accounts_scope_check"
-                },
-                {
-                  "expression": "array_position(\"scope\", NULL) IS NULL",
-                  "name": "google_accounts_scope_elem_not_null_e633fc0c",
-                  "prefix": "google_accounts_scope_elem_not_null"
-                }
-              ],
               "columns": {
                 "access_token": {
                   "codecId": "pg/text@1",
@@ -1052,24 +976,6 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
-                },
-                "scope": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "default": {
-                    "kind": "literal",
-                    "value": []
-                  },
-                  "many": {
-                    "elementNullable": false
-                  },
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "GoogleDriveScope",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
                 },
                 "updated_at": {
                   "codecId": "pg/timestamptz-date@1",
@@ -1603,21 +1509,6 @@
             }
           },
           "valueSet": {
-            "GoogleDriveScope": {
-              "kind": "valueSet",
-              "values": [
-                "DRIVE",
-                "DRIVE_APPDATA",
-                "DRIVE_APPS_READONLY",
-                "DRIVE_FILE",
-                "DRIVE_MEET_READONLY",
-                "DRIVE_METADATA",
-                "DRIVE_METADATA_READONLY",
-                "DRIVE_PHOTOS_READONLY",
-                "DRIVE_READONLY",
-                "DRIVE_SCRIPTS"
-              ]
-            },
             "McpScope": {
               "kind": "valueSet",
               "values": [
@@ -1631,7 +1522,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "4ae9a36ae595b281a9b9e06951e600f4683d324a2c9903a5a05f3a1f46952050"
+    "storageHash": "57e76f7f931c9c6efa2ce786bf6aa69169d234cae79255305ffdd292257f2be5"
   },
   "execution": {
     "executionHash": "fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e",

@@ -47,14 +47,14 @@ export class GoogleDriveGuard extends AuthGuard('google-drive') {
             request.oauthStateData = stateData;
         } else {
             // Get authenticated application user.
-            const user = request.user as { id?: string } | undefined;
+            const userId = request.authenticatedUser?.id ?? request.auth?.sub;
 
-            if (!user?.id) {
+            if (!userId) {
                 throw new UnauthorizedException('Authentication required.');
             }
 
             const state = await this.oauthStateService.create({
-                userId: user.id,
+                userId,
             });
 
             request.oauthState = state;
@@ -63,8 +63,11 @@ export class GoogleDriveGuard extends AuthGuard('google-drive') {
         return (await super.canActivate(context)) as boolean;
     }
 
-    getAuthenticateOptions() {
+    getAuthenticateOptions(context: ExecutionContext) {
+        const request = context.switchToHttp().getRequest<GoogleDriveRequest>();
+
         return {
+            ...(request.oauthState ? { state: request.oauthState } : {}),
             accessType: 'offline',
             prompt: 'consent',
         };

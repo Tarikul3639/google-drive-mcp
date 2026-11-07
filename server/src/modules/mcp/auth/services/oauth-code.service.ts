@@ -51,6 +51,8 @@ export class OAuthCodeService {
 
         this.verifyPkce(code_verifier!, data.codeChallenge);
 
+        await this.assertActiveGrant(data.userId, data.clientId, data.scope);
+
         return this.issueTokens(data.userId, data.clientId, data.scope);
     }
 
@@ -75,6 +77,12 @@ export class OAuthCodeService {
         ) {
             throw new UnauthorizedException('Invalid or expired refresh token.');
         }
+
+        await this.assertActiveGrant(
+            existingToken.userId,
+            existingToken.clientId,
+            toOAuthScope(existingToken.scope),
+        );
 
         const newRefreshToken = randomBytes(64).toString('base64url');
 
@@ -150,6 +158,25 @@ export class OAuthCodeService {
             expires_in: 900,
             scope,
         };
+    }
+
+    private async assertActiveGrant(
+        userId: string,
+        clientId: string,
+        scope: string,
+    ): Promise<void> {
+        const grant = await this.prisma.db.orm.public.McpClientAccess
+            .where({ userId, clientId })
+            .first();
+
+        if (!grant || grant.revokedAt) {
+            throw new UnauthorizedException('MCP client access was revoked.');
+        }
+
+        const allowedScopes = new Set(grant.scopes);
+        if (toMcpScopes(scope).some((requested) => !allowedScopes.has(requested))) {
+            throw new UnauthorizedException('MCP client scope is no longer allowed.');
+        }
     }
 
     /**

@@ -2,8 +2,10 @@ import {
     Body,
     Controller,
     Get,
+    Delete,
     Post,
     Query,
+    Param,
     Req,
     Res,
     HttpCode,
@@ -24,6 +26,9 @@ import { TokenRequestDto } from './dto/token-request.dto.js';
 import { ConsentRequestDto } from './dto/consent-request.dto.js';
 
 import { McpGoogleAuthGuard } from './guards/mcp-google-auth.guard.js';
+import { AccessTokenGuard } from '../../auth/guards/access-token.guard.js';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
+import type { UserResponseDto } from '../../users/dto/user-response.dto.js';
 import type { AuthorizationRequest } from './interfaces/authorization-request.interface.js';
 
 @Controller('mcp/oauth')
@@ -124,5 +129,25 @@ export class OAuthController {
             default:
                 throw new BadRequestException('Unsupported grant type.');
         }
+    }
+
+    @Get('authorized-clients')
+    @UseGuards(AccessTokenGuard)
+    listAuthorizedClients(@CurrentUser() user: UserResponseDto) {
+        return this.oauthAuthorizationService.listAuthorizedClients(user.id);
+    }
+
+    @Delete('authorized-clients/:clientId')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.OK)
+    async revokeClientAccess(
+        @CurrentUser() user: UserResponseDto,
+        @Param('clientId') clientId: string,
+    ) {
+        await this.oauthAuthorizationService.revokeClientAccess(
+            user.id,
+            clientId,
+        );
+        return { message: 'MCP client access revoked.' };
     }
 }
