@@ -20,7 +20,8 @@ export const MCP_TOOLS = {
     CREATE_FOLDER: 'create_folder',
     RENAME_FOLDER: 'rename_folder',
     MOVE_FOLDER: 'move_folder',
-    DELETE_FOLDER: 'delete_folder',
+    TRASH_FOLDER: 'trash_folder',
+    UNTRASH_FOLDER: 'untrash_folder',
 
     // Permissions
     CREATE_PERMISSION: 'create_permission',

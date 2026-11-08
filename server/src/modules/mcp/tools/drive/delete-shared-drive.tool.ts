@@ -4,20 +4,20 @@ import { Tool, type McpContext } from '@nestjs/mcp';
 
 import { GoogleDriveService } from '../../../google-drive/services/google-drive.service.js';
 import { McpToolAccessService } from '../services/mcp-tool-access.service.js';
-import { deleteFolderSchema } from '../schemas/delete-folder.schema.js';
+import { deleteSharedDriveSchema } from '../schemas/delete-shared-drive.schema.js';
 import { MCP_TOOLS } from '../constants/mcp-tools.constant.js';
 
 @Injectable()
-export class DeleteFolderTool {
+export class DeleteSharedDriveTool {
     constructor(
         private readonly googleDriveService: GoogleDriveService,
         private readonly mcpToolAccessService: McpToolAccessService,
     ) {}
 
     @Tool({
-        name: MCP_TOOLS.DELETE_FOLDER,
-        description: "Permanently delete a folder from the authenticated user's Google Drive.",
-        inputSchema: deleteFolderSchema,
+        name: MCP_TOOLS.DELETE_SHARED_DRIVE,
+        description: 'Delete a Google shared drive.',
+        inputSchema: deleteSharedDriveSchema,
         annotations: {
             readOnlyHint: false,
             destructiveHint: true,
@@ -25,12 +25,12 @@ export class DeleteFolderTool {
             openWorldHint: true,
         },
     })
-    async deleteFolder(input: z.infer<typeof deleteFolderSchema>, ctx: McpContext) {
+    async deleteSharedDrive(input: z.infer<typeof deleteSharedDriveSchema>, ctx: McpContext) {
         // Extract authenticated user and OAuth client IDs from the token.
         const userId = ctx.authInfo?.extra?.userId;
         const clientId = ctx.authInfo?.clientId;
 
-        // Ensure the request contains valid authentication context.
+        // Reject requests without a valid authentication context.
         if (
             typeof userId !== 'string' ||
             !userId ||
@@ -40,18 +40,19 @@ export class DeleteFolderTool {
             throw new UnauthorizedException('Authentication required.');
         }
 
-        // Verify tool access before executing the requested Drive operation.
+        // Verify access to this specific MCP tool before calling Google Drive.
         await this.mcpToolAccessService.verifyToolAccess(
             userId,
             clientId,
-            MCP_TOOLS.DELETE_FOLDER,
+            MCP_TOOLS.DELETE_SHARED_DRIVE,
         );
 
-        await this.googleDriveService.deleteFolder(userId, input.folderId);
+        // Execute the authorized operation.
+        const result = await this.googleDriveService.deleteSharedDrive(userId, input);
 
         return {
             status: 'ok',
-            deleted: true,
+            result,
         };
     }
 }
