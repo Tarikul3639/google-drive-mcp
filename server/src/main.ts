@@ -8,62 +8,89 @@ import cookieParser from 'cookie-parser';
 // import { startMemoryMonitor } from './common/utils/memory-monitor.js';
 
 async function bootstrap() {
-  // startMemoryMonitor();
   const logger = new Logger('Bootstrap');
-  const app = await NestFactory.create(AppModule);
 
-  // Enable cookie parsing middleware
-  app.use(cookieParser());
+  try {
+    logger.log('[BOOT] Starting application...');
 
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-  });
+    // startMemoryMonitor();
 
+    logger.log('[BOOT] Creating NestJS application...');
+    const app = await NestFactory.create(AppModule);
+    logger.log('[BOOT] NestJS application created successfully.');
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }),
-  );
+    // Enable cookie parsing middleware
+    app.use(cookieParser());
+    logger.log('[BOOT] Cookie parser configured.');
 
-  app.setGlobalPrefix('api', {
-    exclude: ['.well-known/{*path}',],
-  });
+    app.enableCors({
+      origin: true,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
+    logger.log('[BOOT] CORS configured.');
 
-  const configService = app.get(ConfigService);
-  const port = configService.port;
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
+    logger.log('[BOOT] Global validation pipe configured.');
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Google Drive MCP API')
-    .setDescription('API documentation for the Google Drive MCP service.')
-    .setVersion('1.0.0')
-    .addCookieAuth(
-      'access_token',
-      {
-        type: 'apiKey',
-        in: 'cookie',
+    app.setGlobalPrefix('api', {
+      exclude: ['.well-known/{*path}'],
+    });
+    logger.log('[BOOT] Global API prefix configured.');
+
+    logger.log('[BOOT] Loading application configuration...');
+    const configService = app.get(ConfigService);
+    const port = configService.port;
+    logger.log(`[BOOT] Configuration loaded. Port: ${port}`);
+
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Google Drive MCP API')
+      .setDescription('API documentation for the Google Drive MCP service.')
+      .setVersion('1.0.0')
+      .addCookieAuth(
+        'access_token',
+        {
+          type: 'apiKey',
+          in: 'cookie',
+        },
+        'access-cookie',
+      )
+      .build();
+
+    logger.log('[BOOT] Generating Swagger documentation...');
+    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+
+    SwaggerModule.setup('api/docs', app, swaggerDocument, {
+      swaggerOptions: {
+        persistAuthorization: true,
       },
-      'access-cookie',
-    )
-    .build();
+    });
+    logger.log('[BOOT] Swagger documentation configured.');
 
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+    logger.log('[BOOT] Starting HTTP server...');
+    await app.listen(port);
 
-  SwaggerModule.setup('api/docs', app, swaggerDocument, {
-    swaggerOptions: {
-      persistAuthorization: true,
-    },
-  });
+    logger.log(`Server is running on port ${port}/api`);
+    logger.log(`Swagger docs: /api/docs`);
+    logger.log(`Swagger JSON: /api/docs-json`);
+    logger.log('[BOOT] Application started successfully.');
+  } catch (error) {
+    logger.error(
+      '[BOOT] Application startup failed!',
+      error instanceof Error ? error.stack : String(error),
+    );
 
-  await app.listen(port);
-
-  logger.log(`Server is running on http://localhost:${port}/api`);
-  logger.log(`Swagger docs are available at http://localhost:${port}/api/docs`);
-  logger.log(`Swagger JSON is available at http://localhost:${port}/api/docs-json`);
+    throw error;
+  }
 }
 
-await bootstrap();
+bootstrap().catch((error) => {
+  console.error('[FATAL] Bootstrap failed:', error);
+  process.exit(1);
+});
