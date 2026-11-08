@@ -30,7 +30,7 @@ const clientName = "Drivebridge"
 const clientDescription =
     "Connect Google Drive to your AI tools with Drivebridge through the Model Context Protocol."
 
-const mcpEndpoint = new URL("/mcp", backendUrl).toString()
+const mcpEndpoint = new URL("api/mcp", backendUrl).toString()
 
 const clientConfig = JSON.stringify(
     {

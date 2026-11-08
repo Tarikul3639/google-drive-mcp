@@ -33,7 +33,7 @@ async function bootstrap() {
 
   // Set the global API prefix and exclude the well-known routes
   app.setGlobalPrefix('api', {
-    exclude: ['.well-known/{*path}', 'mcp'],
+    exclude: ['.well-known/{*path}'],
   });
 
   // Get application configuration
