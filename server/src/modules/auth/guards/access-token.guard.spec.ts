@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { JwtService } from '@nestjs/jwt';
 
+import { UsersService } from '../../users/users.service.js';
 import { AccessTokenGuard } from './access-token.guard.js';
 
 describe('AccessTokenGuard', () => {
@@ -20,6 +21,10 @@ describe('AccessTokenGuard', () => {
         {
           provide: JwtService,
           useValue: jwtService,
+        },
+        {
+          provide: UsersService,
+          useValue: { findById: vi.fn().mockResolvedValue({ id: 'user-123' }) },
         },
       ],
     }).compile();
@@ -121,7 +126,7 @@ describe('AccessTokenGuard', () => {
       } as any;
 
       await expect(guard.canActivate(context)).rejects.toThrow(
-        'Invalid or expired access token',
+        'Invalid access token payload',
       );
     });
   });

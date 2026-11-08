@@ -66,7 +66,10 @@ describe('GoogleDriveService', () => {
 
       const result = await service.listFiles('user-123');
 
-      expect(result).toEqual(mockFiles);
+      expect(result).toEqual({
+        files: mockFiles,
+        nextPageToken: null,
+      });
 
       expect(googleDriveClientService.getClient).toHaveBeenCalledWith(
         'user-123',
@@ -74,7 +77,10 @@ describe('GoogleDriveService', () => {
 
       expect(mockDrive.files.list).toHaveBeenCalledWith({
         pageSize: 10,
-        fields: 'files(id, name, mimeType, webViewLink)',
+        pageToken: undefined,
+        q: 'trashed = false',
+        orderBy: 'modifiedTime desc',
+        fields: 'nextPageToken, files(id, name, mimeType, webViewLink)',
       });
     });
 
@@ -93,7 +99,10 @@ describe('GoogleDriveService', () => {
 
       const result = await service.listFiles('user-123');
 
-      expect(result).toEqual([]);
+      expect(result).toEqual({
+        files: [],
+        nextPageToken: null,
+      });
     });
 
     it('should propagate NotFoundException', async () => {

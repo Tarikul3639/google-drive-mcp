@@ -10,6 +10,7 @@ import { SessionService } from '../services/session.service.js';
 import { AccessTokenGuard } from '../guards/access-token.guard.js';
 import { RefreshTokenGuard } from '../guards/refresh-token.guard.js';
 import { GoogleAuthGuard } from '../guards/google-auth.guard.js';
+import { UsersService } from '../../../modules/users/users.service.js';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -26,6 +27,7 @@ describe('AuthController', () => {
         { provide: OAuthStateService, useValue: {} },
         { provide: SessionService, useValue: {} },
         { provide: AccessTokenGuard, useValue: {} },
+        { provide: UsersService, useValue: {} },
         { provide: RefreshTokenGuard, useValue: {} },
         { provide: GoogleAuthGuard, useValue: {} },
       ],
