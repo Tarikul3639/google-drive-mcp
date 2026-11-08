@@ -5,6 +5,7 @@ export const siteConfig = {
     description: "Google Drive for your AI workspace",
 
     url: env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    backendUrl: env.BACKEND_URL ?? "http://localhost:5000",
 
     author: {
         name: env.NEXT_PUBLIC_AUTHOR_NAME,
@@ -14,3 +15,4 @@ export const siteConfig = {
 } as const
 
 export const siteUrl = siteConfig.url
+export const backendUrl = siteConfig.backendUrl

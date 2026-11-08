@@ -1,8 +1,7 @@
 import type { NextConfig } from "next"
+import { backendUrl as url } from "@/config/site"
 
-import { env } from "@/config/env"
-
-const backendUrl = env.BACKEND_URL.replace(/\/$/, "")
+const backendUrl = url.replace(/\/$/, "")
 
 const nextConfig: NextConfig = {
     async rewrites() {

@@ -9,18 +9,16 @@ const envSchema = z.object({
     NEXT_PUBLIC_AUTHOR_GITHUB_URL: z.url({
         error: "A valid GitHub URL is required",
     }),
-
-    // Used by next.config.ts on the server; never expose this as NEXT_PUBLIC_.
     BACKEND_URL: z.url({
         error: "A valid backend URL is required",
     }),
 })
 
 export const env = envSchema.parse({
+    BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_AUTHOR_NAME: process.env.NEXT_PUBLIC_AUTHOR_NAME,
     NEXT_PUBLIC_AUTHOR_PORTFOLIO_URL:
         process.env.NEXT_PUBLIC_AUTHOR_PORTFOLIO_URL,
     NEXT_PUBLIC_AUTHOR_GITHUB_URL: process.env.NEXT_PUBLIC_AUTHOR_GITHUB_URL,
-    BACKEND_URL: process.env.BACKEND_URL,
 })

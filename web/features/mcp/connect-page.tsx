@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { motion } from "motion/react"
 import {
-    ArrowUpRight,
     Check,
     Clipboard,
     Copy,
@@ -15,7 +14,7 @@ import {
     ShieldCheck,
 } from "lucide-react"
 
-import { siteUrl } from "@/config/site"
+import { backendUrl } from "@/config/site"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -31,7 +30,7 @@ const clientName = "Drivebridge"
 const clientDescription =
     "Connect Google Drive to your AI tools with Drivebridge through the Model Context Protocol."
 
-const mcpEndpoint = new URL("/mcp", siteUrl).toString()
+const mcpEndpoint = new URL("/mcp", backendUrl).toString()
 
 const clientConfig = JSON.stringify(
     {
