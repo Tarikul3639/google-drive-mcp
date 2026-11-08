@@ -1,32 +1,58 @@
 import Link from "next/link"
 import { ArrowUpRight, Cable } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import { siteConfig } from "@/config/site"
+
 export function Footer() {
   return (
-    <footer className="border-t border-foreground/[0.08]">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14">
+    <footer className="border-t border-border">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14">
+        {/* Logo */}
         <Link
           aria-label="Drivebridge home"
           className="flex items-center gap-2.5"
           href="/"
         >
-          <span className="grid size-8 place-items-center rounded-[11px] bg-[#d5ed70] text-[#20231b]">
+          <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground">
             <Cable className="size-4" />
           </span>
-          <span className="font-serif text-[19px] tracking-[-0.06em]">
-            drivebridge
-          </span>
+
+          <span className="font-serif text-xl tracking-tight">drivebridge</span>
         </Link>
-        <p className="text-[10px] text-muted-foreground">
-          Your files stay in your Drive. Your access stays in your hands.
-        </p>
-        <Link
-          className="group flex w-fit items-center gap-1 text-[10px] font-medium"
-          href="/login"
+
+        {/* Author */}
+        <div className="flex flex-col gap-1 sm:items-center">
+          <p className="text-xs text-muted-foreground">
+            Your files stay in your Drive. Your access stays in your hands.
+          </p>
+
+          <p className="text-xs text-muted-foreground">
+            Built by{" "}
+            <a
+              href={siteConfig.author.portfolioUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+            >
+              {siteConfig.author.name ?? "Tarikul Islam"}
+              <ArrowUpRight className="ml-0.5 inline size-3" />
+            </a>
+          </p>
+        </div>
+
+        {/* Get Started */}
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="group rounded-full"
         >
-          Get started{" "}
-          <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </Link>
+          <Link href="/login">
+            Get started
+            <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </Link>
+        </Button>
       </div>
     </footer>
   )

@@ -3,9 +3,11 @@ import type { Metadata } from "next"
 import McpConsentPage from "@/features/mcp/consent-page"
 
 export const metadata: Metadata = {
-  title: "Authorize MCP client — Drivebridge",
-  description: "Review and approve an MCP client's access to your Drivebridge account.",
+  title: "Authorize MCP client",
+  description:
+    "Review and approve an MCP client's access to your Drivebridge account.",
   robots: { index: false, follow: false },
+  alternates: { canonical: "/mcp/consent" },
 }
 
 type PageProps = {

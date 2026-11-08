@@ -1,8 +1,10 @@
+
 "use client"
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
+import { motion } from "motion/react"
 import {
   Cable,
   ChevronDown,
@@ -16,164 +18,336 @@ import { ThemeToggle } from "@/features/home/components/ThemeToggle"
 import { authApi } from "@/features/shared/api/client"
 import type { UserProfile } from "@/features/shared/types/api"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Account", href: "/account", icon: CircleUserRound },
 ]
+
+const scrollViewport = {
+  once: false,
+  amount: 0.2,
+  margin: "-5% 0px -5% 0px",
+} as const
+
+const smoothReveal = {
+  duration: 0.55,
+  ease: [0.22, 1, 0.36, 1] as const,
+}
+
+const fadeUp = {
+  initial: { opacity: 0, y: 8 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: scrollViewport,
+}
 
 type DashboardShellProps = {
   children: React.ReactNode
   user: UserProfile
 }
 
-export function DashboardShell({ children, user }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  user,
+}: DashboardShellProps) {
   const pathname = usePathname()
   const router = useRouter()
+
   const [signingOut, setSigningOut] = useState(false)
 
   async function signOut() {
+    if (signingOut) return
+
     setSigningOut(true)
+
     try {
       await authApi.logout()
     } catch {
-      // Return to the public page even if the session already expired.
+      // Session may already be expired.
     } finally {
       router.replace("/")
     }
   }
 
   return (
-    <div className="min-h-svh bg-[#f3f2ea] text-foreground dark:bg-[#171a16]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[248px] flex-col bg-[#25291f] px-5 py-6 text-[#f5f4ed] lg:flex">
-        <Link
-          aria-label="Drivebridge home"
-          className="flex items-center gap-3 px-2"
-          href="/"
-        >
-          <span className="grid size-10 place-items-center rounded-[14px] bg-[#d5ed70] text-[#25291f]">
-            <Cable className="size-5" />
-          </span>
-          <span className="font-serif text-[21px] tracking-[-0.06em]">
-            drivebridge
-          </span>
-        </Link>
+    <div className="min-h-svh overflow-x-clip bg-muted/30 text-foreground">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-hidden bg-primary px-5 py-6 text-primary-foreground lg:flex">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-primary-foreground/15 blur-3xl"
+        />
 
-        <p className="mt-12 mb-3 px-3 font-mono text-[9px] tracking-[0.18em] text-white/40">
-          WORKSPACE
-        </p>
-        <nav aria-label="Workspace navigation" className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const active = pathname === item.href
-            return (
-              <Link
-                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[12px] transition ${active ? "bg-white/10 text-[#d5ed70]" : "text-white/65 hover:bg-white/5 hover:text-white"}`}
-                href={item.href}
-                key={item.href}
-              >
-                <Icon className="size-4" strokeWidth={1.7} /> {item.label}
-              </Link>
-            )
-          })}
-        </nav>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-32 -left-24 size-72 rounded-full bg-blue-400/20 blur-3xl"
+        />
 
-        <div className="mt-auto rounded-[18px] border border-white/10 bg-white/[0.04] p-4">
-          <span className="font-mono text-[9px] tracking-[0.16em] text-[#c5d87b]">
-            YOUR ACCESS
-          </span>
-          <p className="mt-2 text-[11px] leading-5 text-white/65">
-            You can revoke your Drive connection whenever you need to.
-          </p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-1/3 -right-28 size-56 rounded-full bg-violet-400/15 blur-3xl"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-20 top-1/3 size-48 rounded-full bg-cyan-300/10 blur-3xl"
+        />
+
+        <div className="relative z-10 flex h-full flex-col">
           <Link
-            className="mt-3 inline-flex items-center gap-1 text-[10px] text-white/90 hover:text-[#d5ed70]"
-            href="/account"
+            aria-label="Drivebridge home"
+            className="flex items-center gap-3 px-2"
+            href="/"
           >
-            Manage account <ChevronDown className="size-3 -rotate-90" />
+            <motion.span
+              {...fadeUp}
+              transition={smoothReveal}
+              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-foreground/15"
+            >
+              <Cable className="size-5" />
+            </motion.span>
+
+            <motion.span
+              {...fadeUp}
+              transition={{ ...smoothReveal, delay: 0.05 }}
+              className="font-serif text-2xl tracking-tight"
+            >
+              drivebridge
+            </motion.span>
           </Link>
+
+          <motion.p
+            {...fadeUp}
+            transition={{ ...smoothReveal, delay: 0.1 }}
+            className="mb-3 mt-12 px-3 font-mono text-xs tracking-widest opacity-60"
+          >
+            WORKSPACE
+          </motion.p>
+
+          <nav
+            aria-label="Workspace navigation"
+            className="space-y-1"
+          >
+            {navItems.map((item, index) => {
+              const Icon = item.icon
+              const active = pathname === item.href
+
+              return (
+                <Link
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors duration-200 ${active
+                      ? "bg-primary-foreground/15 text-primary-foreground"
+                      : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                    }`}
+                  href={item.href}
+                  key={item.href}
+                >
+                  <motion.span
+                    {...fadeUp}
+                    transition={{
+                      ...smoothReveal,
+                      delay: 0.12 + index * 0.06,
+                    }}
+                    className="flex items-center gap-3"
+                  >
+                    <Icon
+                      className="size-4"
+                      strokeWidth={1.7}
+                    />
+                    <span>{item.label}</span>
+                  </motion.span>
+                </Link>
+              )
+            })}
+          </nav>
+
+          <div className="mt-auto rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 backdrop-blur-sm">
+            <motion.span
+              {...fadeUp}
+              transition={smoothReveal}
+              className="block font-mono text-xs tracking-widest opacity-80"
+            >
+              YOUR ACCESS
+            </motion.span>
+
+            <motion.p
+              {...fadeUp}
+              transition={{ ...smoothReveal, delay: 0.05 }}
+              className="mt-2 text-xs leading-5 text-primary-foreground/70"
+            >
+              You can revoke your Drive connection whenever you need to.
+            </motion.p>
+
+            <Link
+              className="mt-3 inline-flex items-center gap-1 text-xs text-primary-foreground/90 transition-opacity hover:opacity-100"
+              href="/account"
+            >
+              <motion.span
+                {...fadeUp}
+                transition={{ ...smoothReveal, delay: 0.1 }}
+              >
+                Manage account
+              </motion.span>
+
+              <ChevronDown className="size-3 -rotate-90" />
+            </Link>
+          </div>
+
+          <Button
+            variant="ghost"
+            className="mt-5 w-full justify-start gap-3 rounded-xl px-3 py-3 text-left text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+            disabled={signingOut}
+            onClick={signOut}
+            type="button"
+          >
+            <motion.span
+              whileHover={{ rotate: -8 }}
+              whileTap={{ scale: 0.9 }}
+              className="inline-flex"
+            >
+              <LogOut className="size-4" />
+            </motion.span>
+
+            <motion.span
+              {...fadeUp}
+              transition={smoothReveal}
+            >
+              {signingOut ? "Signing out…" : "Sign out"}
+            </motion.span>
+          </Button>
         </div>
       </aside>
 
-      <div className="lg:pl-[248px]">
-        <header className="sticky top-0 z-20 flex h-[66px] items-center justify-between border-b border-foreground/[0.08] bg-background/90 px-5 backdrop-blur sm:px-8">
-          <Link className="flex items-center gap-2.5 lg:hidden" href="/">
-            <span className="grid size-8 place-items-center rounded-[11px] bg-[#d5ed70] text-[#25291f]">
+      <div className="relative isolate min-h-svh lg:pl-64">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-32 top-20 -z-10 size-96 rounded-full bg-primary/16 blur-3xl"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-32 top-[35%] -z-10 size-80 rounded-full bg-primary/10 blur-3xl"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-40 bottom-10 -z-10 size-112 rounded-full bg-primary/10 blur-3xl"
+        />
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/3 top-[65%] -z-10 size-72 rounded-full bg-primary/5 blur-3xl"
+        />
+
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-border bg-background/90 px-5 backdrop-blur-xl sm:px-8">
+          <Link
+            className="flex items-center gap-2.5 lg:hidden"
+            href="/"
+          >
+            <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground">
               <Cable className="size-4" />
             </span>
-            <span className="font-serif text-[19px] tracking-[-0.06em]">
+
+            <span className="font-serif text-xl tracking-tight">
               drivebridge
             </span>
           </Link>
-          <p className="hidden font-mono text-[9px] tracking-[0.18em] text-muted-foreground lg:block">
+
+          <motion.p
+            {...fadeUp}
+            transition={smoothReveal}
+            className="hidden font-mono text-xs tracking-widest text-muted-foreground lg:block"
+          >
             YOUR DRIVE, IN THE FLOW
-          </p>
-          <div className="flex items-center gap-3">
+          </motion.p>
+
+          <div className="ml-auto flex items-center gap-3">
             <ThemeToggle />
-            <button
-              className="flex items-center gap-2 rounded-full border border-foreground/10 py-1.5 pr-3 pl-1.5 text-left"
+
+            <Button
+              variant="ghost"
+              className="h-auto gap-2 rounded-full border border-border py-1.5 pl-1.5 pr-3 text-left"
               onClick={() => router.push("/account")}
               type="button"
             >
-              {user.picture ? (
-                <img
+              <Avatar className="size-7">
+                <AvatarImage
+                  src={user.picture ?? undefined}
                   alt=""
-                  className="size-7 rounded-full object-cover"
-                  src={user.picture}
                 />
-              ) : (
-                <span className="grid size-7 place-items-center rounded-full bg-[#dce6c2] text-[10px] font-semibold text-[#4f6132] dark:bg-[#38442d] dark:text-[#d5ed70]">
+
+                <AvatarFallback className="bg-primary/10 text-xs text-primary">
                   {user.name?.slice(0, 1) ??
                     user.email.slice(0, 1).toUpperCase()}
-                </span>
-              )}
-              <span className="hidden max-w-36 truncate text-[10px] sm:inline">
+                </AvatarFallback>
+              </Avatar>
+
+              <span className="hidden max-w-36 truncate text-xs sm:inline">
                 {user.name ?? user.email}
               </span>
-              <Settings2 className="size-3.5 text-muted-foreground" />
-            </button>
+
+              <Settings2 className="size-4 text-muted-foreground" />
+            </Button>
           </div>
         </header>
 
         <nav
           aria-label="Workspace navigation"
-          className="flex gap-2 overflow-x-auto border-b border-foreground/[0.08] bg-background px-5 py-2.5 lg:hidden"
+          className="flex gap-2 overflow-x-auto border-b border-border bg-background px-5 py-2.5 lg:hidden"
         >
-          {navItems.map((item) => {
+          {navItems.map((item, index) => {
             const Icon = item.icon
+            const active = pathname === item.href
+
             return (
               <Link
-                className={`flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-[10px] ${pathname === item.href ? "bg-foreground text-background" : "bg-muted text-muted-foreground"}`}
+                className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs transition-colors ${active
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
                 href={item.href}
                 key={item.href}
               >
-                <Icon className="size-3.5" />
-                {item.label}
+                <motion.span
+                  {...fadeUp}
+                  transition={{
+                    ...smoothReveal,
+                    delay: index * 0.05,
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Icon className="size-4" />
+                  <span>{item.label}</span>
+                </motion.span>
               </Link>
             )
           })}
-          <button
-            className="ml-auto flex shrink-0 items-center gap-1.5 px-3 text-[10px] text-muted-foreground disabled:opacity-50"
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto shrink-0 text-xs text-muted-foreground"
             disabled={signingOut}
             onClick={signOut}
             type="button"
           >
-            <LogOut className="size-3.5" /> Sign out
-          </button>
+            <motion.span
+              whileHover={{ rotate: -8 }}
+              whileTap={{ scale: 0.9 }}
+              className="inline-flex"
+            >
+              <LogOut className="size-4" />
+            </motion.span>
+
+            <span>
+              {signingOut ? "Signing out…" : "Sign out"}
+            </span>
+          </Button>
         </nav>
 
-        <main className="mx-auto max-w-[1180px] px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+        <main className="relative mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
           {children}
         </main>
-        <div className="hidden lg:fixed lg:bottom-5 lg:left-5 lg:block lg:w-[208px]">
-          <button
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[11px] text-white/55 transition hover:bg-white/5 hover:text-white disabled:opacity-50"
-            disabled={signingOut}
-            onClick={signOut}
-            type="button"
-          >
-            <LogOut className="size-4" />{" "}
-            {signingOut ? "Signing out…" : "Sign out"}
-          </button>
-        </div>
       </div>
     </div>
   )

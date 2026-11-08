@@ -10,18 +10,18 @@ export const filePreviews: FilePreview[] = [
     name: "Q4 product brief",
     kind: "document",
     detail: "Edited today · 8 pages",
-    accent: "bg-[#4f8d6a]",
+    accent: "bg-[#2563EB] text-white",
   },
   {
     name: "Launch metrics",
     kind: "sheet",
     detail: "Edited yesterday · 4 sheets",
-    accent: "bg-[#8b9a55]",
+    accent: "bg-[#059669] text-white",
   },
   {
     name: "Brand direction",
     kind: "slides",
     detail: "Edited Oct 28 · 16 slides",
-    accent: "bg-[#bf765d]",
+    accent: "bg-[#7C3AED] text-white",
   },
 ]
