@@ -1,96 +1,78 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module.js';
-import { ConfigService } from './config/config.service.js';
 import cookieParser from 'cookie-parser';
 
-// import { startMemoryMonitor } from './common/utils/memory-monitor.js';
+import { AppModule } from './app.module.js';
+import { ConfigService } from './config/config.service.js';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  try {
-    logger.log('[BOOT] Starting application...');
+  // Create the NestJS application
+  const app = await NestFactory.create(AppModule);
 
-    // startMemoryMonitor();
+  // Parse cookies from incoming HTTP requests
+  app.use(cookieParser());
 
-    logger.log('[BOOT] Creating NestJS application...');
-    const app = await NestFactory.create(AppModule);
-    logger.log('[BOOT] NestJS application created successfully.');
+  // Enable Cross-Origin Resource Sharing (CORS)
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
-    // Enable cookie parsing middleware
-    app.use(cookieParser());
-    logger.log('[BOOT] Cookie parser configured.');
+  // Validate and transform incoming request data
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
-    app.enableCors({
-      origin: true,
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true,
-    });
-    logger.log('[BOOT] CORS configured.');
+  // Set the global API prefix and exclude the well-known routes
+  app.setGlobalPrefix('api', {
+    exclude: ['.well-known/{*path}'],
+  });
 
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
-    logger.log('[BOOT] Global validation pipe configured.');
+  // Get application configuration
+  const configService = app.get(ConfigService);
 
-    app.setGlobalPrefix('api', {
-      exclude: ['.well-known/{*path}'],
-    });
-    logger.log('[BOOT] Global API prefix configured.');
-
-    logger.log('[BOOT] Loading application configuration...');
-    const configService = app.get(ConfigService);
-    const port = configService.port;
-    logger.log(`[BOOT] Configuration loaded. Port: ${port}`);
-
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Google Drive MCP API')
-      .setDescription('API documentation for the Google Drive MCP service.')
-      .setVersion('1.0.0')
-      .addCookieAuth(
-        'access_token',
-        {
-          type: 'apiKey',
-          in: 'cookie',
-        },
-        'access-cookie',
-      )
-      .build();
-
-    logger.log('[BOOT] Generating Swagger documentation...');
-    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-
-    SwaggerModule.setup('api/docs', app, swaggerDocument, {
-      swaggerOptions: {
-        persistAuthorization: true,
+  // Configure Swagger API documentation
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Google Drive MCP API')
+    .setDescription('API documentation for the Google Drive MCP service.')
+    .setVersion('1.0.0')
+    .addCookieAuth(
+      'access_token',
+      {
+        type: 'apiKey',
+        in: 'cookie',
       },
-    });
-    logger.log('[BOOT] Swagger documentation configured.');
+      'access-cookie',
+    )
+    .build();
 
-    logger.log('[BOOT] Starting HTTP server...');
-    await app.listen(port);
+  // Generate the Swagger documentation
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
 
-    logger.log(`Server is running on port ${port}/api`);
-    logger.log(`Swagger docs: /api/docs`);
-    logger.log(`Swagger JSON: /api/docs-json`);
-    logger.log('[BOOT] Application started successfully.');
-  } catch (error) {
-    logger.error(
-      '[BOOT] Application startup failed!',
-      error instanceof Error ? error.stack : String(error),
-    );
+  // Register Swagger UI and API documentation routes
+  SwaggerModule.setup('api/docs', app, swaggerDocument, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
-    throw error;
-  }
+  // Start the HTTP server
+  await app.listen(configService.port);
+
+  logger.log(`Application running on port ${configService.port}`);
+  logger.log('Swagger: /api/docs');
 }
 
-bootstrap().catch((error) => {
-  console.error('[FATAL] Bootstrap failed:', error);
+// Handle application startup errors
+bootstrap().catch((error: unknown) => {
+  console.error('[FATAL] Application startup failed:', error);
   process.exit(1);
 });
