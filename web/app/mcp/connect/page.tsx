@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 
 import McpConnectPage from "@/features/mcp/connect-page"
 import { Header } from "@/components/Header"
+import { Footer } from "@/components/Footer"
 
 export const metadata: Metadata = {
     title: "Connect an MCP client",
@@ -21,6 +22,7 @@ export default function Page() {
         <main className="min-h-svh overflow-hidden bg-background text-foreground">
             <Header />
             <McpConnectPage />
+            <Footer />
         </main>
     )
 }

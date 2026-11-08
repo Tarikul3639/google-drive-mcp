@@ -14,11 +14,11 @@ export function Footer() {
           className="flex items-center gap-2.5"
           href="/"
         >
-          <span className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground">
+          <span className="grid size-8 place-items-center rounded-md bg-primary text-primary-foreground">
             <Cable className="size-4" />
           </span>
 
-          <span className="font-serif text-xl tracking-tight">drivebridge</span>
+          <span className="font-serif text-lg font-semibold capitalize">drivebridge</span>
         </Link>
 
         {/* Author */}

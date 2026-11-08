@@ -185,7 +185,7 @@ export default function LoginPage() {
 
 function GoogleMark() {
   return (
-    <svg aria-hidden="true" className="size-4.25" viewBox="0 0 48 48">
+    <svg aria-hidden="true" className="size-5.5" viewBox="0 0 48 48">
       <path
         fill="#4285F4"
         d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11a9.4 9.4 0 0 1-4.1 6.2v5h6.7c3.9-3.6 6-8.8 6-14.9Z"

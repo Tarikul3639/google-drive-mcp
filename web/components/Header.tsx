@@ -44,7 +44,7 @@ export function Header() {
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative grid size-10 place-items-center rounded-[14px] bg-primary text-primary-foreground shadow-sm transition-transform duration-300 group-hover:scale-105"
+          className="relative grid size-10 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm transition-transform duration-300 group-hover:scale-105"
         >
           <Cable className="size-5" strokeWidth={1.8} />
           <span className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-background bg-destructive" />
@@ -54,7 +54,7 @@ export function Header() {
           initial={{ opacity: 0, x: -6 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.05 }}
-          className="font-serif text-[22px] leading-none tracking-[-0.06em]"
+          className="font-serif text-[22px] leading-none font-black capitalize"
         >
           drivebridge
         </motion.span>
