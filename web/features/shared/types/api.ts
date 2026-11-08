@@ -27,8 +27,14 @@ export type GoogleDriveConnection = {
   email: string | null
 }
 
+export type McpToolPermission = {
+  toolName: string
+  isEnabled: boolean
+}
+
 export type AuthorizedMcpClient = {
   clientId: string
   name: string
   grantedAt: string
+  tools: McpToolPermission[]
 }

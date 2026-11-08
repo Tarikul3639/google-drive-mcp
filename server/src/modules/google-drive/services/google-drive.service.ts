@@ -12,7 +12,7 @@ export class GoogleDriveService {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.files.list({
-            pageSize: 10,
+            pageSize: 50,
             pageToken,
             q: 'trashed = false',
             orderBy: 'modifiedTime desc',

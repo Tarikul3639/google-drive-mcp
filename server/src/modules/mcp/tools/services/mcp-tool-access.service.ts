@@ -1,8 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+    ForbiddenException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../../../prisma/prisma.service.js';
 import { RedisService } from '../../../../redis/redis.service.js';
 import { RedisKeys } from '../../../../redis/redis.keys.js';
+import { MCP_TOOL_NAMES } from '../constants/mcp-tools.constant.js';
 import type { McpToolName } from '../constants/mcp-tools.constant.js';
 
 // Cache permissions for 30 seconds.
@@ -35,6 +40,66 @@ export class McpToolAccessService {
         if (!isEnabled) {
             throw new ForbiddenException(`Access to tool "${toolName}" is disabled.`);
         }
+    }
+
+    // Return the permissions currently assigned to a user's MCP client.
+    async listToolAccess(userId: string, clientId: string) {
+        const clientAccess =
+            await this.prisma.db.orm.public.McpClientAccess.whereUnique({
+                userId,
+                clientId,
+            }).first();
+
+        if (!clientAccess || clientAccess.revokedAt) {
+            throw new NotFoundException('MCP client access was not found.');
+        }
+
+        const existing = await this.prisma.db.orm.public.McpToolAccess.where({
+            clientAccessId: clientAccess.id,
+        }).all();
+        const byName = new Map(existing.map((item) => [item.toolName, item]));
+
+        return MCP_TOOL_NAMES.map((toolName) => ({
+            toolName,
+            isEnabled: byName.get(toolName)?.isEnabled ?? true,
+        }));
+    }
+
+    // Enable or block one tool for the authenticated user's client.
+    async setToolAccess(
+        userId: string,
+        clientId: string,
+        toolName: McpToolName,
+        isEnabled: boolean,
+    ): Promise<void> {
+        const clientAccess =
+            await this.prisma.db.orm.public.McpClientAccess.whereUnique({
+                userId,
+                clientId,
+            }).first();
+
+        if (!clientAccess || clientAccess.revokedAt) {
+            throw new NotFoundException('MCP client access was not found.');
+        }
+
+        const existing = await this.prisma.db.orm.public.McpToolAccess.where({
+            clientAccessId: clientAccess.id,
+            toolName,
+        }).first();
+
+        if (existing) {
+            await this.prisma.db.orm.public.McpToolAccess.where({
+                id: existing.id,
+            }).update({ isEnabled });
+        } else {
+            await this.prisma.db.orm.public.McpToolAccess.create({
+                clientAccessId: clientAccess.id,
+                toolName,
+                isEnabled,
+            });
+        }
+
+        await this.invalidateToolAccess(userId, clientId, toolName);
     }
 
     // Get the user's client authorization ID from Redis or database.
@@ -91,8 +156,8 @@ export class McpToolAccessService {
             toolName,
         }).first();
 
-        // Tools without an explicit permission record are enabled by default.
-        const isEnabled = !access || access.isEnabled;
+        // Missing permission records fail closed until the registry refreshes them.
+        const isEnabled = Boolean(access?.isEnabled);
 
         // Cache the permission result.
         await this.redisService.set(key, isEnabled ? '1' : '0', ACCESS_CACHE_TTL);

@@ -13,6 +13,14 @@ import { GoogleTokenService } from './google-token.service.js';
 
 import type { GoogleDriveAuthResult } from '../interfaces/google-drive-auth.interface.js';
 
+// Normalize date fields because Redis JSON values and database values have different runtime types.
+const mapGoogleAccount = <T extends { expiresAt: Date | string | null }>(
+    account: T,
+): Omit<T, 'expiresAt'> & { expiresAt: Date | null } => ({
+    ...account,
+    expiresAt: account.expiresAt ? new Date(account.expiresAt) : null,
+});
+
 @Injectable()
 export class GoogleIntegrationService {
     constructor(
@@ -106,7 +114,8 @@ export class GoogleIntegrationService {
         );
 
         if (cachedAccount) {
-            return JSON.parse(cachedAccount);
+            // Keep the cached result consistent with the database result.
+            return mapGoogleAccount(JSON.parse(cachedAccount));
         }
 
         // 2. Cache miss: fetch from database
@@ -125,7 +134,7 @@ export class GoogleIntegrationService {
             300,
         );
 
-        return account;
+        return mapGoogleAccount(account);
     }
 
     /**

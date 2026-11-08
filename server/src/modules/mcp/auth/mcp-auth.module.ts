@@ -13,11 +13,13 @@ import { McpGoogleStrategy } from './strategies/mcp-google.strategy.js';
 import { OAuthClientService } from './services/oauth-client.service.js';
 import { OAuthAuthorizationService } from './services/oauth-authorization.service.js';
 import { OAuthCodeService } from './services/oauth-code.service.js';
+import { ToolsModule } from '../tools/tools.module.js';
 
 @Module({
     imports: [
         AuthModule,
         UsersModule,
+        ToolsModule,
         JwtModule.registerAsync({
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => ({

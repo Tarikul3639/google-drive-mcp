@@ -65,6 +65,15 @@ export const mcpAccessApi = {
     apiClient.delete<void>(
       `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}`,
     ),
+  refreshTools: (clientId: string) =>
+    apiClient.post<unknown>(
+      `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}/tools/refresh`,
+    ),
+  setToolAccess: (clientId: string, toolName: string, isEnabled: boolean) =>
+    apiClient.patch<void>(
+      `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}/tools`,
+      { toolName, isEnabled },
+    ),
 }
 
 export const mcpConsentApi = {

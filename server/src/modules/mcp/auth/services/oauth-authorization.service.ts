@@ -14,6 +14,9 @@ import { PrismaService } from '../../../../prisma/prisma.service.js';
 
 import { GoogleAuthService } from '../../../auth/services/google-auth.service.js';
 import { OAuthClientService } from './oauth-client.service.js';
+import { McpToolAccessService } from '../../tools/services/mcp-tool-access.service.js';
+import { McpToolRegistryService } from '../../tools/services/mcp-tool-registry.service.js';
+import type { McpToolName } from '../../tools/constants/mcp-tools.constant.js';
 
 import type { GoogleUser } from '../../../auth/interfaces/google-user.interface.js';
 import type { ConsentRequestDto } from '../dto/consent-request.dto.js';
@@ -46,6 +49,8 @@ export class OAuthAuthorizationService {
     private readonly prisma: PrismaService,
     private readonly oauthClientService: OAuthClientService,
     private readonly googleAuthService: GoogleAuthService,
+    private readonly mcpToolAccessService: McpToolAccessService,
+    private readonly mcpToolRegistryService: McpToolRegistryService,
   ) { }
 
   /**
@@ -288,6 +293,9 @@ export class OAuthAuthorizationService {
       });
     }
 
+    // New tool permissions are registered for this grant, preserving user choices.
+    await this.mcpToolRegistryService.execute(userId, consentData.clientId);
+
     // A new grant replaces prior tokens for the same client.
     await this.prisma.db.orm.public.McpRefreshToken.where({
       userId,
@@ -364,8 +372,30 @@ export class OAuthAuthorizationService {
           clientId,
           name: client?.client_name ?? 'MCP client',
           grantedAt: grant.grantedAt,
+          tools: await this.mcpToolAccessService.listToolAccess(userId, clientId),
         };
       }),
+    );
+  }
+
+  // Refresh a client's tool registry so newly-added tools become manageable.
+  async refreshClientTools(userId: string, clientId: string) {
+    await this.mcpToolRegistryService.execute(userId, clientId);
+    return this.mcpToolAccessService.listToolAccess(userId, clientId);
+  }
+
+  // Update an individual tool permission belonging to the signed-in user.
+  async updateClientToolAccess(
+    userId: string,
+    clientId: string,
+    toolName: McpToolName,
+    isEnabled: boolean,
+  ): Promise<void> {
+    await this.mcpToolAccessService.setToolAccess(
+      userId,
+      clientId,
+      toolName,
+      isEnabled,
     );
   }
 
@@ -391,5 +421,22 @@ export class OAuthAuthorizationService {
     }
     await this.prisma.db.orm.public.McpRefreshToken.where({ userId, clientId })
       .update({ revokedAt });
+
+    // Clear cached client and per-tool authorization immediately.
+    await this.mcpToolAccessService.invalidateClientAccess(userId, clientId);
+    const toolAccesses = grant
+      ? await this.prisma.db.orm.public.McpToolAccess
+        .where({ clientAccessId: grant.id })
+        .all()
+      : [];
+    await Promise.all(
+      toolAccesses.map((item) =>
+        this.mcpToolAccessService.invalidateToolAccess(
+          userId,
+          clientId,
+          item.toolName as McpToolName,
+        ),
+      ),
+    );
   }
 }
