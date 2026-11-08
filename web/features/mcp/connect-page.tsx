@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -47,10 +46,7 @@ const clientConfig = JSON.stringify(
     2
 )
 
-const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="128" fill="#376447"/>
-  <path d="M160 352L352 160M192 160h160v160" fill="none" stroke="#ffffff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`
+const clientIcon = "/drivebridge-icon.jpg"
 
 const connectionSteps = [
     {
@@ -104,19 +100,13 @@ export default function McpConnectPage() {
     }
 
     const downloadIcon = () => {
-        const blob = new Blob([iconSvg], {
-            type: "image/svg+xml;charset=utf-8",
-        })
-
-        const url = URL.createObjectURL(blob)
         const link = document.createElement("a")
 
-        link.href = url
-        link.download = "drivebridge-icon.svg"
+        link.href = clientIcon
+        link.download = "drivebridge-icon.jpg"
         document.body.appendChild(link)
         link.click()
         link.remove()
-        URL.revokeObjectURL(url)
     }
 
     const CopyButton = ({
@@ -188,8 +178,12 @@ export default function McpConnectPage() {
                 <Card className="overflow-hidden">
                     <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 p-4 sm:p-5">
                         <div className="flex min-w-0 items-center gap-3">
-                            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                                <ArrowUpRight className="size-7" />
+                            <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
+                                <img
+                                    src={clientIcon}
+                                    alt="Drivebridge logo"
+                                    className="size-full object-cover"
+                                />
                             </div>
 
                             <div className="min-w-0 space-y-0.5">
@@ -261,27 +255,12 @@ export default function McpConnectPage() {
 
                         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3">
                             <div className="flex min-w-0 items-center gap-3">
-                                <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted p-1.5">
-                                    <svg
-                                        viewBox="0 0 512 512"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="size-full rounded-lg"
-                                    >
-                                        <rect
-                                            width="512"
-                                            height="512"
-                                            rx="128"
-                                            fill="#376447"
-                                        />
-                                        <path
-                                            d="M160 352L352 160M192 160h160v160"
-                                            fill="none"
-                                            stroke="#ffffff"
-                                            strokeWidth="40"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
+                                <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
+                                    <img
+                                        src={clientIcon}
+                                        alt="Drivebridge MCP client icon"
+                                        className="size-full object-cover"
+                                    />
                                 </div>
 
                                 <div className="min-w-0">
@@ -289,7 +268,7 @@ export default function McpConnectPage() {
                                         Client icon
                                     </p>
                                     <p className="text-[11px] text-muted-foreground">
-                                        SVG · 512 × 512
+                                        JPG · 1254 × 1254
                                     </p>
                                 </div>
                             </div>
