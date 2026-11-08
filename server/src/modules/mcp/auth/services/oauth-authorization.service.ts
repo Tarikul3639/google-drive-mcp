@@ -168,7 +168,6 @@ export class OAuthAuthorizationService {
 
     // Redirect the authenticated user to the consent page.
     const consentUrl = new URL('/mcp/consent', this.configService.frontendUrl);
-
     consentUrl.searchParams.set('transaction', transaction);
 
     return {

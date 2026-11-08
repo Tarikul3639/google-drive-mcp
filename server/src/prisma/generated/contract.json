@@ -24,6 +24,10 @@
       "model": "McpRefreshToken",
       "namespace": "public"
     },
+    "mcp_tool_accesses": {
+      "model": "McpToolAccess",
+      "namespace": "public"
+    },
     "users": {
       "model": "User",
       "namespace": "public"
@@ -439,6 +443,21 @@
                   "namespace": "public"
                 }
               },
+              "toolAccesses": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientAccessId"
+                  ]
+                },
+                "to": {
+                  "model": "McpToolAccess",
+                  "namespace": "public"
+                }
+              },
               "user": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -599,6 +618,87 @@
               },
               "namespaceId": "public",
               "table": "mcp_refresh_tokens"
+            }
+          },
+          "McpToolAccess": {
+            "fields": {
+              "clientAccessId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "toolName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              }
+            },
+            "relations": {
+              "clientAccess": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "clientAccessId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "McpClientAccess",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientAccessId": {
+                  "column": "client_access_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isEnabled": {
+                  "column": "is_enabled"
+                },
+                "toolName": {
+                  "column": "tool_name"
+                },
+                "updatedAt": {
+                  "column": "updated_at"
+                }
+              },
+              "namespaceId": "public",
+              "table": "mcp_tool_accesses"
             }
           },
           "User": {
@@ -1279,6 +1379,95 @@
                 }
               ]
             },
+            "mcp_tool_accesses": {
+              "columns": {
+                "client_access_id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "is_enabled": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nullable": false
+                },
+                "tool_name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "updated_at": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 3
+                  }
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "mcp_tool_accesses_client_access_id_idx_079334d7"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "client_access_id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "mcp_tool_accesses"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "mcp_client_accesses"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "client_access_id"
+                  ],
+                  "name": "mcp_tool_accesses_client_access_id_idx_079334d7",
+                  "prefix": "mcp_tool_accesses_client_access_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tool_name"
+                  ],
+                  "name": "mcp_tool_accesses_tool_name_idx_081476e4",
+                  "prefix": "mcp_tool_accesses_tool_name_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "client_access_id",
+                    "tool_name"
+                  ]
+                }
+              ]
+            },
             "users": {
               "columns": {
                 "created_at": {
@@ -1353,10 +1542,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9c1d6f113b5dc3704391fcb92d6cf270c7c3d199a866673a80bae5e76e12ce2a"
+    "storageHash": "6d5ebd2452ca7b4f904719751cdb56f967b261beff80dd7c947841ccbafbc333"
   },
   "execution": {
-    "executionHash": "fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e",
+    "executionHash": "799e9f52449364e2f1f3407ed0a839517c08c6859e0f797413e59fbc81c44049",
     "mutations": {
       "defaults": [
         {
@@ -1453,6 +1642,38 @@
           "ref": {
             "entry": "mcp_refresh_tokens",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "mcp_tool_accesses",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator",
+            "params": {
+              "precision": 3
+            }
+          },
+          "ref": {
+            "entry": "mcp_tool_accesses",
+            "field": "updated_at",
             "namespace": "public"
           }
         },

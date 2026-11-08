@@ -16,6 +16,9 @@ import { GoogleTokenService } from '../google-integration/services/google-token.
     GoogleDriveService,
     GoogleDriveClientService,
   ],
-  controllers: [],
+  exports: [
+    GoogleDriveService,
+    GoogleDriveClientService,
+  ],
 })
 export class GoogleDriveModule { }

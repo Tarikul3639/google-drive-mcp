@@ -21,19 +21,19 @@ model McpClient {
 
 // Stores hashed refresh tokens issued to MCP clients.
 model McpRefreshToken {
-  id        String     @id @onCreate(uuid())
-  tokenHash String     @unique @map("token_hash")
-  clientId  String     @map("client_id")
-  userId    String     @map("user_id")
-  expiresAt DateTime   @map("expires_at")
-  revokedAt DateTime?  @map("revoked_at")
-  createdAt DateTime   @default(now()) @map("created_at")
+  id        String    @id @onCreate(uuid())
+  tokenHash String    @unique @map("token_hash")
+  clientId  String    @map("client_id")
+  userId    String    @map("user_id")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
   // User associated with this refresh token.
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // MCP client associated with this refresh token.
-  client    McpClient  @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  client    McpClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
 
   @@index([clientId])
   @@index([userId])
@@ -43,20 +43,38 @@ model McpRefreshToken {
 
 // Stores user authorization grants for MCP clients.
 model McpClientAccess {
-  id        String     @id @onCreate(uuid())
-  userId    String     @map("user_id")
-  clientId  String     @map("client_id")
-  grantedAt DateTime   @default(now()) @map("granted_at")
-  revokedAt DateTime?  @map("revoked_at")
+  id           String          @id @onCreate(uuid())
+  userId       String          @map("user_id")
+  clientId     String          @map("client_id")
+  grantedAt    DateTime        @default(now()) @map("granted_at")
+  revokedAt    DateTime?       @map("revoked_at")
 
   // User who granted authorization.
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // MCP client that received authorization.
-  client    McpClient  @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  client       McpClient       @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  // Tool access records associated with this user authorization grant.
+  toolAccesses McpToolAccess[]
 
   // One authorization record per user and MCP client.
   @@unique([userId, clientId])
   @@index([clientId])
   @@map("mcp_client_accesses")
+}
+
+model McpToolAccess {
+  id             String             @id @onCreate(uuid())
+  clientAccessId String             @map("client_access_id")
+  toolName       String             @map("tool_name")
+  isEnabled      Boolean            @default(true) @map("is_enabled")
+  updatedAt      temporal.UpdatedAt @map("updated_at")
+
+  // MCP client access associated with this tool access.
+  clientAccess   McpClientAccess    @relation(fields: [clientAccessId], references: [id], onDelete: Cascade)
+
+  @@unique([clientAccessId, toolName])
+  @@index([toolName])
+  @@map("mcp_tool_accesses")
 }

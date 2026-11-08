@@ -23,9 +23,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'9c1d6f113b5dc3704391fcb92d6cf270c7c3d199a866673a80bae5e76e12ce2a'>;
+  StorageHashBase<'6d5ebd2452ca7b4f904719751cdb56f967b261beff80dd7c947841ccbafbc333'>;
 export type ExecutionHash =
-  ExecutionHashBase<'fa73d50e60dd2ccd2ce132e86de709d16ca194a4ed0bf4426ddc1176b7a7b44e'>;
+  ExecutionHashBase<'799e9f52449364e2f1f3407ed0a839517c08c6859e0f797413e59fbc81c44049'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -351,8 +351,9 @@ export namespace Models {
     revokedAt: FieldOutputTypes['public']['McpClientAccess']['revokedAt'];
     userId: FieldOutputTypes['public']['McpClientAccess']['userId'];
     client: public_McpClient;
+    toolAccesses: public_McpToolAccess[];
     user: public_User;
-    readonly [RelationKeys]?: 'client' | 'user';
+    readonly [RelationKeys]?: 'client' | 'toolAccesses' | 'user';
   };
   export type public_McpRefreshToken = {
     clientId: FieldOutputTypes['public']['McpRefreshToken']['clientId'];
@@ -365,6 +366,15 @@ export namespace Models {
     client: public_McpClient;
     user: public_User;
     readonly [RelationKeys]?: 'client' | 'user';
+  };
+  export type public_McpToolAccess = {
+    clientAccessId: FieldOutputTypes['public']['McpToolAccess']['clientAccessId'];
+    id: FieldOutputTypes['public']['McpToolAccess']['id'];
+    isEnabled: FieldOutputTypes['public']['McpToolAccess']['isEnabled'];
+    toolName: FieldOutputTypes['public']['McpToolAccess']['toolName'];
+    updatedAt: FieldOutputTypes['public']['McpToolAccess']['updatedAt'];
+    clientAccess: public_McpClientAccess;
+    readonly [RelationKeys]?: 'clientAccess';
   };
   export type public_User = {
     createdAt: FieldOutputTypes['public']['User']['createdAt'];
@@ -390,6 +400,7 @@ export declare const models: {
     McpClient: Models.public_McpClient;
     McpClientAccess: Models.public_McpClientAccess;
     McpRefreshToken: Models.public_McpRefreshToken;
+    McpToolAccess: Models.public_McpToolAccess;
     User: Models.public_User;
   };
 };
@@ -798,6 +809,75 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly mcp_tool_accesses: {
+              columns: {
+                readonly client_access_id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly is_enabled: {
+                  readonly dataType: 'pg/bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                  readonly many: false;
+                };
+                readonly tool_name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updated_at: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly precision: 3 };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['client_access_id', 'tool_name'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'mcp_tool_accesses_client_access_id_idx_079334d7';
+                  readonly prefix: 'mcp_tool_accesses_client_access_id_idx';
+                  readonly columns: readonly ['client_access_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'mcp_tool_accesses_tool_name_idx_081476e4';
+                  readonly prefix: 'mcp_tool_accesses_tool_name_idx';
+                  readonly columns: readonly ['tool_name'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'mcp_tool_accesses';
+                    readonly columns: readonly ['client_access_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'mcp_client_accesses';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly users: {
               columns: {
                 readonly created_at: {
@@ -884,6 +964,10 @@ type ContractBase = Omit<
     readonly mcp_refresh_tokens: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'McpRefreshToken';
+    };
+    readonly mcp_tool_accesses: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'McpToolAccess';
     };
     readonly users: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
@@ -1154,6 +1238,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['clientId'];
                 };
               };
+              readonly toolAccesses: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'McpToolAccess';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['clientAccessId'];
+                };
+              };
               readonly user: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
                 readonly cardinality: 'N:1';
@@ -1253,6 +1348,59 @@ type ContractBase = Omit<
                 readonly revokedAt: { readonly column: 'revoked_at' };
                 readonly tokenHash: { readonly column: 'token_hash' };
                 readonly userId: { readonly column: 'user_id' };
+              };
+            };
+          };
+          readonly McpToolAccess: {
+            readonly fields: {
+              readonly clientAccessId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly isEnabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly toolName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly typeParams: { readonly precision: 3 };
+                };
+              };
+            };
+            readonly relations: {
+              readonly clientAccess: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'McpClientAccess';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['clientAccessId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'mcp_tool_accesses';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly clientAccessId: { readonly column: 'client_access_id' };
+                readonly id: { readonly column: 'id' };
+                readonly isEnabled: { readonly column: 'is_enabled' };
+                readonly toolName: { readonly column: 'tool_name' };
+                readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
           };
@@ -1463,6 +1611,31 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'mcp_refresh_tokens';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'mcp_tool_accesses';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: {
+            readonly id: 'timestampNow';
+            readonly kind: 'generator';
+            readonly params: { readonly precision: 3 };
+          };
+          readonly onUpdate: {
+            readonly id: 'timestampNow';
+            readonly kind: 'generator';
+            readonly params: { readonly precision: 3 };
+          };
+          readonly ref: {
+            readonly entry: 'mcp_tool_accesses';
+            readonly field: 'updated_at';
             readonly namespace: 'public';
           };
         },

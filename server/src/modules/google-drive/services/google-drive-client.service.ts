@@ -96,7 +96,6 @@ export class GoogleDriveClientService implements OnModuleDestroy {
         }
 
         const accessToken = this.googleTokenService.decrypt(account.accessToken);
-
         const refreshToken = this.googleTokenService.decrypt(account.refreshToken);
 
         const oauth2Client = new google.auth.OAuth2(

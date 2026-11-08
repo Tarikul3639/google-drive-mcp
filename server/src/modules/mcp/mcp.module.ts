@@ -4,10 +4,13 @@ import { McpModule as NestMcpModule } from '@nestjs/mcp';
 import { ConfigService } from '../../config/config.service.js';
 import { McpAuthModule } from './auth/mcp-auth.module.js';
 import { IdentityProviderTokenVerifier } from './auth/identity-provider-token.verifier.js';
-import { HealthCheckTool } from './tools/health-check.tool.js';
+import { ToolsModule } from './tools/tools.module.js';
 
 @Module({
     imports: [
+        McpAuthModule,
+        ToolsModule,
+
         NestMcpModule.forRootAsync({
             imports: [McpAuthModule],
             inject: [ConfigService, IdentityProviderTokenVerifier],
@@ -22,11 +25,12 @@ import { HealthCheckTool } from './tools/health-check.tool.js';
                 auth: {
                     verifier,
                     resource: configService.mcpResource,
-                    authorizationServers: [configService.mcpAuthorizationServer],
+                    authorizationServers: [
+                        configService.mcpAuthorizationServer,
+                    ],
                 },
             }),
         }),
     ],
-    providers: [HealthCheckTool],
 })
-export class McpModule { }
+export class McpModule {}

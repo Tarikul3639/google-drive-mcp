@@ -5,7 +5,6 @@ import type { McpTokenVerifier } from '@nestjs/mcp';
 import type { AuthInfo } from '@modelcontextprotocol/server';
 
 import { ConfigService } from '../../../config/config.service.js';
-
 import type { McpAccessTokenPayload } from './interfaces/mcp-access-token-payload.interface.js';
 
 @Injectable()
@@ -38,6 +37,9 @@ export class IdentityProviderTokenVerifier implements McpTokenVerifier {
                 scopes: [],
                 resource: new URL(this.configService.mcpResource),
                 expiresAt: payload.exp,
+                extra: {
+                    userId: payload.sub,
+                },
             };
         } catch {
             return null;

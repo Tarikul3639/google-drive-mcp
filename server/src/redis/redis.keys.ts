@@ -9,4 +9,10 @@ export const RedisKeys = {
 
     authSessionByToken: (tokenHash: string) => `auth:session:token:${tokenHash}`,
     authSessionById: (sessionId: string) => `auth:session:id:${sessionId}`,
+
+    mcpClientAccess: (userId: string, clientId: string) =>
+        `mcp:client-access:${userId}:${clientId}`,
+
+    mcpToolAccess: (userId: string, clientId: string, toolName: string) =>
+        `mcp:tool-access:${userId}:${clientId}:${toolName}`,
 } as const;
