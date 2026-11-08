@@ -1,0 +1,1590 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.auth_sessions",
+    "label": "Create table \"auth_sessions\"",
+    "summary": "Creates table \"auth_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "auth_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"auth_sessions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"auth_sessions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"auth_sessions\"",
+        "sql": "CREATE TABLE \"public\".\"auth_sessions\" (\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"expires_at\" timestamptz(3) NOT NULL,\n  \"id\" text NOT NULL,\n  \"revoked_at\" timestamptz(3),\n  \"token_hash\" text NOT NULL,\n  \"user_id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"auth_sessions\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"auth_sessions\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.google_accounts",
+    "label": "Create table \"google_accounts\"",
+    "summary": "Creates table \"google_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"google_accounts\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"google_accounts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"google_accounts\"",
+        "sql": "CREATE TABLE \"public\".\"google_accounts\" (\n  \"access_token\" text NOT NULL,\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"expires_at\" timestamptz(3),\n  \"google_id\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"refresh_token\" text,\n  \"updated_at\" timestamptz(3) NOT NULL,\n  \"user_id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"google_accounts\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"google_accounts\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"google_accounts\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.mcp_client_accesses",
+    "label": "Create table \"mcp_client_accesses\"",
+    "summary": "Creates table \"mcp_client_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"mcp_client_accesses\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"mcp_client_accesses\"",
+        "sql": "CREATE TABLE \"public\".\"mcp_client_accesses\" (\n  \"client_id\" text NOT NULL,\n  \"granted_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"revoked_at\" timestamptz(3),\n  \"user_id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"mcp_client_accesses\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"mcp_client_accesses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.mcp_clients",
+    "label": "Create table \"mcp_clients\"",
+    "summary": "Creates table \"mcp_clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "mcp_clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"mcp_clients\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"mcp_clients\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"mcp_clients\"",
+        "sql": "CREATE TABLE \"public\".\"mcp_clients\" (\n  \"client_id\" text NOT NULL,\n  \"client_secret_hash\" text,\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"redirect_uris\" text[] NOT NULL,\n  \"updated_at\" timestamptz(3) NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"mcp_clients_redirect_uris_elem_not_null_3825312c\" CHECK (array_position(\"redirect_uris\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"mcp_clients\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_clients\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"mcp_clients\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.mcp_refresh_tokens",
+    "label": "Create table \"mcp_refresh_tokens\"",
+    "summary": "Creates table \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"mcp_refresh_tokens\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"mcp_refresh_tokens\"",
+        "sql": "CREATE TABLE \"public\".\"mcp_refresh_tokens\" (\n  \"client_id\" text NOT NULL,\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"expires_at\" timestamptz(3) NOT NULL,\n  \"id\" text NOT NULL,\n  \"revoked_at\" timestamptz(3),\n  \"token_hash\" text NOT NULL,\n  \"user_id\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"mcp_refresh_tokens\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"mcp_refresh_tokens\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.mcp_tool_accesses",
+    "label": "Create table \"mcp_tool_accesses\"",
+    "summary": "Creates table \"mcp_tool_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "mcp_tool_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"mcp_tool_accesses\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"mcp_tool_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"mcp_tool_accesses\"",
+        "sql": "CREATE TABLE \"public\".\"mcp_tool_accesses\" (\n  \"client_access_id\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"is_enabled\" bool DEFAULT true NOT NULL,\n  \"tool_name\" text NOT NULL,\n  \"updated_at\" timestamptz(3) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"mcp_tool_accesses\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"mcp_tool_accesses\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.users",
+    "label": "Create table \"users\"",
+    "summary": "Creates table \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"users\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"users\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"users\"",
+        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"created_at\" timestamptz(3) DEFAULT (now()) NOT NULL,\n  \"email\" text NOT NULL,\n  \"google_id\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text,\n  \"picture\" text,\n  \"updated_at\" timestamptz(3) NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"users\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"users\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"users\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "unique.auth_sessions.auth_sessions_token_hash_key",
+    "label": "Add unique constraint on \"auth_sessions\" (token_hash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "auth_sessions_token_hash_key",
+        "table": "auth_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"auth_sessions_token_hash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_sessions_token_hash_key",
+          "public",
+          "\"public\".\"auth_sessions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"auth_sessions_token_hash_key\" on \"auth_sessions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"auth_sessions_token_hash_key\"",
+        "sql": "ALTER TABLE \"public\".\"auth_sessions\" ADD CONSTRAINT \"auth_sessions_token_hash_key\" UNIQUE (\"token_hash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"auth_sessions_token_hash_key\" exists on (token_hash)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "auth_sessions_token_hash_key",
+          "public",
+          "\"public\".\"auth_sessions\"",
+          "u",
+          "[\"token_hash\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.google_accounts.google_accounts_user_id_key",
+    "label": "Add unique constraint on \"google_accounts\" (user_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "google_accounts_user_id_key",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"google_accounts_user_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "google_accounts_user_id_key",
+          "public",
+          "\"public\".\"google_accounts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"google_accounts_user_id_key\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"google_accounts_user_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\" ADD CONSTRAINT \"google_accounts_user_id_key\" UNIQUE (\"user_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"google_accounts_user_id_key\" exists on (user_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "google_accounts_user_id_key",
+          "public",
+          "\"public\".\"google_accounts\"",
+          "u",
+          "[\"user_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.google_accounts.google_accounts_google_id_key",
+    "label": "Add unique constraint on \"google_accounts\" (google_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "google_accounts_google_id_key",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"google_accounts_google_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "google_accounts_google_id_key",
+          "public",
+          "\"public\".\"google_accounts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"google_accounts_google_id_key\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"google_accounts_google_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\" ADD CONSTRAINT \"google_accounts_google_id_key\" UNIQUE (\"google_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"google_accounts_google_id_key\" exists on (google_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "google_accounts_google_id_key",
+          "public",
+          "\"public\".\"google_accounts\"",
+          "u",
+          "[\"google_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.mcp_client_accesses.mcp_client_accesses_user_id_client_id_key",
+    "label": "Add unique constraint on \"mcp_client_accesses\" (user_id, client_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "mcp_client_accesses_user_id_client_id_key",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_client_accesses_user_id_client_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_user_id_client_id_key",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_client_accesses_user_id_client_id_key\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"mcp_client_accesses_user_id_client_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\" ADD CONSTRAINT \"mcp_client_accesses_user_id_client_id_key\" UNIQUE (\"user_id\", \"client_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"mcp_client_accesses_user_id_client_id_key\" exists on (user_id, client_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_user_id_client_id_key",
+          "public",
+          "\"public\".\"mcp_client_accesses\"",
+          "u",
+          "[\"user_id\",\"client_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.mcp_clients.mcp_clients_client_id_key",
+    "label": "Add unique constraint on \"mcp_clients\" (client_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "mcp_clients_client_id_key",
+        "table": "mcp_clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_clients_client_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_clients_client_id_key",
+          "public",
+          "\"public\".\"mcp_clients\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_clients_client_id_key\" on \"mcp_clients\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"mcp_clients_client_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_clients\" ADD CONSTRAINT \"mcp_clients_client_id_key\" UNIQUE (\"client_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"mcp_clients_client_id_key\" exists on (client_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "mcp_clients_client_id_key",
+          "public",
+          "\"public\".\"mcp_clients\"",
+          "u",
+          "[\"client_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.mcp_refresh_tokens.mcp_refresh_tokens_token_hash_key",
+    "label": "Add unique constraint on \"mcp_refresh_tokens\" (token_hash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "mcp_refresh_tokens_token_hash_key",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_refresh_tokens_token_hash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_token_hash_key",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_refresh_tokens_token_hash_key\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"mcp_refresh_tokens_token_hash_key\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\" ADD CONSTRAINT \"mcp_refresh_tokens_token_hash_key\" UNIQUE (\"token_hash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"mcp_refresh_tokens_token_hash_key\" exists on (token_hash)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_token_hash_key",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "u",
+          "[\"token_hash\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.mcp_tool_accesses.mcp_tool_accesses_client_access_id_tool_name_key",
+    "label": "Add unique constraint on \"mcp_tool_accesses\" (client_access_id, tool_name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "mcp_tool_accesses_client_access_id_tool_name_key",
+        "table": "mcp_tool_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"mcp_tool_accesses_client_access_id_tool_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_tool_accesses_client_access_id_tool_name_key",
+          "public",
+          "\"public\".\"mcp_tool_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"mcp_tool_accesses_client_access_id_tool_name_key\" on \"mcp_tool_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"mcp_tool_accesses_client_access_id_tool_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_tool_accesses\" ADD CONSTRAINT \"mcp_tool_accesses_client_access_id_tool_name_key\" UNIQUE (\"client_access_id\", \"tool_name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"mcp_tool_accesses_client_access_id_tool_name_key\" exists on (client_access_id, tool_name)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "mcp_tool_accesses_client_access_id_tool_name_key",
+          "public",
+          "\"public\".\"mcp_tool_accesses\"",
+          "u",
+          "[\"client_access_id\",\"tool_name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_google_id_key",
+    "label": "Add unique constraint on \"users\" (google_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_google_id_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_google_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_google_id_key",
+          "public",
+          "\"public\".\"users\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"users_google_id_key\" on \"users\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_google_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_google_id_key\" UNIQUE (\"google_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"users_google_id_key\" exists on (google_id)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "users_google_id_key",
+          "public",
+          "\"public\".\"users\"",
+          "u",
+          "[\"google_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_email_key",
+    "label": "Add unique constraint on \"users\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_email_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"users_email_key\" on \"users\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"users_email_key\" exists on (email)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\"",
+          "u",
+          "[\"email\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.auth_sessions.auth_sessions_expires_at_idx_35365ada",
+    "label": "Create index \"auth_sessions_expires_at_idx_35365ada\" on \"auth_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "auth_sessions_expires_at_idx_35365ada",
+        "table": "auth_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"auth_sessions_expires_at_idx_35365ada\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions_expires_at_idx_35365ada\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"auth_sessions_expires_at_idx_35365ada\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"auth_sessions_expires_at_idx_35365ada\"",
+        "sql": "CREATE INDEX \"auth_sessions_expires_at_idx_35365ada\" ON \"public\".\"auth_sessions\" (\"expires_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"auth_sessions_expires_at_idx_35365ada\" exists on \"auth_sessions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions_expires_at_idx_35365ada\"",
+          "i",
+          "I",
+          "\"public\".\"auth_sessions\"",
+          "btree",
+          "[\"expires_at\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.auth_sessions.auth_sessions_user_id_idx_6c952402",
+    "label": "Create index \"auth_sessions_user_id_idx_6c952402\" on \"auth_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "auth_sessions_user_id_idx_6c952402",
+        "table": "auth_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"auth_sessions_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions_user_id_idx_6c952402\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"auth_sessions_user_id_idx_6c952402\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"auth_sessions_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"auth_sessions_user_id_idx_6c952402\" ON \"public\".\"auth_sessions\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"auth_sessions_user_id_idx_6c952402\" exists on \"auth_sessions\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"auth_sessions_user_id_idx_6c952402\"",
+          "i",
+          "I",
+          "\"public\".\"auth_sessions\"",
+          "btree",
+          "[\"user_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_client_accesses.mcp_client_accesses_client_id_idx_1bb5a570",
+    "label": "Create index \"mcp_client_accesses_client_id_idx_1bb5a570\" on \"mcp_client_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_client_accesses_client_id_idx_1bb5a570",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_client_accesses_client_id_idx_1bb5a570\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses_client_id_idx_1bb5a570\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_client_accesses_client_id_idx_1bb5a570\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_client_accesses_client_id_idx_1bb5a570\"",
+        "sql": "CREATE INDEX \"mcp_client_accesses_client_id_idx_1bb5a570\" ON \"public\".\"mcp_client_accesses\" (\"client_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_client_accesses_client_id_idx_1bb5a570\" exists on \"mcp_client_accesses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses_client_id_idx_1bb5a570\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_client_accesses\"",
+          "btree",
+          "[\"client_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_client_accesses.mcp_client_accesses_user_id_idx_6c952402",
+    "label": "Create index \"mcp_client_accesses_user_id_idx_6c952402\" on \"mcp_client_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_client_accesses_user_id_idx_6c952402",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_client_accesses_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses_user_id_idx_6c952402\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_client_accesses_user_id_idx_6c952402\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_client_accesses_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"mcp_client_accesses_user_id_idx_6c952402\" ON \"public\".\"mcp_client_accesses\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_client_accesses_user_id_idx_6c952402\" exists on \"mcp_client_accesses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_client_accesses_user_id_idx_6c952402\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_client_accesses\"",
+          "btree",
+          "[\"user_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_refresh_tokens.mcp_refresh_tokens_client_id_idx_1bb5a570",
+    "label": "Create index \"mcp_refresh_tokens_client_id_idx_1bb5a570\" on \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_refresh_tokens_client_id_idx_1bb5a570",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_refresh_tokens_client_id_idx_1bb5a570\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_client_id_idx_1bb5a570\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_refresh_tokens_client_id_idx_1bb5a570\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_refresh_tokens_client_id_idx_1bb5a570\"",
+        "sql": "CREATE INDEX \"mcp_refresh_tokens_client_id_idx_1bb5a570\" ON \"public\".\"mcp_refresh_tokens\" (\"client_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_refresh_tokens_client_id_idx_1bb5a570\" exists on \"mcp_refresh_tokens\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_client_id_idx_1bb5a570\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "btree",
+          "[\"client_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_refresh_tokens.mcp_refresh_tokens_expires_at_idx_35365ada",
+    "label": "Create index \"mcp_refresh_tokens_expires_at_idx_35365ada\" on \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_refresh_tokens_expires_at_idx_35365ada",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_refresh_tokens_expires_at_idx_35365ada\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_expires_at_idx_35365ada\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_refresh_tokens_expires_at_idx_35365ada\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_refresh_tokens_expires_at_idx_35365ada\"",
+        "sql": "CREATE INDEX \"mcp_refresh_tokens_expires_at_idx_35365ada\" ON \"public\".\"mcp_refresh_tokens\" (\"expires_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_refresh_tokens_expires_at_idx_35365ada\" exists on \"mcp_refresh_tokens\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_expires_at_idx_35365ada\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "btree",
+          "[\"expires_at\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_refresh_tokens.mcp_refresh_tokens_user_id_idx_6c952402",
+    "label": "Create index \"mcp_refresh_tokens_user_id_idx_6c952402\" on \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_refresh_tokens_user_id_idx_6c952402",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_refresh_tokens_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_user_id_idx_6c952402\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_refresh_tokens_user_id_idx_6c952402\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_refresh_tokens_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"mcp_refresh_tokens_user_id_idx_6c952402\" ON \"public\".\"mcp_refresh_tokens\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_refresh_tokens_user_id_idx_6c952402\" exists on \"mcp_refresh_tokens\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_refresh_tokens_user_id_idx_6c952402\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "btree",
+          "[\"user_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_tool_accesses.mcp_tool_accesses_client_access_id_idx_079334d7",
+    "label": "Create index \"mcp_tool_accesses_client_access_id_idx_079334d7\" on \"mcp_tool_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_tool_accesses_client_access_id_idx_079334d7",
+        "table": "mcp_tool_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_tool_accesses_client_access_id_idx_079334d7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses_client_access_id_idx_079334d7\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_tool_accesses_client_access_id_idx_079334d7\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_tool_accesses_client_access_id_idx_079334d7\"",
+        "sql": "CREATE INDEX \"mcp_tool_accesses_client_access_id_idx_079334d7\" ON \"public\".\"mcp_tool_accesses\" (\"client_access_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_tool_accesses_client_access_id_idx_079334d7\" exists on \"mcp_tool_accesses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses_client_access_id_idx_079334d7\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_tool_accesses\"",
+          "btree",
+          "[\"client_access_id\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.mcp_tool_accesses.mcp_tool_accesses_tool_name_idx_081476e4",
+    "label": "Create index \"mcp_tool_accesses_tool_name_idx_081476e4\" on \"mcp_tool_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "mcp_tool_accesses_tool_name_idx_081476e4",
+        "table": "mcp_tool_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"mcp_tool_accesses_tool_name_idx_081476e4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses_tool_name_idx_081476e4\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"mcp_tool_accesses_tool_name_idx_081476e4\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"mcp_tool_accesses_tool_name_idx_081476e4\"",
+        "sql": "CREATE INDEX \"mcp_tool_accesses_tool_name_idx_081476e4\" ON \"public\".\"mcp_tool_accesses\" (\"tool_name\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"mcp_tool_accesses_tool_name_idx_081476e4\" exists on \"mcp_tool_accesses\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"mcp_tool_accesses_tool_name_idx_081476e4\"",
+          "i",
+          "I",
+          "\"public\".\"mcp_tool_accesses\"",
+          "btree",
+          "[\"tool_name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.auth_sessions.auth_sessions_user_id_fkey",
+    "label": "Add foreign key \"auth_sessions_user_id_fkey\" on \"auth_sessions\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "auth_sessions_user_id_fkey",
+        "table": "auth_sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"auth_sessions_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "auth_sessions_user_id_fkey",
+          "public",
+          "\"public\".\"auth_sessions\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"auth_sessions_user_id_fkey\" on \"auth_sessions\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"auth_sessions_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"auth_sessions\"\nADD CONSTRAINT \"auth_sessions_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"auth_sessions_user_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "auth_sessions_user_id_fkey",
+          "public",
+          "\"public\".\"auth_sessions\"",
+          "f",
+          "[\"user_id\"]",
+          "\"public\".\"users\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.google_accounts.google_accounts_user_id_fkey",
+    "label": "Add foreign key \"google_accounts_user_id_fkey\" on \"google_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "google_accounts_user_id_fkey",
+        "table": "google_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"google_accounts_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "google_accounts_user_id_fkey",
+          "public",
+          "\"public\".\"google_accounts\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"google_accounts_user_id_fkey\" on \"google_accounts\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"google_accounts_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"google_accounts\"\nADD CONSTRAINT \"google_accounts_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"google_accounts_user_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "google_accounts_user_id_fkey",
+          "public",
+          "\"public\".\"google_accounts\"",
+          "f",
+          "[\"user_id\"]",
+          "\"public\".\"users\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.mcp_client_accesses.mcp_client_accesses_user_id_fkey",
+    "label": "Add foreign key \"mcp_client_accesses_user_id_fkey\" on \"mcp_client_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "mcp_client_accesses_user_id_fkey",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"mcp_client_accesses_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_user_id_fkey",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"mcp_client_accesses_user_id_fkey\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"mcp_client_accesses_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\"\nADD CONSTRAINT \"mcp_client_accesses_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"mcp_client_accesses_user_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_user_id_fkey",
+          "public",
+          "\"public\".\"mcp_client_accesses\"",
+          "f",
+          "[\"user_id\"]",
+          "\"public\".\"users\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.mcp_client_accesses.mcp_client_accesses_client_id_fkey",
+    "label": "Add foreign key \"mcp_client_accesses_client_id_fkey\" on \"mcp_client_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "mcp_client_accesses_client_id_fkey",
+        "table": "mcp_client_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"mcp_client_accesses_client_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_client_id_fkey",
+          "public",
+          "\"public\".\"mcp_client_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"mcp_client_accesses_client_id_fkey\" on \"mcp_client_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"mcp_client_accesses_client_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_client_accesses\"\nADD CONSTRAINT \"mcp_client_accesses_client_id_fkey\"\nFOREIGN KEY (\"client_id\")\nREFERENCES \"public\".\"mcp_clients\" (\"client_id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"mcp_client_accesses_client_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "mcp_client_accesses_client_id_fkey",
+          "public",
+          "\"public\".\"mcp_client_accesses\"",
+          "f",
+          "[\"client_id\"]",
+          "\"public\".\"mcp_clients\"",
+          "[\"client_id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.mcp_refresh_tokens.mcp_refresh_tokens_user_id_fkey",
+    "label": "Add foreign key \"mcp_refresh_tokens_user_id_fkey\" on \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "mcp_refresh_tokens_user_id_fkey",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"mcp_refresh_tokens_user_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_user_id_fkey",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"mcp_refresh_tokens_user_id_fkey\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"mcp_refresh_tokens_user_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\"\nADD CONSTRAINT \"mcp_refresh_tokens_user_id_fkey\"\nFOREIGN KEY (\"user_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"mcp_refresh_tokens_user_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_user_id_fkey",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "f",
+          "[\"user_id\"]",
+          "\"public\".\"users\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.mcp_refresh_tokens.mcp_refresh_tokens_client_id_fkey",
+    "label": "Add foreign key \"mcp_refresh_tokens_client_id_fkey\" on \"mcp_refresh_tokens\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "mcp_refresh_tokens_client_id_fkey",
+        "table": "mcp_refresh_tokens"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"mcp_refresh_tokens_client_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_client_id_fkey",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"mcp_refresh_tokens_client_id_fkey\" on \"mcp_refresh_tokens\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"mcp_refresh_tokens_client_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_refresh_tokens\"\nADD CONSTRAINT \"mcp_refresh_tokens_client_id_fkey\"\nFOREIGN KEY (\"client_id\")\nREFERENCES \"public\".\"mcp_clients\" (\"client_id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"mcp_refresh_tokens_client_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "mcp_refresh_tokens_client_id_fkey",
+          "public",
+          "\"public\".\"mcp_refresh_tokens\"",
+          "f",
+          "[\"client_id\"]",
+          "\"public\".\"mcp_clients\"",
+          "[\"client_id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.mcp_tool_accesses.mcp_tool_accesses_client_access_id_fkey",
+    "label": "Add foreign key \"mcp_tool_accesses_client_access_id_fkey\" on \"mcp_tool_accesses\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "mcp_tool_accesses_client_access_id_fkey",
+        "table": "mcp_tool_accesses"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"mcp_tool_accesses_client_access_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "mcp_tool_accesses_client_access_id_fkey",
+          "public",
+          "\"public\".\"mcp_tool_accesses\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"mcp_tool_accesses_client_access_id_fkey\" on \"mcp_tool_accesses\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"mcp_tool_accesses_client_access_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"mcp_tool_accesses\"\nADD CONSTRAINT \"mcp_tool_accesses_client_access_id_fkey\"\nFOREIGN KEY (\"client_access_id\")\nREFERENCES \"public\".\"mcp_client_accesses\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"mcp_tool_accesses_client_access_id_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "mcp_tool_accesses_client_access_id_fkey",
+          "public",
+          "\"public\".\"mcp_tool_accesses\"",
+          "f",
+          "[\"client_access_id\"]",
+          "\"public\".\"mcp_client_accesses\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  }
+]

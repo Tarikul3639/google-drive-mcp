@@ -6,5 +6,7 @@ overrides:
 permissions:
   '@prisma/orm-postgres':
     skills: false
+  prisma:
+    skills: true
   workerd:
     build: true
