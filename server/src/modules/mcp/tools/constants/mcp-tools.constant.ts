@@ -18,6 +18,9 @@ export const MCP_TOOLS = {
     // Folders
     LIST_FOLDERS: 'list_folders',
     CREATE_FOLDER: 'create_folder',
+    RENAME_FOLDER: 'rename_folder',
+    MOVE_FOLDER: 'move_folder',
+    DELETE_FOLDER: 'delete_folder',
 
     // Permissions
     CREATE_PERMISSION: 'create_permission',

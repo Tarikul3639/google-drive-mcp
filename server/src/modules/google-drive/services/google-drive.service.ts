@@ -56,4 +56,322 @@ export class GoogleDriveService {
 
         return response.data;
     }
+
+    // Create a file in the authenticated user's Google Drive.
+    async createFile(
+        userId: string,
+        input: {
+            name: string;
+            mimeType?: string;
+            content?: string;
+            parentId?: string;
+        },
+    ) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.create({
+            requestBody: {
+                name: input.name,
+                mimeType: input.mimeType,
+                parents: input.parentId ? [input.parentId] : undefined,
+            },
+            media: input.content === undefined
+                ? undefined
+                : {
+                    mimeType: input.mimeType ?? 'text/plain',
+                    body: input.content,
+                },
+            fields: 'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+        });
+
+        return response.data;
+    }
+
+    // Update file metadata and, when provided, its text content.
+    async updateFile(
+        userId: string,
+        input: {
+            fileId: string;
+            name?: string;
+            description?: string;
+            mimeType?: string;
+            content?: string;
+        },
+    ) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.update({
+            fileId: input.fileId,
+            requestBody: {
+                name: input.name,
+                description: input.description,
+            },
+            // Upload media only when content was explicitly provided.
+            media: input.content === undefined
+                ? undefined
+                : {
+                    mimeType: input.mimeType ?? 'text/plain',
+                    body: input.content,
+                },
+            fields: 'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents',
+        });
+
+        return response.data;
+    }
+
+    // Move a file by replacing its existing parent folder.
+    async moveFile(userId: string, fileId: string, parentId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        // Read current parents so the file can be detached from its old folder.
+        const currentFile = await drive.files.get({
+            fileId,
+            fields: 'id, parents',
+        });
+        const currentParents = currentFile.data.parents ?? [];
+
+        const response = await drive.files.update({
+            fileId,
+            addParents: parentId,
+            removeParents: currentParents.length > 0
+                ? currentParents.join(',')
+                : undefined,
+            fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+        });
+
+        return response.data;
+    }
+
+    // Rename a file without changing its other metadata or content.
+    async renameFile(userId: string, fileId: string, newName: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.update({
+            fileId,
+            requestBody: {
+                name: newName,
+            },
+            fields: 'id, name, mimeType, webViewLink, modifiedTime, parents',
+        });
+
+        return response.data;
+    }
+
+    // Move a file to the Google Drive trash without permanently deleting it.
+    async trashFile(userId: string, fileId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.update({
+            fileId,
+            requestBody: {
+                trashed: true,
+            },
+            fields: 'id, name, mimeType, trashed, modifiedTime',
+        });
+
+        return response.data;
+    }
+
+    // Restore a previously trashed file.
+    async untrashFile(userId: string, fileId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.update({
+            fileId,
+            requestBody: {
+                trashed: false,
+            },
+            fields: 'id, name, mimeType, trashed, modifiedTime, parents',
+        });
+
+        return response.data;
+    }
+
+    // Create a copy of a file, optionally assigning a new name or parent folder.
+    async copyFile(
+        userId: string,
+        input: {
+            fileId: string;
+            name?: string;
+            parentId?: string;
+        },
+    ) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.copy({
+            fileId: input.fileId,
+            requestBody: {
+                name: input.name,
+                parents: input.parentId ? [input.parentId] : undefined,
+            },
+            fields: 'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+        });
+
+        return response.data;
+    }
+
+    // Permanently delete a file; this operation cannot be undone.
+    async deleteFile(userId: string, fileId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        await drive.files.delete({ fileId });
+    }
+
+    // Download a binary Drive file and encode it for an MCP text response.
+    async downloadFile(userId: string, fileId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        // Fetch metadata first to identify the file and its MIME type.
+        const metadata = await drive.files.get({
+            fileId,
+            fields: 'id, name, mimeType, size',
+        });
+
+        // Google Workspace-native files must be exported instead.
+        if (metadata.data.mimeType?.startsWith('application/vnd.google-apps.')) {
+            throw new Error('Google Workspace files must be retrieved with export_file.');
+        }
+
+        const response = await drive.files.get(
+            { fileId, alt: 'media' },
+            { responseType: 'arraybuffer' },
+        );
+
+        return {
+            fileId,
+            name: metadata.data.name,
+            mimeType: response.headers['content-type'] ?? metadata.data.mimeType,
+            dataBase64: Buffer.from(response.data as ArrayBuffer).toString('base64'),
+        };
+    }
+
+    // Export a Google Workspace file to a requested MIME type.
+    async exportFile(userId: string, fileId: string, mimeType: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const metadata = await drive.files.get({
+            fileId,
+            fields: 'id, name, mimeType',
+        });
+
+        if (!metadata.data.mimeType?.startsWith('application/vnd.google-apps.')) {
+            throw new Error('export_file is only for Google Workspace-native files. Use download_file instead.');
+        }
+
+        const response = await drive.files.export(
+            { fileId, mimeType },
+            { responseType: 'arraybuffer' },
+        );
+
+        return {
+            fileId,
+            name: metadata.data.name,
+            mimeType,
+            dataBase64: Buffer.from(response.data as ArrayBuffer).toString('base64'),
+        };
+    }
+
+    // List folders while excluding trashed items.
+    async listFolders(userId: string, pageToken?: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.list({
+            pageSize: 100,
+            pageToken,
+            q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false",
+            orderBy: 'name',
+            fields: 'nextPageToken, files(id, name, mimeType, webViewLink, parents, createdTime, modifiedTime)',
+        });
+
+        return {
+            folders: response.data.files ?? [],
+            nextPageToken: response.data.nextPageToken ?? null,
+        };
+    }
+
+    // Create a Google Drive folder, optionally inside another folder.
+    async createFolder(
+        userId: string,
+        input: {
+            name: string;
+            parentId?: string;
+        },
+    ) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        const response = await drive.files.create({
+            requestBody: {
+                name: input.name,
+                mimeType: 'application/vnd.google-apps.folder',
+                parents: input.parentId ? [input.parentId] : undefined,
+            },
+            fields: 'id, name, mimeType, webViewLink, parents, createdTime, modifiedTime',
+        });
+
+        return response.data;
+    }
+
+    // Rename a Google Drive folder without changing its contents.
+    async renameFolder(userId: string, folderId: string, newName: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        // Confirm the target is a folder before renaming it.
+        const metadata = await drive.files.get({
+            fileId: folderId,
+            fields: 'id, mimeType',
+        });
+        if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
+            throw new Error('The specified item is not a folder.');
+        }
+
+        const response = await drive.files.update({
+            fileId: folderId,
+            requestBody: { name: newName },
+            fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+        });
+
+        return response.data;
+    }
+
+    // Move a Google Drive folder to another parent folder.
+    async moveFolder(userId: string, folderId: string, parentId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        // Confirm the source is a folder before changing its parent.
+        const metadata = await drive.files.get({
+            fileId: folderId,
+            fields: 'id, mimeType, parents',
+        });
+        if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
+            throw new Error('The specified item is not a folder.');
+        }
+
+        const currentParents = metadata.data.parents ?? [];
+        const response = await drive.files.update({
+            fileId: folderId,
+            addParents: parentId,
+            removeParents: currentParents.length > 0
+                ? currentParents.join(',')
+                : undefined,
+            fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+        });
+
+        return response.data;
+    }
+
+    // Permanently delete a Google Drive folder.
+    async deleteFolder(userId: string, folderId: string) {
+        const drive = await this.googleDriveClientService.getClient(userId);
+
+        // Prevent this folder-specific operation from deleting a regular file.
+        const metadata = await drive.files.get({
+            fileId: folderId,
+            fields: 'id, mimeType',
+        });
+        if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
+            throw new Error('The specified item is not a folder.');
+        }
+
+        await drive.files.delete({ fileId: folderId });
+    }
 }
