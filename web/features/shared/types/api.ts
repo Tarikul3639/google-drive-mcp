@@ -36,5 +36,6 @@ export type AuthorizedMcpClient = {
   clientId: string
   name: string
   grantedAt: string
+  isRevoked: boolean
   tools: McpToolPermission[]
 }

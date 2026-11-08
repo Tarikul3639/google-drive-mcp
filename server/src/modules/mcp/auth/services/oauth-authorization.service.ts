@@ -342,15 +342,20 @@ export class OAuthAuthorizationService {
       .where({ userId })
       .all();
     const grantsByClient = new Map(grants.map((grant) => [grant.clientId, grant]));
-    const clients = new Map<string, { grantedAt: Date }>();
+    const clients = new Map<
+      string,
+      { grantedAt: Date; isRevoked: boolean }
+    >();
 
+    // Include revoked grants so users can permanently remove their history.
     for (const grant of grants) {
-      if (!grant.revokedAt) {
-        clients.set(grant.clientId, { grantedAt: grant.grantedAt });
-      }
+      clients.set(grant.clientId, {
+        grantedAt: grant.grantedAt,
+        isRevoked: Boolean(grant.revokedAt),
+      });
     }
 
-    // Show older authorizations that predate the persisted grant records.
+    // Show older active authorizations that predate persisted grant records.
     for (const token of legacyTokens) {
       if (
         token.revokedAt ||
@@ -361,6 +366,7 @@ export class OAuthAuthorizationService {
       }
       clients.set(token.clientId, {
         grantedAt: token.createdAt,
+        isRevoked: false,
       });
     }
 
@@ -372,7 +378,10 @@ export class OAuthAuthorizationService {
           clientId,
           name: client?.client_name ?? 'MCP client',
           grantedAt: grant.grantedAt,
-          tools: await this.mcpToolAccessService.listToolAccess(userId, clientId),
+          isRevoked: grant.isRevoked,
+          tools: grant.isRevoked
+            ? []
+            : await this.mcpToolAccessService.listToolAccess(userId, clientId),
         };
       }),
     );
@@ -403,13 +412,13 @@ export class OAuthAuthorizationService {
     const grant = await this.prisma.db.orm.public.McpClientAccess
       .where({ userId, clientId })
       .first();
-    const activeTokens = await this.prisma.db.orm.public.McpRefreshToken
+    const tokens = await this.prisma.db.orm.public.McpRefreshToken
       .where({ userId, clientId })
       .all();
 
     if (
       (!grant || grant.revokedAt) &&
-      !activeTokens.some((token) => !token.revokedAt)
+      !tokens.some((token) => !token.revokedAt)
     ) {
       throw new NotFoundException('MCP client access was not found.');
     }
@@ -422,13 +431,55 @@ export class OAuthAuthorizationService {
     await this.prisma.db.orm.public.McpRefreshToken.where({ userId, clientId })
       .update({ revokedAt });
 
-    // Clear cached client and per-tool authorization immediately.
+    await this.invalidateClientAuthorizationCaches(userId, clientId, grant?.id);
+  }
+
+  /**
+   * Permanently removes this user's authorization grant and its tool permissions.
+   * Refresh-token records are retained as revoked for audit/history purposes.
+   */
+  async deleteClientAccess(userId: string, clientId: string): Promise<void> {
+    const grant = await this.prisma.db.orm.public.McpClientAccess
+      .where({ userId, clientId })
+      .first();
+    const tokens = await this.prisma.db.orm.public.McpRefreshToken
+      .where({ userId, clientId })
+      .all();
+
+    if (!grant && tokens.length === 0) {
+      throw new NotFoundException('MCP client access was not found.');
+    }
+
+    await this.invalidateClientAuthorizationCaches(userId, clientId, grant?.id);
+
+    // Keep token history, but make every token unusable.
+    await this.prisma.db.orm.public.McpRefreshToken.where({ userId, clientId })
+      .update({ revokedAt: new Date() });
+
+    // McpToolAccess rows are deleted automatically through the relation's
+    // onDelete: Cascade constraint.
+    if (grant) {
+      await this.prisma.db.orm.public.McpClientAccess.where({ id: grant.id })
+        .delete();
+    }
+
+    // Clear once more after the database change to avoid stale authorization.
+    await this.invalidateClientAuthorizationCaches(userId, clientId);
+  }
+
+  private async invalidateClientAuthorizationCaches(
+    userId: string,
+    clientId: string,
+    grantId?: string,
+  ): Promise<void> {
     await this.mcpToolAccessService.invalidateClientAccess(userId, clientId);
-    const toolAccesses = grant
+
+    const toolAccesses = grantId
       ? await this.prisma.db.orm.public.McpToolAccess
-        .where({ clientAccessId: grant.id })
+        .where({ clientAccessId: grantId })
         .all()
       : [];
+
     await Promise.all(
       toolAccesses.map((item) =>
         this.mcpToolAccessService.invalidateToolAccess(

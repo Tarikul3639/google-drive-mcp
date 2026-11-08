@@ -64,6 +64,10 @@ export const mcpAccessApi = {
         apiClient.delete<void>(
             `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}`,
         ),
+    deleteAccess: (clientId: string) =>
+        apiClient.delete<void>(
+            `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}/access`,
+        ),
     refreshTools: (clientId: string) =>
         apiClient.post<unknown>(
             `/api/mcp/oauth/authorized-clients/${encodeURIComponent(clientId)}/tools/refresh`,

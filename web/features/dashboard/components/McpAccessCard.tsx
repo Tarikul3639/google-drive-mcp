@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "motion/react"
-import { Ban, Check, ChevronDown, LoaderCircle, RefreshCw, ShieldCheck } from "lucide-react"
+import { Ban, Check, ChevronDown, LoaderCircle, RefreshCw, ShieldCheck, Trash2 } from "lucide-react"
 
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -49,6 +49,7 @@ function readClients(value: unknown): AuthorizedMcpClient[] {
     typeof (item as AuthorizedMcpClient).clientId === "string" &&
     typeof (item as AuthorizedMcpClient).name === "string" &&
     typeof (item as AuthorizedMcpClient).grantedAt === "string" &&
+    typeof (item as AuthorizedMcpClient).isRevoked === "boolean" &&
     Array.isArray((item as AuthorizedMcpClient).tools)
   )
 }
@@ -60,6 +61,7 @@ export function McpAccessCard() {
   const [busyTool, setBusyTool] = useState<string | null>(null)
   const [refreshingClient, setRefreshingClient] = useState<string | null>(null)
   const [revoking, setRevoking] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const [message, setMessage] = useState("")
 
   useEffect(() => {
@@ -117,19 +119,42 @@ export function McpAccessCard() {
     }
   }
 
-  // Revoke the selected client's authorization and remove it from this list.
+  // Revoke the selected client's authorization but keep its record available for deletion.
   async function revoke(client: AuthorizedMcpClient) {
     setRevoking(client.clientId)
     setMessage("")
 
     try {
       await mcpAccessApi.revoke(client.clientId)
-      setClients(current => current.filter(item => item.clientId !== client.clientId))
-      setMessage(`${client.name} access has been revoked.`)
+      setClients(current => current.map(item => item.clientId === client.clientId
+        ? { ...item, isRevoked: true, tools: [] }
+        : item))
+      setMessage(`${client.name} access has been revoked. You can still permanently delete its access record.`)
     } catch {
       setMessage(`Could not revoke ${client.name}. Please try again.`)
     } finally {
       setRevoking(null)
+    }
+  }
+
+  // Permanently delete the selected authorization and its tool permissions.
+  async function deleteAccess(client: AuthorizedMcpClient) {
+    const confirmed = window.confirm(
+      `Permanently delete the access record for "${client.name}"? This also deletes its saved tool permissions. This action cannot be undone.`,
+    )
+    if (!confirmed) return
+
+    setDeleting(client.clientId)
+    setMessage("")
+
+    try {
+      await mcpAccessApi.deleteAccess(client.clientId)
+      setClients(current => current.filter(item => item.clientId !== client.clientId))
+      setMessage(`${client.name} access record has been permanently deleted.`)
+    } catch {
+      setMessage(`Could not delete ${client.name} access. Please try again.`)
+    } finally {
+      setDeleting(null)
     }
   }
 
@@ -148,7 +173,7 @@ export function McpAccessCard() {
               <CardTitle className="mt-2 font-serif text-2xl tracking-tight">MCP client access</CardTitle>
             </motion.div>
             <motion.p {...fadeIn} transition={{ ...smoothReveal, delay: 0.08 }} className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
-              Choose exactly which Drivebridge tools each connected app can use. You can refresh the tool list when new tools are added.
+              Choose which Drivebridge tools each connected app can use. Revoke access temporarily or permanently delete its saved access record.
             </motion.p>
           </div>
         </div>
@@ -182,7 +207,12 @@ export function McpAccessCard() {
                           <ShieldCheck className="size-4" />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold">{client.name}</span>
+                          <span className="flex flex-wrap items-center gap-2">
+                            <span className="block truncate text-sm font-semibold">{client.name}</span>
+                            <Badge variant={client.isRevoked ? "secondary" : "outline"} className="text-[10px]">
+                              {client.isRevoked ? "Revoked" : "Active"}
+                            </Badge>
+                          </span>
                           <span className="mt-1 block text-xs text-muted-foreground">
                             Approved {new Date(client.grantedAt).toLocaleDateString()}
                           </span>
@@ -200,21 +230,34 @@ export function McpAccessCard() {
                           size="sm"
                           className="h-9 rounded-full"
                           onClick={() => void refreshTools(client)}
-                          disabled={refreshingClient !== null || revoking !== null}
+                          disabled={refreshingClient !== null || revoking !== null || deleting !== null || client.isRevoked}
                         >
                           {refreshingClient === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}
                           Refresh tools
                         </Button>
+                        {!client.isRevoked ? (
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="h-9 rounded-full"
+                            onClick={() => void revoke(client)}
+                            disabled={revoking !== null || refreshingClient !== null || deleting !== null}
+                          >
+                            {revoking === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Ban className="size-3.5" />}
+                            Revoke client
+                          </Button>
+                        ) : null}
                         <Button
                           type="button"
-                          variant="destructive"
+                          variant="outline"
                           size="sm"
-                          className="h-9 rounded-full"
-                          onClick={() => void revoke(client)}
-                          disabled={revoking !== null || refreshingClient !== null}
+                          className="h-9 rounded-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => void deleteAccess(client)}
+                          disabled={deleting !== null || revoking !== null || refreshingClient !== null || busyTool !== null}
                         >
-                          {revoking === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Ban className="size-3.5" />}
-                          Revoke client
+                          {deleting === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                          Delete access
                         </Button>
                       </div>
                     </div>
@@ -244,7 +287,7 @@ export function McpAccessCard() {
                                       <Switch
                                         checked={tool.isEnabled}
                                         onCheckedChange={checked => void updateTool(client, tool, checked)}
-                                        disabled={busyTool !== null || refreshingClient !== null || revoking !== null}
+                                        disabled={busyTool !== null || refreshingClient !== null || revoking !== null || deleting !== null || client.isRevoked}
                                         aria-label={`${tool.isEnabled ? "Block" : "Allow"} ${tool.toolName}`}
                                       />
                                     )}

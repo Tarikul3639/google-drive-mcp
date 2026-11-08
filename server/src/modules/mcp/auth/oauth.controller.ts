@@ -213,6 +213,24 @@ export class OAuthController {
     }
 
     /**
+     * Permanently deletes the authenticated user's authorization grant.
+     * Related per-tool permissions are removed through the database cascade.
+     */
+    @Delete('authorized-clients/:clientId/access')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.OK)
+    async deleteClientAccess(
+        @CurrentUser() user: UserResponseDto,
+        @Param('clientId') clientId: string,
+    ) {
+        await this.oauthAuthorizationService.deleteClientAccess(
+            user.id,
+            clientId,
+        );
+        return { message: 'MCP client access deleted.' };
+    }
+
+    /**
      * Revokes the authenticated user's authorization grant for an MCP client.
      */
     @Delete('authorized-clients/:clientId')
