@@ -137,6 +137,26 @@ export function McpAccessCard() {
     }
   }
 
+  // Restore a revoked grant when the user turns its access switch back on.
+  async function restore(client: AuthorizedMcpClient) {
+    setRevoking(client.clientId)
+    setMessage("")
+
+    try {
+      await mcpAccessApi.restore(client.clientId)
+      const { data } = await mcpAccessApi.refreshTools(client.clientId)
+      const tools = Array.isArray(data) ? data as McpToolPermission[] : []
+      setClients(current => current.map(item => item.clientId === client.clientId
+        ? { ...item, isRevoked: false, tools }
+        : item))
+      setMessage(`${client.name} access restored. Reconnect or reauthorize the app to obtain fresh tokens.`)
+    } catch {
+      setMessage(`Could not restore ${client.name}. Please try again.`)
+    } finally {
+      setRevoking(null)
+    }
+  }
+
   // Permanently delete the selected authorization and its tool permissions.
   async function deleteAccess(client: AuthorizedMcpClient) {
     const confirmed = window.confirm(
@@ -173,7 +193,7 @@ export function McpAccessCard() {
               <CardTitle className="mt-2 font-serif text-2xl tracking-tight">MCP client access</CardTitle>
             </motion.div>
             <motion.p {...fadeIn} transition={{ ...smoothReveal, delay: 0.08 }} className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
-              Choose which Drivebridge tools each connected app can use. Revoke access temporarily or permanently delete its saved access record.
+              Choose which Drivebridge tools each app can use. Toggle access off to revoke it, turn it back on to restore it, or delete a revoked access record permanently.
             </motion.p>
           </div>
         </div>
@@ -235,30 +255,35 @@ export function McpAccessCard() {
                           {refreshingClient === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <RefreshCw className="size-3.5" />}
                           Refresh tools
                         </Button>
-                        {!client.isRevoked ? (
+                        <div className="flex items-center gap-2 rounded-full border px-3">
+                          <span className="text-xs text-muted-foreground">{client.isRevoked ? "Revoked" : "Active"}</span>
+                          {revoking === client.clientId ? (
+                            <LoaderCircle className="size-4 animate-spin" />
+                          ) : (
+                            <Switch
+                              checked={!client.isRevoked}
+                              onCheckedChange={checked => {
+                                if (checked) void restore(client)
+                                else void revoke(client)
+                              }}
+                              disabled={revoking !== null || refreshingClient !== null || deleting !== null || busyTool !== null}
+                              aria-label={client.isRevoked ? `Restore ${client.name} access` : `Revoke ${client.name} access`}
+                            />
+                          )}
+                        </div>
+                        {client.isRevoked ? (
                           <Button
                             type="button"
-                            variant="destructive"
+                            variant="outline"
                             size="sm"
-                            className="h-9 rounded-full"
-                            onClick={() => void revoke(client)}
-                            disabled={revoking !== null || refreshingClient !== null || deleting !== null}
+                            className="h-9 rounded-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                            onClick={() => void deleteAccess(client)}
+                            disabled={deleting !== null || revoking !== null || refreshingClient !== null || busyTool !== null}
                           >
-                            {revoking === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Ban className="size-3.5" />}
-                            Revoke client
+                            {deleting === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
+                            Delete access
                           </Button>
                         ) : null}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="h-9 rounded-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => void deleteAccess(client)}
-                          disabled={deleting !== null || revoking !== null || refreshingClient !== null || busyTool !== null}
-                        >
-                          {deleting === client.clientId ? <LoaderCircle className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />}
-                          Delete access
-                        </Button>
                       </div>
                     </div>
 

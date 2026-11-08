@@ -293,6 +293,9 @@ export class OAuthAuthorizationService {
       });
     }
 
+    // Clear a previous revoked/denied cache entry before the grant is used again.
+    await this.mcpToolAccessService.invalidateClientAccess(userId, consentData.clientId);
+
     // New tool permissions are registered for this grant, preserving user choices.
     await this.mcpToolRegistryService.execute(userId, consentData.clientId);
 
@@ -406,6 +409,26 @@ export class OAuthAuthorizationService {
       toolName,
       isEnabled,
     );
+  }
+
+  // Restore a previously revoked grant at the user's explicit request.
+  async restoreClientAccess(userId: string, clientId: string): Promise<void> {
+    const grant = await this.prisma.db.orm.public.McpClientAccess
+      .where({ userId, clientId })
+      .first();
+
+    if (!grant) {
+      throw new NotFoundException('MCP client access was not found.');
+    }
+
+    if (grant.revokedAt) {
+      await this.prisma.db.orm.public.McpClientAccess.where({ id: grant.id })
+        .update({ revokedAt: null, grantedAt: new Date() });
+    }
+
+    // The old refresh tokens remain revoked; the client must reauthorize to obtain new tokens.
+    await this.mcpToolAccessService.invalidateClientAccess(userId, clientId);
+    await this.mcpToolRegistryService.execute(userId, clientId);
   }
 
   async revokeClientAccess(userId: string, clientId: string): Promise<void> {

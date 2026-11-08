@@ -231,6 +231,23 @@ export class OAuthController {
     }
 
     /**
+     * Restores a previously revoked authorization grant for the authenticated user.
+     */
+    @Patch('authorized-clients/:clientId/restore')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.OK)
+    async restoreClientAccess(
+        @CurrentUser() user: UserResponseDto,
+        @Param('clientId') clientId: string,
+    ) {
+        await this.oauthAuthorizationService.restoreClientAccess(
+            user.id,
+            clientId,
+        );
+        return { message: 'MCP client access restored. Reauthorize the client to issue fresh tokens.' };
+    }
+
+    /**
      * Revokes the authenticated user's authorization grant for an MCP client.
      */
     @Delete('authorized-clients/:clientId')

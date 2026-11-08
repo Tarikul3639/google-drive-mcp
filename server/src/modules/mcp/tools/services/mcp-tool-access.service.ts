@@ -42,6 +42,17 @@ export class McpToolAccessService {
         }
     }
 
+    // Check whether the user has an active grant, using the shared Redis cache.
+    async hasActiveClientAccess(userId: string, clientId: string): Promise<boolean> {
+        try {
+            await this.getClientAccessId(userId, clientId);
+            return true;
+        } catch (error) {
+            if (error instanceof ForbiddenException) return false;
+            throw error;
+        }
+    }
+
     // Return the permissions currently assigned to a user's MCP client.
     async listToolAccess(userId: string, clientId: string) {
         const clientAccess =

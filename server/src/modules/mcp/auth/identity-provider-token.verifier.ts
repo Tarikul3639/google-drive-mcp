@@ -5,6 +5,7 @@ import type { McpTokenVerifier } from '@nestjs/mcp';
 import type { AuthInfo } from '@modelcontextprotocol/server';
 
 import { ConfigService } from '../../../config/config.service.js';
+import { McpToolAccessService } from '../tools/services/mcp-tool-access.service.js';
 import type { McpAccessTokenPayload } from './interfaces/mcp-access-token-payload.interface.js';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class IdentityProviderTokenVerifier implements McpTokenVerifier {
     constructor(
         private readonly jwtService: JwtService,
         private readonly configService: ConfigService,
+        private readonly mcpToolAccessService: McpToolAccessService,
     ) { }
 
     async verifyAccessToken(token: string): Promise<AuthInfo | null> {
@@ -28,6 +30,14 @@ export class IdentityProviderTokenVerifier implements McpTokenVerifier {
                 : [payload.aud];
 
             if (!audiences.includes(this.configService.mcpResource)) {
+                return null;
+            }
+
+            // Reuse the Redis-backed grant cache; the database is queried only on cache misses.
+            if (!(await this.mcpToolAccessService.hasActiveClientAccess(
+                payload.sub,
+                payload.client_id,
+            ))) {
                 return null;
             }
 
