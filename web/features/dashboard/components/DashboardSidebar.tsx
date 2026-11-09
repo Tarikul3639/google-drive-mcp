@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { motion } from "motion/react"
 import {
+  ArrowUpRight,
   Cable,
   ChevronDown,
   CircleUserRound,
@@ -10,62 +11,58 @@ import {
   LogOut,
 } from "lucide-react"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { ThemeSelector } from "@/features/home/components/ThemeSelector"
+import type { UserProfile } from "@/features/shared/types/api"
 
 const items = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Account", href: "/account", icon: CircleUserRound },
 ]
 
-// Render the desktop workspace sidebar and its navigation.
+// Render the desktop workspace sidebar in the shared application style.
 export function DashboardSidebar({
   pathname,
+  user,
   signingOut,
   onSignOut,
 }: {
   pathname: string
+  user: UserProfile
   signingOut: boolean
   onSignOut: () => void
 }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-hidden bg-primary px-5 py-6 text-primary-foreground lg:flex">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-primary-foreground/15 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -left-24 size-72 rounded-full bg-blue-400/20 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-28 bottom-1/3 size-56 rounded-full bg-violet-400/15 blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/3 -left-20 size-48 rounded-full bg-cyan-300/10 blur-3xl"
-      />
-
-      <div className="relative z-10 flex h-full flex-col">
-        <Link
-          aria-label="Drivebridge home"
-          className="flex items-center gap-3 px-2"
-          href="/"
-        >
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border/70 bg-background text-foreground lg:flex">
+      <div className="flex items-center gap-3 border-b border-border/70 px-5 py-5">
+        <Link href="/" className="group flex items-center gap-3">
           <motion.span
             initial={{ opacity: 0, y: 8 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-foreground/15"
+            animate={{ opacity: 1, y: 0 }}
+            className="grid size-10 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105"
           >
-            <Cable className="size-5" />
+            <Cable className="size-5" strokeWidth={1.8} />
           </motion.span>
-          <span className="font-serif text-2xl tracking-tight">
-            drivebridge
+          <span className="font-serif text-[22px] font-black tracking-tight">
+            Drivebridge
           </span>
         </Link>
+      </div>
 
-        <p className="mt-12 mb-3 px-3 font-mono text-xs tracking-widest opacity-60">
-          WORKSPACE
+      <div className="mx-4 mt-5 rounded-xl border border-border/70 bg-muted/40 p-3">
+        <div className="flex items-center gap-2 text-xs font-medium text-foreground">
+          <span className="size-2 rounded-full bg-emerald-500" />
+          Your AI workspace
+        </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+          Manage your Google Drive connection and MCP access.
+        </p>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col px-3 py-5">
+        <p className="mb-2 px-3 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+          Workspace
         </p>
         <nav aria-label="Workspace navigation" className="space-y-1">
           {items.map((item) => {
@@ -75,33 +72,63 @@ export function DashboardSidebar({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm transition-colors duration-200 ${active ? "bg-primary-foreground/15 text-primary-foreground" : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"}`}
+                aria-current={active ? "page" : undefined}
+                className={`flex h-10 items-center gap-3 rounded-lg px-3 text-[13px] transition-colors duration-200 ${active
+                    ? "bg-primary/10 font-semibold text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
               >
-                <Icon className="size-4" strokeWidth={1.7} />
-                {item.label}
+                <Icon className="size-4" strokeWidth={1.8} />
+                <span>{item.label}</span>
+                {active ? (
+                  <span className="ml-auto size-1.5 rounded-full bg-primary" />
+                ) : null}
               </Link>
             )
           })}
         </nav>
 
-        <div className="mt-auto rounded-xl border border-primary-foreground/15 bg-primary-foreground/5 p-4 backdrop-blur-sm">
-          <span className="block font-mono text-xs tracking-widest opacity-80">
-            YOUR ACCESS
+        <div className="mt-auto rounded-xl border border-border/70 bg-muted/40 p-4">
+          <span className="block text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+            Your access
           </span>
-          <p className="mt-2 text-xs leading-5 text-primary-foreground/70">
-            You can revoke your Drive connection whenever you need to.
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            You can review or revoke your Drive connection whenever you need to.
           </p>
           <Link
-            className="mt-3 inline-flex items-center gap-1 text-xs text-primary-foreground/90 transition-opacity hover:opacity-100"
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition-opacity hover:opacity-75"
             href="/account"
           >
             Manage account <ChevronDown className="size-3 -rotate-90" />
           </Link>
         </div>
+      </div>
 
+      <div className="border-t border-border/70 p-3">
+        <ThemeSelector />
+        <Link
+          href="/account"
+          className="flex min-w-0 items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted"
+        >
+          <Avatar className="size-9 shrink-0 border border-border">
+            <AvatarImage src={user.picture ?? undefined} alt="" />
+            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+              {user.name?.slice(0, 1) ?? user.email.slice(0, 1).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-xs font-semibold">
+              {user.name ?? "Your account"}
+            </span>
+            <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
+              {user.email}
+            </span>
+          </span>
+          <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" />
+        </Link>
         <Button
           variant="ghost"
-          className="mt-5 w-full justify-start gap-3 rounded-xl px-3 py-3 text-left text-sm text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          className="mt-1 h-10 w-full justify-start gap-3 rounded-lg px-3 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground"
           disabled={signingOut}
           onClick={onSignOut}
           type="button"

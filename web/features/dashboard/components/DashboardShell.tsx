@@ -41,6 +41,7 @@ export function DashboardShell({
     <div className="min-h-svh overflow-x-clip bg-muted/30 text-foreground">
       <DashboardSidebar
         pathname={pathname}
+        user={user}
         signingOut={signingOut}
         onSignOut={signOut}
       />
