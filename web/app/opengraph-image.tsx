@@ -76,7 +76,7 @@ export default function OpenGraphImage() {
           >
             ↗
           </div>
-          drivebridge
+          Drivebridge
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div

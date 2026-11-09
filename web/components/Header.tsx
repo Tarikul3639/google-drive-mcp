@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -8,20 +7,23 @@ import { ArrowUpRight, Cable } from "lucide-react"
 
 import { navItems } from "../features/home/components/constants"
 import { ThemeToggle } from "../features/home/components/ThemeToggle"
-import { authApi } from "@/features/shared/api/client"
+import { useLazyGetProfileQuery } from "@/features/auth/api/auth-api"
 import { readUserProfile } from "@/features/shared/api/normalize"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
+// Render the public header and switch to a slide-in sidebar on phones.
 export function Header() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null)
+  const [getProfile] = useLazyGetProfileQuery()
 
   useEffect(() => {
     let active = true
 
-    authApi
-      .getProfile()
-      .then(({ data }) => {
+    getProfile()
+      .unwrap()
+      .then((data) => {
         if (active) setSignedIn(Boolean(readUserProfile(data)))
       })
       .catch(() => {
@@ -31,7 +33,7 @@ export function Header() {
     return () => {
       active = false
     }
-  }, [])
+  }, [getProfile])
 
   return (
     <header className="relative z-20 mx-auto flex w-full max-w-360 items-center justify-between px-5 py-5 sm:px-8 lg:px-14 lg:py-7">
@@ -76,11 +78,7 @@ export function Header() {
           >
             <Link
               className="text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
-              href={
-                item.href.startsWith("#")
-                  ? `/${item.href}`
-                  : item.href
-              }
+              href={item.href.startsWith("#") ? `/${item.href}` : item.href}
             >
               {item.label}
             </Link>
@@ -102,26 +100,31 @@ export function Header() {
       </nav>
 
       <div className="flex items-center gap-2 sm:gap-3">
-        <ThemeToggle />
-
-        {signedIn === null ? (
-          <Skeleton
-            aria-label="Checking sign-in status"
-            className="h-10 w-33 rounded-full"
+        <div className="hidden md:block">
+          <ThemeToggle />
+        </div>
+        <div className="md:hidden">
+          <SidebarTrigger
+            aria-label="Open navigation"
+            className="size-9 rounded-full border border-border md:hidden"
           />
-        ) : (
-          <Button
-            asChild
-            className="group h-10 rounded-full px-4 sm:px-5"
-          >
-            <Link href={signedIn ? "/dashboard" : "/login"}>
-              <span>
-                {signedIn ? "Open workspace" : "Connect Drive"}
-              </span>
-              <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </Link>
-          </Button>
-        )}
+        </div>
+
+        <div className="hidden items-center gap-2 md:flex">
+          {signedIn === null ? (
+            <Skeleton
+              aria-label="Checking sign-in status"
+              className="h-10 w-33 rounded-full"
+            />
+          ) : (
+            <Button asChild className="group h-10 rounded-full px-4 sm:px-5">
+              <Link href={signedIn ? "/dashboard" : "/login"}>
+                <span>{signedIn ? "Open workspace" : "Connect Drive"}</span>
+                <ArrowUpRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   )

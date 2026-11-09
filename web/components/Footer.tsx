@@ -18,7 +18,9 @@ export function Footer() {
             <Cable className="size-4" />
           </span>
 
-          <span className="font-serif text-lg font-semibold capitalize">drivebridge</span>
+          <span className="font-serif text-lg font-semibold capitalize">
+            Drivebridge
+          </span>
         </Link>
 
         {/* Author */}

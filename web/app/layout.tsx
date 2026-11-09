@@ -3,8 +3,12 @@ import { Geist_Mono, Inter } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/AppSidebar"
 import { cn } from "@/lib/utils"
 import { siteUrl, siteConfig } from "@/config/site"
+import { StoreProvider } from "@/features/shared/store/provider"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -71,7 +75,18 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <StoreProvider>
+          <SidebarProvider>
+            <ThemeProvider>
+              <TooltipProvider>
+                <div className="flex min-h-svh w-full min-w-0 flex-col">
+                  <AppSidebar />
+                  {children}
+                </div>
+              </TooltipProvider>
+            </ThemeProvider>
+          </SidebarProvider>
+        </StoreProvider>
       </body>
     </html>
   )

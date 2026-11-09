@@ -1,14 +1,17 @@
 "use client"
 
+import { useSyncExternalStore } from "react"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
 import { Moon, Sun } from "lucide-react"
 
+// Toggle the active color scheme after the client has mounted.
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   const isDark = mounted && resolvedTheme === "dark"
 
