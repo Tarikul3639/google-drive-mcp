@@ -1,124 +1,69 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend API and MCP guide
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This guide supplements the root [README](../README.md) with backend implementation details.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Service boundaries
 
-## Description
+- **Auth module:** Google sign-in, application sessions, refresh, logout, and current-user lookup.
+- **Google integration module:** Connects a user's Google Drive identity and manages encrypted Google token material.
+- **Google Drive module:** Contains the Drive API client and operations used by MCP tools.
+- **MCP auth module:** Dynamic Client Registration, authorization, consent, token endpoints, OAuth metadata, and client access management.
+- **MCP tools module:** Registers tool providers and checks per-client tool permissions.
+- **Health module:** Liveness, database, Redis, and memory health indicators.
+- **Users module:** User profile endpoints and response DTOs.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## OAuth metadata
 
-## Project setup
+The OAuth metadata controller exposes authorization-server metadata at the well-known paths implemented in `OAuthMetadataController`. The issuer and MCP resource are supplied by backend configuration.
 
-```bash
-$ pnpm install
-```
+The supported authorization-code security features visible in the metadata include:
+- Authorization Code grant.
+- Refresh Token grant.
+- Public token endpoint authentication method (`none`).
+- PKCE challenge method `S256`.
 
-## Compile and run the project
+Always inspect the live metadata document for the exact deployed URLs and supported fields.
 
-```bash
-# development
-$ pnpm run start
+## Authorization sequence
 
-# watch mode
-$ pnpm run start:dev
+1. Client sends a Dynamic Client Registration request.
+2. Client starts authorization with its redirect URI, state, and PKCE challenge.
+3. Drivebridge validates the request and redirects the user to Google.
+4. Google callback creates a pending consent transaction.
+5. The user approves or denies the request.
+6. The client exchanges the returned code at the token endpoint.
+7. The MCP resource verifies the bearer token.
+8. Tool execution checks the active grant and the requested tool's enabled flag.
 
-# production mode
-$ pnpm run start:prod
-```
+## Tool permission behavior
 
-## Run tests
+The registry constant at `src/modules/mcp/tools/constants/mcp-tools.constant.ts` is the source of truth for supported tool names. The access service:
+- Requires an active user/client grant.
+- Checks one permission per tool name.
+- Caches grant and tool permission lookups in Redis for 30 seconds.
+- Invalidates relevant cache entries when access settings change.
 
-```bash
-# unit tests
-$ pnpm run test
+A missing permission record is treated as disabled until the registry sync creates the record.
 
-# e2e tests
-$ pnpm run test:e2e
+## Tool inventory
 
-# test coverage
-$ pnpm run test:cov
-```
+There are 36 tool names in the checked-in registry:
 
-## Deployment
+- Files: `list_files`, `search_files`, `get_file`, `create_file`, `update_file`, `move_file`, `rename_file`, `trash_file`, `untrash_file`, `copy_file`, `delete_file`, `download_file`, `export_file`.
+- Folders: `list_folders`, `create_folder`, `rename_folder`, `move_folder`, `trash_folder`, `untrash_folder`.
+- Permissions: `create_permission`, `get_permission`, `list_permissions`, `update_permission`, `delete_permission`.
+- Comments: `create_comment`, `get_comment`, `list_comments`, `update_comment`, `delete_comment`.
+- Revisions: `list_revisions`, `get_revision`.
+- Shared drives: `create_shared_drive`, `list_shared_drives`, `get_shared_drive`, `update_shared_drive`, `delete_shared_drive`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## HTTP endpoints
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+The backend global prefix is `/api`. The root README documents commonly used routes. Use Swagger at `/api/docs` for the authoritative request/response schema of each REST endpoint.
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+## Database operations
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Prisma 8 is configured in this repository. Read:
+- [Prisma notes](../server/prisma-8.md)
+- [Database workflow](../server/PRISMA_DATABASE_WORKFLOW.md)
 
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project:
-
-```bash
-$ pnpm install @nestjs/observe
-```
-
-Then follow the [setup guide](https://docs.nestjs.com/observability/overview) - it takes a single import and an app key.
-
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Do not run destructive or production database commands without reviewing the migration plan and confirming the target environment.

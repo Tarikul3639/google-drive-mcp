@@ -1,21 +1,46 @@
-# Next.js template
+# Drivebridge Web Application
 
-This is a Next.js template with shadcn/ui.
+The Drivebridge web application is built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, and Redux Toolkit.
 
-## Adding components
+## Responsibilities
 
-To add components to your app, run the following command:
+- Public landing page and product information.
+- Google sign-in entry point and post-login welcome flow.
+- Authenticated Drive/MCP dashboard and account settings.
+- MCP connection guidance and authorization consent UI.
+- API requests proxied through Next.js rewrites to the backend.
+
+## Local development
+
+Configure `web/.env.local` using the root [README](../README.md#environment-configuration), then run:
 
 ```bash
-npx shadcn@latest add button
+pnpm install
+pnpm run dev
 ```
 
-This will place the ui components in the `components` directory.
+Open `http://localhost:3000`.
 
-## Using components
+## Scripts
 
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
+```bash
+pnpm run dev       # Development server
+pnpm run build     # Production build
+pnpm run start     # Serve production build
+pnpm run lint      # ESLint
+pnpm run typecheck # TypeScript checks
 ```
+
+## Main routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Landing page |
+| `/login` | Google sign-in |
+| `/auth/welcome` | Post-login welcome |
+| `/dashboard` | Main account dashboard |
+| `/account` | Account settings |
+| `/mcp/connect` | MCP setup instructions |
+| `/mcp/consent` | OAuth consent flow |
+
+See the repository root documentation for backend configuration, OAuth setup, architecture, and MCP tool details.
