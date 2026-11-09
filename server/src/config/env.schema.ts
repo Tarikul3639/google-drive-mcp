@@ -12,12 +12,14 @@ export const validationSchema = z.object({
     .string({
       error: 'GOOGLE_CLIENT_ID is required',
     })
+    .trim()
     .min(1, 'GOOGLE_CLIENT_ID cannot be empty'),
 
   GOOGLE_CLIENT_SECRET: z
     .string({
       error: 'GOOGLE_CLIENT_SECRET is required',
     })
+    .trim()
     .min(1, 'GOOGLE_CLIENT_SECRET cannot be empty'),
 
   GOOGLE_CALLBACK_URL: z

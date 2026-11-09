@@ -92,11 +92,13 @@ describe('ConfigService', () => {
 
   // Google OAuth Configuration
 
-  it('should return Google Client ID', () => {
+  it('should return a trimmed Google Client ID', () => {
+    config.GOOGLE_CLIENT_ID = ' test-client-id ';
     expect(service.googleClientId).toBe('test-client-id');
   });
 
-  it('should return Google Client Secret', () => {
+  it('should return a trimmed Google Client Secret', () => {
+    config.GOOGLE_CLIENT_SECRET = ' test-client-secret ';
     expect(service.googleClientSecret).toBe('test-client-secret');
   });
 

@@ -21,7 +21,7 @@ const items = [
   { label: "Account", href: "/account", icon: CircleUserRound },
 ]
 
-// Render the desktop workspace sidebar in the shared application style.
+// Keep a compact icon rail on mobile and the full sidebar on desktop.
 export function DashboardSidebar({
   pathname,
   user,
@@ -34,8 +34,8 @@ export function DashboardSidebar({
   onSignOut: () => void
 }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-border/70 bg-background text-foreground lg:flex">
-      <div className="flex items-center gap-3 border-b border-border/70 px-5 py-5">
+    <aside className="fixed inset-y-0 left-0 z-30 flex w-16 flex-col border-r border-border/70 bg-background text-foreground lg:w-64">
+      <div className="flex items-center justify-center gap-3 border-b border-border/70 px-2 py-5 lg:justify-start lg:px-5">
         <Link href="/" className="group flex items-center gap-3">
           <motion.span
             initial={{ opacity: 0, y: 8 }}
@@ -44,13 +44,13 @@ export function DashboardSidebar({
           >
             <Cable className="size-5" strokeWidth={1.8} />
           </motion.span>
-          <span className="font-serif text-[22px] font-black tracking-tight">
+          <span className="hidden font-serif text-[22px] font-black tracking-tight lg:inline">
             Drivebridge
           </span>
         </Link>
       </div>
 
-      <div className="mx-4 mt-5 rounded-xl border border-border/70 bg-muted/40 p-3">
+      <div className="mx-4 mt-5 hidden rounded-xl border border-border/70 bg-muted/40 p-3 lg:block">
         <div className="flex items-center gap-2 text-xs font-medium text-foreground">
           <span className="size-2 rounded-full bg-emerald-500" />
           Your AI workspace
@@ -60,8 +60,8 @@ export function DashboardSidebar({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-3 py-5">
-        <p className="mb-2 px-3 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+      <div className="flex min-h-0 flex-1 flex-col px-1 py-5 lg:px-3">
+        <p className="mb-2 hidden px-3 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase lg:block">
           Workspace
         </p>
         <nav aria-label="Workspace navigation" className="space-y-1">
@@ -72,23 +72,25 @@ export function DashboardSidebar({
               <Link
                 key={item.href}
                 href={item.href}
+                aria-label={item.label}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-10 items-center gap-3 rounded-lg px-3 text-[13px] transition-colors duration-200 ${active
+                className={`flex h-10 items-center justify-center gap-3 rounded-lg px-1 text-[13px] transition-colors duration-200 lg:justify-start lg:px-3 ${
+                  active
                     ? "bg-primary/10 font-semibold text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                }`}
               >
                 <Icon className="size-4" strokeWidth={1.8} />
-                <span>{item.label}</span>
+                <span className="hidden lg:inline">{item.label}</span>
                 {active ? (
-                  <span className="ml-auto size-1.5 rounded-full bg-primary" />
+                  <span className="ml-auto hidden size-1.5 rounded-full bg-primary lg:block" />
                 ) : null}
               </Link>
             )
           })}
         </nav>
 
-        <div className="mt-auto rounded-xl border border-border/70 bg-muted/40 p-4">
+        <div className="mt-auto hidden rounded-xl border border-border/70 bg-muted/40 p-4 lg:block">
           <span className="block text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
             Your access
           </span>
@@ -104,11 +106,14 @@ export function DashboardSidebar({
         </div>
       </div>
 
-      <div className="border-t border-border/70 p-3">
-        <ThemeSelector />
+      <div className="border-t border-border/70 p-2 lg:p-3">
+        <div className="hidden lg:block">
+          <ThemeSelector />
+        </div>
         <Link
           href="/account"
-          className="flex min-w-0 items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted"
+          aria-label="Account profile"
+          className="flex min-w-0 items-center justify-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted lg:justify-start"
         >
           <Avatar className="size-9 shrink-0 border border-border">
             <AvatarImage src={user.picture ?? undefined} alt="" />
@@ -116,7 +121,7 @@ export function DashboardSidebar({
               {user.name?.slice(0, 1) ?? user.email.slice(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="min-w-0 flex-1">
+          <span className="hidden min-w-0 flex-1 lg:block">
             <span className="block truncate text-xs font-semibold">
               {user.name ?? "Your account"}
             </span>
@@ -124,17 +129,21 @@ export function DashboardSidebar({
               {user.email}
             </span>
           </span>
-          <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" />
+          <ArrowUpRight className="hidden size-4 shrink-0 text-muted-foreground lg:block" />
         </Link>
         <Button
+          type="button"
           variant="ghost"
-          className="mt-1 h-10 w-full justify-start gap-3 rounded-lg px-3 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground"
+          size="sm"
+          aria-label="Sign out"
+          className="mt-1 w-full justify-center px-2 text-muted-foreground lg:justify-start lg:px-3"
           disabled={signingOut}
           onClick={onSignOut}
-          type="button"
         >
-          <LogOut className="size-4" />
-          {signingOut ? "Signing out…" : "Sign out"}
+          <LogOut className="size-4 shrink-0" />
+          <span className="hidden lg:inline">
+            {signingOut ? "Signing out…" : "Sign out"}
+          </span>
         </Button>
       </div>
     </aside>

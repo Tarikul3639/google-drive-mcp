@@ -36,13 +36,13 @@ export class ConfigService {
   get googleClientId(): string {
     return this.config.get('GOOGLE_CLIENT_ID', {
       infer: true,
-    });
+    }).trim();
   }
 
   get googleClientSecret(): string {
     return this.config.get('GOOGLE_CLIENT_SECRET', {
       infer: true,
-    });
+    }).trim();
   }
 
   get googleCallbackUrl(): string {
