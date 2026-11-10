@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GoogleDriveClientService } from './services/drive/google-drive-client.service.js';
+import { GoogleDriveClientService } from './services/google-drive-client.service.js';
 import { FilesService } from './services/files/files.service.js';
 import { FoldersService } from './services/folders/folders.service.js';
 import { PermissionsService } from './services/permissions/permissions.service.js';

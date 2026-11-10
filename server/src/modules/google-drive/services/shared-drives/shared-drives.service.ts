@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import { GoogleDriveClientService } from '../drive/google-drive-client.service.js';
+import { GoogleDriveClientService } from '../google-drive-client.service.js';
 
 // Manages shared-drive creation, discovery, metadata, updates, and deletion.
 @Injectable()

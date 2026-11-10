@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { GoogleDriveClientService } from '../drive/google-drive-client.service.js';
+import { GoogleDriveClientService } from '../google-drive-client.service.js';
 
 // Provides Google Docs, Sheets, and Slides document operations.
 @Injectable()

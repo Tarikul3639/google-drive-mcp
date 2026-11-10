@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 import { FilesService } from './files.service.js';
-import { GoogleDriveClientService } from '../drive/google-drive-client.service.js';
+import { GoogleDriveClientService } from '../google-drive-client.service.js';
 
 // Covers the Google Drive file service behavior and API error handling.
 describe('FilesService', () => {

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GoogleDriveClientService } from '../drive/google-drive-client.service.js';
+import { GoogleDriveClientService } from '../google-drive-client.service.js';
 
 // Creates, retrieves, updates, lists, and deletes comments on Drive files.
 @Injectable()
