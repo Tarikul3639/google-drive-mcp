@@ -27,7 +27,7 @@ export function McpAccessHeader() {
           >
             AUTHORIZED APPS
           </Badge>
-          <CardTitle className="mt-2 break-words font-serif text-xl tracking-tight sm:text-2xl">
+          <CardTitle className="mt-2 wrap-break-word font-serif text-xl tracking-tight sm:text-2xl">
             MCP client access
           </CardTitle>
           <p className="mt-1 max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">

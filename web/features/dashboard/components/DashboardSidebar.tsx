@@ -12,6 +12,13 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { ThemeSelector } from "@/features/home/components/ThemeSelector"
 import type { UserProfile } from "@/features/shared/types/api"
 
@@ -20,21 +27,25 @@ const items = [
   { label: "Account", href: "/account", icon: CircleUserRound },
 ]
 
-// Keep a compact icon rail on mobile and the full sidebar on desktop.
+// Reuse the same full dashboard navigation in the desktop sidebar and mobile drawer.
 export function DashboardSidebar({
   pathname,
   user,
   signingOut,
   onSignOut,
+  mobileOpen,
+  onMobileOpenChange,
 }: {
   pathname: string
   user: UserProfile
   signingOut: boolean
   onSignOut: () => void
+  mobileOpen: boolean
+  onMobileOpenChange: (open: boolean) => void
 }) {
-  return (
-    <aside className="fixed inset-y-0 left-0 z-30 flex w-14 flex-col border-r border-border/70 bg-background text-foreground sm:w-16 lg:w-64">
-      <div className="flex items-center justify-center gap-3 border-b border-border/70 px-2 py-5 lg:justify-start lg:px-5">
+  const renderContent = () => (
+    <>
+      <div className="flex items-center gap-3 border-b border-border/70 px-5 py-5">
         <Link
           aria-label="Google Drive MCP home"
           className="group flex items-center gap-2.5"
@@ -44,7 +55,7 @@ export function DashboardSidebar({
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="relative block size-10 shrink-0 overflow-hidden rounded-sm transition-transform duration-300 group-hover:scale-105 sm:size-10"
+            className="relative block size-10 shrink-0 overflow-hidden rounded-sm transition-transform duration-300 group-hover:scale-105"
           >
             <img
               src="/google-drive-mcp-logo.svg"
@@ -52,25 +63,23 @@ export function DashboardSidebar({
               className="size-full object-cover"
             />
           </motion.span>
-
           <motion.span
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
-            className="flex-col sm:leading-none hidden lg:flex"
+            className="flex flex-col leading-none"
           >
-            <span className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.7px] text-foreground sm:text-base">
+            <span className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.7px] text-foreground">
               Google Drive
             </span>
-
-            <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.24em] text-primary sm:text-xs">
+            <span className="mt-1 whitespace-nowrap text-[11px] font-semibold tracking-[0.24em] text-primary">
               MCP
             </span>
           </motion.span>
         </Link>
       </div>
 
-      <div className="mx-4 mt-5 hidden rounded-xl border border-border/70 bg-muted/40 p-3 lg:block">
+      <div className="mx-4 mt-5 rounded-xl border border-border/70 bg-muted/40 p-3">
         <div className="flex items-center gap-2 text-xs font-medium text-foreground">
           <span className="size-2 rounded-full bg-emerald-500" />
           Your AI workspace
@@ -80,8 +89,8 @@ export function DashboardSidebar({
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-1 py-5 lg:px-3">
-        <p className="mb-2 hidden px-3 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase lg:block">
+      <div className="flex min-h-0 flex-1 flex-col px-3 py-5">
+        <p className="mb-2 px-3 text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
           Workspace
         </p>
         <nav aria-label="Workspace navigation" className="space-y-1">
@@ -92,24 +101,25 @@ export function DashboardSidebar({
               <Link
                 key={item.href}
                 href={item.href}
-                aria-label={item.label}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-10 items-center justify-center gap-3 rounded-lg px-1 text-[13px] transition-colors duration-200 lg:justify-start lg:px-3 ${active
-                  ? "bg-primary/10 font-semibold text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                onClick={() => onMobileOpenChange(false)}
+                className={`flex h-10 items-center gap-3 rounded-lg px-3 text-[13px] transition-colors duration-200 ${
+                  active
+                    ? "bg-primary/10 font-semibold text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
               >
                 <Icon className="size-4" strokeWidth={1.8} />
-                <span className="hidden lg:inline">{item.label}</span>
+                <span>{item.label}</span>
                 {active ? (
-                  <span className="ml-auto hidden size-1.5 rounded-full bg-primary lg:block" />
+                  <span className="ml-auto size-1.5 rounded-full bg-primary" />
                 ) : null}
               </Link>
             )
           })}
         </nav>
 
-        <div className="mt-auto hidden rounded-xl border border-border/70 bg-muted/40 p-4 lg:block">
+        <div className="mt-auto rounded-xl border border-border/70 bg-muted/40 p-4">
           <span className="block text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
             Your access
           </span>
@@ -119,20 +129,20 @@ export function DashboardSidebar({
           <Link
             className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary transition-opacity hover:opacity-75"
             href="/account"
+            onClick={() => onMobileOpenChange(false)}
           >
             Manage account <ChevronDown className="size-3 -rotate-90" />
           </Link>
         </div>
       </div>
 
-      <div className="border-t border-border/70 p-2 lg:p-3">
-        <div className="hidden lg:block">
-          <ThemeSelector />
-        </div>
+      <div className="border-t border-border/70 p-3">
+        <ThemeSelector />
         <Link
           href="/account"
           aria-label="Account profile"
-          className="flex min-w-0 items-center justify-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted lg:justify-start"
+          onClick={() => onMobileOpenChange(false)}
+          className="flex min-w-0 items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted"
         >
           <Avatar className="size-9 shrink-0 border border-border">
             <AvatarImage src={user.picture ?? undefined} alt="" />
@@ -140,7 +150,7 @@ export function DashboardSidebar({
               {user.name?.slice(0, 1) ?? user.email.slice(0, 1).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="hidden min-w-0 flex-1 lg:block">
+          <span className="min-w-0 flex-1">
             <span className="block truncate text-xs font-semibold">
               {user.name ?? "Your account"}
             </span>
@@ -148,23 +158,44 @@ export function DashboardSidebar({
               {user.email}
             </span>
           </span>
-          <ArrowUpRight className="hidden size-4 shrink-0 text-muted-foreground lg:block" />
+          <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" />
         </Link>
         <Button
           type="button"
           variant="ghost"
           size="sm"
           aria-label="Sign out"
-          className="mt-1 w-full justify-center px-2 text-muted-foreground lg:justify-start lg:px-3"
+          className="mt-1 w-full justify-start px-3 text-muted-foreground"
           disabled={signingOut}
           onClick={onSignOut}
         >
           <LogOut className="size-4 shrink-0" />
-          <span className="hidden lg:inline">
-            {signingOut ? "Signing out…" : "Sign out"}
-          </span>
+          {signingOut ? "Signing out…" : "Sign out"}
         </Button>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-16 flex-col border-r border-border/70 bg-background text-foreground sm:flex lg:w-64">
+        {renderContent()}
+      </aside>
+
+      <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
+        <SheetContent
+          side="left"
+          className="w-64 max-w-[85vw] border-r border-border/70 bg-background p-0 text-foreground sm:hidden"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Dashboard navigation</SheetTitle>
+            <SheetDescription>
+              Navigate your Google Drive MCP workspace.
+            </SheetDescription>
+          </SheetHeader>
+          <aside className="flex h-full w-full flex-col">{renderContent()}</aside>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }
