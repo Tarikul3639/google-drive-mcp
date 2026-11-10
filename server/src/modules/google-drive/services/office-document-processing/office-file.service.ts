@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
-import pptxgen from 'pptxgenjs';
 
 // Keep the public result type independent from Mammoth's internal declaration types.
 type DocxReadResult = {
@@ -93,7 +92,9 @@ export class OfficeFileService {
     title: string;
     slides: Array<{ title?: string; body?: string }>;
   }) {
-    const presentation = new pptxgen();
+    // Load PPTXGenJS lazily so serverless CommonJS loaders do not require its ESM entry as CJS.
+    const PptxGenJS = (await import('pptxgenjs')).default;
+    const presentation = new PptxGenJS();
     presentation.subject = input.title;
     presentation.title = input.title;
     presentation.layout = 'LAYOUT_WIDE';
