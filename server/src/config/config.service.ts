@@ -5,9 +5,7 @@ import ms, { type StringValue } from 'ms';
 
 @Injectable()
 export class ConfigService {
-  constructor(
-    private readonly config: config<EnvSchema, true>,
-  ) { }
+  constructor(private readonly config: config<EnvSchema, true>) {}
 
   // Application Configuration
   // NOTE: infer: true is used to ensure that the value is inferred as the correct type from the schema
@@ -34,15 +32,19 @@ export class ConfigService {
   // Google OAuth Configuration
 
   get googleClientId(): string {
-    return this.config.get('GOOGLE_CLIENT_ID', {
-      infer: true,
-    }).trim();
+    return this.config
+      .get('GOOGLE_CLIENT_ID', {
+        infer: true,
+      })
+      .trim();
   }
 
   get googleClientSecret(): string {
-    return this.config.get('GOOGLE_CLIENT_SECRET', {
-      infer: true,
-    }).trim();
+    return this.config
+      .get('GOOGLE_CLIENT_SECRET', {
+        infer: true,
+      })
+      .trim();
   }
 
   get googleCallbackUrl(): string {
@@ -58,9 +60,7 @@ export class ConfigService {
   }
 
   get googleTokenEncryptionKey(): string {
-    return this.config.get<string>(
-      'GOOGLE_TOKEN_ENCRYPTION_KEY',
-    )!;
+    return this.config.get<string>('GOOGLE_TOKEN_ENCRYPTION_KEY')!;
   }
 
   // Database Configuration
@@ -166,7 +166,6 @@ export class ConfigService {
       infer: true,
     });
   }
-
 
   // MCP Configuration
 

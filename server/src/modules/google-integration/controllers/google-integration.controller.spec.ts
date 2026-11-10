@@ -16,7 +16,10 @@ describe('GoogleIntegrationController', () => {
       controllers: [GoogleIntegrationController],
       providers: [
         { provide: GoogleIntegrationService, useValue: {} },
-        { provide: ConfigService, useValue: { frontendUrl: 'http://localhost:3000' } },
+        {
+          provide: ConfigService,
+          useValue: { frontendUrl: 'http://localhost:3000' },
+        },
         { provide: OAuthStateService, useValue: {} },
         { provide: JwtService, useValue: {} },
         { provide: AccessTokenGuard, useValue: {} },
@@ -25,7 +28,9 @@ describe('GoogleIntegrationController', () => {
       ],
     }).compile();
 
-    controller = module.get<GoogleIntegrationController>(GoogleIntegrationController);
+    controller = module.get<GoogleIntegrationController>(
+      GoogleIntegrationController,
+    );
   });
 
   it('should be defined', () => {

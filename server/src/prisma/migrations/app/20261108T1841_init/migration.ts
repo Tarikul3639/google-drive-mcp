@@ -25,18 +25,36 @@ export default class M extends Migration<never, End> {
           col('created_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
           col('expires_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('revoked_at', 'timestamptz(3)', {
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('token_hash', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('user_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('token_hash', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('user_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
         ],
         constraints: [primaryKey(['id'])],
       }),
@@ -44,24 +62,48 @@ export default class M extends Migration<never, End> {
         schema: 'public',
         table: 'google_accounts',
         columns: [
-          col('access_token', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('access_token', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('created_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('email', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('email', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('expires_at', 'timestamptz(3)', {
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('google_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('google_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('refresh_token', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('updated_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('user_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('user_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
         ],
         constraints: [primaryKey(['id'])],
       }),
@@ -69,17 +111,32 @@ export default class M extends Migration<never, End> {
         schema: 'public',
         table: 'mcp_client_accesses',
         columns: [
-          col('client_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('client_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('granted_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('revoked_at', 'timestamptz(3)', {
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('user_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('user_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
         ],
         constraints: [primaryKey(['id'])],
       }),
@@ -87,22 +144,39 @@ export default class M extends Migration<never, End> {
         schema: 'public',
         table: 'mcp_clients',
         columns: [
-          col('client_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('client_secret_hash', 'text', { codecRef: { codecId: 'pg/text@1' } }),
+          col('client_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('client_secret_hash', 'text', {
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('created_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('name', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('name', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('redirect_uris', 'text[]', {
             notNull: true,
             codecRef: { codecId: 'pg/text@1', many: true },
           }),
           col('updated_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
         ],
         constraints: [
@@ -117,22 +191,43 @@ export default class M extends Migration<never, End> {
         schema: 'public',
         table: 'mcp_refresh_tokens',
         columns: [
-          col('client_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('client_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('created_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
           col('expires_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('revoked_at', 'timestamptz(3)', {
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('token_hash', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('user_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('token_hash', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('user_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
         ],
         constraints: [primaryKey(['id'])],
       }),
@@ -140,17 +235,29 @@ export default class M extends Migration<never, End> {
         schema: 'public',
         table: 'mcp_tool_accesses',
         columns: [
-          col('client_access_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('client_access_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('is_enabled', 'bool', {
             notNull: true,
             default: lit(true),
             codecRef: { codecId: 'pg/bool@1' },
           }),
-          col('tool_name', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('tool_name', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('updated_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
         ],
         constraints: [primaryKey(['id'])],
@@ -162,16 +269,31 @@ export default class M extends Migration<never, End> {
           col('created_at', 'timestamptz(3)', {
             notNull: true,
             default: fn(sql`now()`),
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
-          col('email', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('google_id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
-          col('id', 'text', { notNull: true, codecRef: { codecId: 'pg/text@1' } }),
+          col('email', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('google_id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
+          col('id', 'text', {
+            notNull: true,
+            codecRef: { codecId: 'pg/text@1' },
+          }),
           col('name', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('picture', 'text', { codecRef: { codecId: 'pg/text@1' } }),
           col('updated_at', 'timestamptz(3)', {
             notNull: true,
-            codecRef: { codecId: 'pg/timestamptz-date@1', typeParams: { precision: 3 } },
+            codecRef: {
+              codecId: 'pg/timestamptz-date@1',
+              typeParams: { precision: 3 },
+            },
           }),
         ],
         constraints: [primaryKey(['id'])],
@@ -320,7 +442,11 @@ export default class M extends Migration<never, End> {
         foreignKey: {
           name: 'mcp_client_accesses_client_id_fkey',
           columns: ['client_id'],
-          references: { schema: 'public', table: 'mcp_clients', columns: ['client_id'] },
+          references: {
+            schema: 'public',
+            table: 'mcp_clients',
+            columns: ['client_id'],
+          },
           onDelete: 'cascade',
         },
       }),
@@ -340,7 +466,11 @@ export default class M extends Migration<never, End> {
         foreignKey: {
           name: 'mcp_refresh_tokens_client_id_fkey',
           columns: ['client_id'],
-          references: { schema: 'public', table: 'mcp_clients', columns: ['client_id'] },
+          references: {
+            schema: 'public',
+            table: 'mcp_clients',
+            columns: ['client_id'],
+          },
           onDelete: 'cascade',
         },
       }),
@@ -350,7 +480,11 @@ export default class M extends Migration<never, End> {
         foreignKey: {
           name: 'mcp_tool_accesses_client_access_id_fkey',
           columns: ['client_access_id'],
-          references: { schema: 'public', table: 'mcp_client_accesses', columns: ['id'] },
+          references: {
+            schema: 'public',
+            table: 'mcp_client_accesses',
+            columns: ['id'],
+          },
           onDelete: 'cascade',
         },
       }),

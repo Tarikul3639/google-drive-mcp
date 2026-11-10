@@ -3,20 +3,17 @@ import { PrismaService } from '../../../prisma/prisma.service.js';
 
 @Injectable()
 export class DatabaseIndicator {
-    constructor(
-        private readonly prisma: PrismaService,
-    ) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-    async check() {
+  async check() {
+    const plan = this.prisma.db.raw.sql`SELECT 1`
+      .returnsRow({ '?column?': 'pg/int4@1' })
+      .build();
 
-        const plan = this.prisma.db.raw.sql`SELECT 1`
-            .returnsRow({ "?column?": "pg/int4@1" })
-            .build();
+    await this.prisma.db.query(plan);
 
-        await this.prisma.db.query(plan);
-
-        return {
-            status: 'up' as const,
-        };
-    }
+    return {
+      status: 'up' as const,
+    };
+  }
 }

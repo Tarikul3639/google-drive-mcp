@@ -8,12 +8,12 @@ import { RedisIndicator } from './indicators/redis.indicator.js';
 import { MemoryIndicator } from './indicators/memory.indicator.js';
 
 @Module({
-    controllers: [HealthController],
-    providers: [
-        HealthService,
-        DatabaseIndicator,
-        RedisIndicator,
-        MemoryIndicator,
-    ],
+  controllers: [HealthController],
+  providers: [
+    HealthService,
+    DatabaseIndicator,
+    RedisIndicator,
+    MemoryIndicator,
+  ],
 })
-export class HealthModule { }
+export class HealthModule {}

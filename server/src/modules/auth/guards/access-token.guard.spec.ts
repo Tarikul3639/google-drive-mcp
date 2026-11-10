@@ -62,9 +62,7 @@ describe('AccessTokenGuard', () => {
       expect(result).toBe(true);
       expect(request).toHaveProperty('auth', payload);
 
-      expect(jwtService.verifyAsync).toHaveBeenCalledWith(
-        'valid-access-token',
-      );
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith('valid-access-token');
     });
 
     it('should throw UnauthorizedException when token is missing', async () => {
@@ -86,9 +84,7 @@ describe('AccessTokenGuard', () => {
     });
 
     it('should throw UnauthorizedException when token is invalid', async () => {
-      jwtService.verifyAsync.mockRejectedValue(
-        new Error('Invalid token'),
-      );
+      jwtService.verifyAsync.mockRejectedValue(new Error('Invalid token'));
 
       const request = {
         cookies: {

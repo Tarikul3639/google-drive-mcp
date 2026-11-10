@@ -4,23 +4,23 @@ import type { GoogleDriveAuthResult } from '../../modules/google-integration/int
 import type { AccessTokenPayload } from '../../modules/auth/interfaces/token-payload.interface.js';
 
 interface OAuthStateData {
-    userId: string | null;
-    redirectTo: string | null;
+  userId: string | null;
+  redirectTo: string | null;
 }
 
 declare global {
-    namespace Express {
-        interface User extends GoogleUser, GoogleDriveAuthResult {}
+  namespace Express {
+    interface User extends GoogleUser, GoogleDriveAuthResult {}
 
-        interface Request {
-            authenticatedUser?: UserResponseDto;
-            auth?: AccessTokenPayload;
-            refreshTokenHash?: string;
+    interface Request {
+      authenticatedUser?: UserResponseDto;
+      auth?: AccessTokenPayload;
+      refreshTokenHash?: string;
 
-            oauthState?: string;
-            oauthStateData?: OAuthStateData;
-        }
+      oauthState?: string;
+      oauthStateData?: OAuthStateData;
     }
+  }
 }
 
 export {};

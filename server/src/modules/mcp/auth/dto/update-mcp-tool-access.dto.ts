@@ -4,9 +4,9 @@ import { MCP_TOOL_NAMES } from '../../tools/constants/mcp-tools.constant.js';
 import type { McpToolName } from '../../tools/constants/mcp-tools.constant.js';
 
 export class UpdateMcpToolAccessDto {
-    @IsIn(MCP_TOOL_NAMES)
-    toolName!: McpToolName;
+  @IsIn(MCP_TOOL_NAMES)
+  toolName!: McpToolName;
 
-    @IsBoolean()
-    isEnabled!: boolean;
+  @IsBoolean()
+  isEnabled!: boolean;
 }

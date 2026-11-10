@@ -11,7 +11,7 @@ import { SessionService } from '../services/session.service.js';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(private readonly sessionService: SessionService) { }
+  constructor(private readonly sessionService: SessionService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();

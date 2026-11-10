@@ -9,50 +9,53 @@ import { MCP_TOOLS } from '../constants/mcp-tools.constant.js';
 
 @Injectable()
 export class CreateFolderTool {
-    constructor(
-        private readonly googleDriveService: GoogleDriveService,
-        private readonly mcpToolAccessService: McpToolAccessService,
-    ) { }
+  constructor(
+    private readonly googleDriveService: GoogleDriveService,
+    private readonly mcpToolAccessService: McpToolAccessService,
+  ) {}
 
-    @Tool({
-        name: MCP_TOOLS.CREATE_FOLDER,
-        description: "Create a folder in the authenticated user's Google Drive.",
-        inputSchema: createFolderSchema,
-        annotations: {
-            readOnlyHint: false,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: true,
-        },
-    })
-    async createFolder(input: z.infer<typeof createFolderSchema>, ctx: McpContext) {
-        // Extract authenticated user and OAuth client IDs from the token.
-        const userId = ctx.authInfo?.extra?.userId;
-        const clientId = ctx.authInfo?.clientId;
+  @Tool({
+    name: MCP_TOOLS.CREATE_FOLDER,
+    description: "Create a folder in the authenticated user's Google Drive.",
+    inputSchema: createFolderSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+  })
+  async createFolder(
+    input: z.infer<typeof createFolderSchema>,
+    ctx: McpContext,
+  ) {
+    // Extract authenticated user and OAuth client IDs from the token.
+    const userId = ctx.authInfo?.extra?.userId;
+    const clientId = ctx.authInfo?.clientId;
 
-        // Ensure the request contains valid authentication context.
-        if (
-            typeof userId !== 'string' ||
-            !userId ||
-            typeof clientId !== 'string' ||
-            !clientId
-        ) {
-            throw new UnauthorizedException('Authentication required.');
-        }
-
-        // Verify tool access before executing the requested Drive operation.
-        await this.mcpToolAccessService.verifyToolAccess(
-            userId,
-            clientId,
-            MCP_TOOLS.CREATE_FOLDER,
-        );
-
-        // Execute the Drive operation only after authorization succeeds.
-        const result = await this.googleDriveService.createFolder(userId, input);
-
-        return {
-            status: 'ok',
-            folder: result,
-        };
+    // Ensure the request contains valid authentication context.
+    if (
+      typeof userId !== 'string' ||
+      !userId ||
+      typeof clientId !== 'string' ||
+      !clientId
+    ) {
+      throw new UnauthorizedException('Authentication required.');
     }
+
+    // Verify tool access before executing the requested Drive operation.
+    await this.mcpToolAccessService.verifyToolAccess(
+      userId,
+      clientId,
+      MCP_TOOLS.CREATE_FOLDER,
+    );
+
+    // Execute the Drive operation only after authorization succeeds.
+    const result = await this.googleDriveService.createFolder(userId, input);
+
+    return {
+      status: 'ok',
+      folder: result,
+    };
+  }
 }

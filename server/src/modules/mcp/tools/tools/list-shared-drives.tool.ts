@@ -9,50 +9,56 @@ import { MCP_TOOLS } from '../constants/mcp-tools.constant.js';
 
 @Injectable()
 export class ListSharedDrivesTool {
-    constructor(
-        private readonly googleDriveService: GoogleDriveService,
-        private readonly mcpToolAccessService: McpToolAccessService,
-    ) {}
+  constructor(
+    private readonly googleDriveService: GoogleDriveService,
+    private readonly mcpToolAccessService: McpToolAccessService,
+  ) {}
 
-    @Tool({
-        name: MCP_TOOLS.LIST_SHARED_DRIVES,
-        description: 'List shared drives available to the authenticated user.',
-        inputSchema: listSharedDrivesSchema,
-        annotations: {
-            readOnlyHint: true,
-            destructiveHint: false,
-            idempotentHint: false,
-            openWorldHint: true,
-        },
-    })
-    async listSharedDrives(input: z.infer<typeof listSharedDrivesSchema>, ctx: McpContext) {
-        // Extract authenticated user and OAuth client IDs from the token.
-        const userId = ctx.authInfo?.extra?.userId;
-        const clientId = ctx.authInfo?.clientId;
+  @Tool({
+    name: MCP_TOOLS.LIST_SHARED_DRIVES,
+    description: 'List shared drives available to the authenticated user.',
+    inputSchema: listSharedDrivesSchema,
+    annotations: {
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
+  })
+  async listSharedDrives(
+    input: z.infer<typeof listSharedDrivesSchema>,
+    ctx: McpContext,
+  ) {
+    // Extract authenticated user and OAuth client IDs from the token.
+    const userId = ctx.authInfo?.extra?.userId;
+    const clientId = ctx.authInfo?.clientId;
 
-        // Reject requests without a valid authentication context.
-        if (
-            typeof userId !== 'string' ||
-            !userId ||
-            typeof clientId !== 'string' ||
-            !clientId
-        ) {
-            throw new UnauthorizedException('Authentication required.');
-        }
-
-        // Verify access to this specific MCP tool before calling Google Drive.
-        await this.mcpToolAccessService.verifyToolAccess(
-            userId,
-            clientId,
-            MCP_TOOLS.LIST_SHARED_DRIVES,
-        );
-
-        // Execute the authorized operation.
-        const drives = await this.googleDriveService.listSharedDrives(userId, input);
-
-        return {
-            status: 'ok',
-            drives,
-        };
+    // Reject requests without a valid authentication context.
+    if (
+      typeof userId !== 'string' ||
+      !userId ||
+      typeof clientId !== 'string' ||
+      !clientId
+    ) {
+      throw new UnauthorizedException('Authentication required.');
     }
+
+    // Verify access to this specific MCP tool before calling Google Drive.
+    await this.mcpToolAccessService.verifyToolAccess(
+      userId,
+      clientId,
+      MCP_TOOLS.LIST_SHARED_DRIVES,
+    );
+
+    // Execute the authorized operation.
+    const drives = await this.googleDriveService.listSharedDrives(
+      userId,
+      input,
+    );
+
+    return {
+      status: 'ok',
+      drives,
+    };
+  }
 }

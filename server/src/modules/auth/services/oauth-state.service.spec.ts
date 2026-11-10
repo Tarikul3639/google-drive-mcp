@@ -7,10 +7,7 @@ describe('OAuthStateService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        OAuthStateService,
-        { provide: RedisService, useValue: {} },
-      ],
+      providers: [OAuthStateService, { provide: RedisService, useValue: {} }],
     }).compile();
 
     service = module.get<OAuthStateService>(OAuthStateService);

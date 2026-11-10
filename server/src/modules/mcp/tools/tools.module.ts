@@ -7,6 +7,7 @@ import { ListFilesTool } from './tools/list-files.tool.js';
 import { SearchFilesTool } from './tools/search-files.tool.js';
 import { GetFileTool } from './tools/get-file.tool.js';
 import { CreateFileTool } from './tools/create-file.tool.js';
+import { UploadFileTool } from './tools/upload-file.tool.js';
 import { UpdateFileTool } from './tools/update-file.tool.js';
 import { MoveFileTool } from './tools/move-file.tool.js';
 import { RenameFileTool } from './tools/rename-file.tool.js';
@@ -41,54 +42,50 @@ import { UpdateSharedDriveTool } from './tools/update-shared-drive.tool.js';
 import { DeleteSharedDriveTool } from './tools/delete-shared-drive.tool.js';
 
 @Module({
-    imports: [
-        GoogleDriveModule,
-    ],
-    providers: [
-        McpToolAccessService,
-        McpToolRegistryService,
-        // Drive Tools
-        HealthCheckTool,
-        ListFilesTool,
-        SearchFilesTool,
-        GetFileTool,
-        CreateFileTool,
-        UpdateFileTool,
-        MoveFileTool,
-        RenameFileTool,
-        TrashFileTool,
-        UntrashFileTool,
-        CopyFileTool,
-        DeleteFileTool,
-        DownloadFileTool,
-        ExportFileTool,
-        ListFoldersTool,
-        CreateFolderTool,
-        RenameFolderTool,
-        MoveFolderTool,
-        TrashFolderTool,
-        UntrashFolderTool,
-        CreatePermissionTool,
-        GetPermissionTool,
-        ListPermissionsTool,
-        UpdatePermissionTool,
-        DeletePermissionTool,
-        CreateCommentTool,
-        GetCommentTool,
-        ListCommentsTool,
-        UpdateCommentTool,
-        DeleteCommentTool,
-        ListRevisionsTool,
-        GetRevisionTool,
-        CreateSharedDriveTool,
-        ListSharedDrivesTool,
-        GetSharedDriveTool,
-        UpdateSharedDriveTool,
-        DeleteSharedDriveTool,
-    ],
-    exports: [
-        McpToolAccessService,
-        McpToolRegistryService,
-    ],
+  imports: [GoogleDriveModule],
+  providers: [
+    McpToolAccessService,
+    McpToolRegistryService,
+    // Drive Tools
+    HealthCheckTool,
+    ListFilesTool,
+    SearchFilesTool,
+    GetFileTool,
+    CreateFileTool,
+    UploadFileTool,
+    UpdateFileTool,
+    MoveFileTool,
+    RenameFileTool,
+    TrashFileTool,
+    UntrashFileTool,
+    CopyFileTool,
+    DeleteFileTool,
+    DownloadFileTool,
+    ExportFileTool,
+    ListFoldersTool,
+    CreateFolderTool,
+    RenameFolderTool,
+    MoveFolderTool,
+    TrashFolderTool,
+    UntrashFolderTool,
+    CreatePermissionTool,
+    GetPermissionTool,
+    ListPermissionsTool,
+    UpdatePermissionTool,
+    DeletePermissionTool,
+    CreateCommentTool,
+    GetCommentTool,
+    ListCommentsTool,
+    UpdateCommentTool,
+    DeleteCommentTool,
+    ListRevisionsTool,
+    GetRevisionTool,
+    CreateSharedDriveTool,
+    ListSharedDrivesTool,
+    GetSharedDriveTool,
+    UpdateSharedDriveTool,
+    DeleteSharedDriveTool,
+  ],
+  exports: [McpToolAccessService, McpToolRegistryService],
 })
-export class ToolsModule { }
+export class ToolsModule {}

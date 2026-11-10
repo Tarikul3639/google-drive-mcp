@@ -3,9 +3,9 @@ import type { UserResponseDto } from '../../users/dto/user-response.dto.js';
 import type { Request } from 'express';
 
 export const CurrentUser = createParamDecorator(
-    (_data: unknown, ctx: ExecutionContext): UserResponseDto | null => {
-        const request: Request = ctx.switchToHttp().getRequest();
+  (_data: unknown, ctx: ExecutionContext): UserResponseDto | null => {
+    const request: Request = ctx.switchToHttp().getRequest();
 
-        return request.authenticatedUser ?? null;
-    },
+    return request.authenticatedUser ?? null;
+  },
 );

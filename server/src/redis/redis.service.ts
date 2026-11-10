@@ -1,115 +1,117 @@
 import {
-    Injectable,
-    OnModuleInit,
-    OnModuleDestroy,
-    Logger,
+  Injectable,
+  OnModuleInit,
+  OnModuleDestroy,
+  Logger,
 } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
 import { ConfigService } from '../config/config.service.js';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
-    private readonly logger = new Logger(RedisService.name);
-    private readonly redisUrl: string;
-    private client: RedisClientType;
+  private readonly logger = new Logger(RedisService.name);
+  private readonly redisUrl: string;
+  private client: RedisClientType;
 
-    constructor(private readonly configService: ConfigService) {
-        this.redisUrl = this.configService.redisUrl;
+  constructor(private readonly configService: ConfigService) {
+    this.redisUrl = this.configService.redisUrl;
+  }
+
+  // Initialize Redis client when the module is initialized
+  async onModuleInit() {
+    this.logger.log('🚀 Initializing Redis client...');
+
+    this.client = createClient({
+      url: this.redisUrl,
+    });
+
+    // Handle Redis client errors
+    this.client.on('error', (err) => {
+      this.logger.error('❌ Redis Client Error', err);
+    });
+
+    try {
+      await this.client.connect();
+      this.logger.log('✅ Redis client connected successfully.');
+    } catch (error) {
+      this.logger.error('❌ Failed to connect to Redis', error);
+      throw error;
+    }
+  }
+
+  // Close Redis client when the module is destroyed
+  async onModuleDestroy() {
+    if (this.client?.isOpen) {
+      this.logger.log('🔌 Closing Redis client...');
+
+      await this.client.quit();
+
+      this.logger.log('👋 Redis client disconnected successfully.');
+    }
+  }
+
+  // Ping Redis server to check if it's alive
+  async ping(): Promise<string> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
-    // Initialize Redis client when the module is initialized
-    async onModuleInit() {
-        this.logger.log('🚀 Initializing Redis client...');
+    return await this.client.ping();
+  }
 
-        this.client = createClient({
-            url: this.redisUrl,
-        });
-
-        // Handle Redis client errors
-        this.client.on('error', (err) => {
-            this.logger.error('❌ Redis Client Error', err);
-        });
-
-        try {
-            await this.client.connect();
-            this.logger.log('✅ Redis client connected successfully.');
-        } catch (error) {
-            this.logger.error('❌ Failed to connect to Redis', error);
-            throw error;
-        }
+  // Set a value in Redis with an optional expiration time
+  async set(
+    key: string,
+    value: string,
+    expirationInSeconds?: number,
+  ): Promise<void> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
-    // Close Redis client when the module is destroyed
-    async onModuleDestroy() {
-        if (this.client?.isOpen) {
-            this.logger.log('🔌 Closing Redis client...');
+    if (expirationInSeconds) {
+      await this.client.set(key, value, {
+        EX: expirationInSeconds,
+      });
+    } else {
+      await this.client.set(key, value);
+    }
+  }
 
-            await this.client.quit();
-
-            this.logger.log('👋 Redis client disconnected successfully.');
-        }
+  // Get a value from Redis
+  async get(key: string): Promise<string | null> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
-    // Ping Redis server to check if it's alive
-    async ping(): Promise<string> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
+    return await this.client.get(key);
+  }
 
-        return await this.client.ping();
+  // Delete a value from Redis
+  async del(key: string): Promise<void> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
+    await this.client.del(key);
+  }
 
-    // Set a value in Redis with an optional expiration time
-    async set(key: string, value: string, expirationInSeconds?: number): Promise<void> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
-
-        if (expirationInSeconds) {
-            await this.client.set(key, value, {
-                EX: expirationInSeconds,
-            });
-        } else {
-            await this.client.set(key, value);
-        }
+  // Get and delete a value atomically from Redis
+  async getDel(key: string): Promise<string | null> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
-    // Get a value from Redis
-    async get(key: string): Promise<string | null> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
+    return await this.client.getDel(key);
+  }
 
-        return await this.client.get(key);
+  // Check if a key exists in Redis
+  async exists(key: string): Promise<boolean> {
+    if (!this.client?.isOpen) {
+      throw new Error('Redis client is not connected.');
     }
 
-    // Delete a value from Redis
-    async del(key: string): Promise<void> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
-
-        await this.client.del(key);
-    }
-
-
-    // Get and delete a value atomically from Redis
-    async getDel(key: string): Promise<string | null> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
-
-        return await this.client.getDel(key);
-    }
-
-    // Check if a key exists in Redis
-    async exists(key: string): Promise<boolean> {
-        if (!this.client?.isOpen) {
-            throw new Error('Redis client is not connected.');
-        }
-
-        const result = await this.client.exists(key);
-        return result === 1;
-    }
+    const result = await this.client.exists(key);
+    return result === 1;
+  }
 }

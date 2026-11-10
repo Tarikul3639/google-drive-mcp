@@ -7,30 +7,28 @@ import { IdentityProviderTokenVerifier } from './auth/identity-provider-token.ve
 import { ToolsModule } from './tools/tools.module.js';
 
 @Module({
-    imports: [
-        McpAuthModule,
-        ToolsModule,
+  imports: [
+    McpAuthModule,
+    ToolsModule,
 
-        NestMcpModule.forRootAsync({
-            imports: [McpAuthModule],
-            inject: [ConfigService, IdentityProviderTokenVerifier],
+    NestMcpModule.forRootAsync({
+      imports: [McpAuthModule],
+      inject: [ConfigService, IdentityProviderTokenVerifier],
 
-            useFactory: (
-                configService: ConfigService,
-                verifier: IdentityProviderTokenVerifier,
-            ) => ({
-                name: 'google-drive-mcp',
-                version: '1.0.0',
+      useFactory: (
+        configService: ConfigService,
+        verifier: IdentityProviderTokenVerifier,
+      ) => ({
+        name: 'google-drive-mcp',
+        version: '1.0.0',
 
-                auth: {
-                    verifier,
-                    resource: configService.mcpResource,
-                    authorizationServers: [
-                        configService.mcpAuthorizationServer,
-                    ],
-                },
-            }),
-        }),
-    ],
+        auth: {
+          verifier,
+          resource: configService.mcpResource,
+          authorizationServers: [configService.mcpAuthorizationServer],
+        },
+      }),
+    }),
+  ],
 })
 export class McpModule {}

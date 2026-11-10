@@ -7,10 +7,7 @@ describe('LogoutService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LogoutService,
-        { provide: SessionService, useValue: {} },
-      ],
+      providers: [LogoutService, { provide: SessionService, useValue: {} }],
     }).compile();
 
     service = module.get<LogoutService>(LogoutService);

@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { Readable } from 'node:stream';
 import { randomUUID } from 'node:crypto';
 import { GoogleDriveClientService } from './google-drive-client.service.js';
 
 @Injectable()
 export class GoogleDriveService {
+    private readonly maxUploadBytes = 1000 * 1024 * 1024;
+
     constructor(
         private readonly googleDriveClientService: GoogleDriveClientService,
     ) { }
@@ -52,7 +55,8 @@ export class GoogleDriveService {
 
         const response = await drive.files.get({
             fileId,
-            fields: 'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents, trashed',
+            fields:
+                'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents, trashed',
         });
 
         return response.data;
@@ -76,13 +80,15 @@ export class GoogleDriveService {
                 mimeType: input.mimeType,
                 parents: input.parentId ? [input.parentId] : undefined,
             },
-            media: input.content === undefined
-                ? undefined
-                : {
-                    mimeType: input.mimeType ?? 'text/plain',
-                    body: input.content,
-                },
-            fields: 'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+            media:
+                input.content === undefined
+                    ? undefined
+                    : {
+                        mimeType: input.mimeType ?? 'text/plain',
+                        body: input.content,
+                    },
+            fields:
+                'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
         });
 
         return response.data;
@@ -108,13 +114,15 @@ export class GoogleDriveService {
                 description: input.description,
             },
             // Upload media only when content was explicitly provided.
-            media: input.content === undefined
-                ? undefined
-                : {
-                    mimeType: input.mimeType ?? 'text/plain',
-                    body: input.content,
-                },
-            fields: 'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents',
+            media:
+                input.content === undefined
+                    ? undefined
+                    : {
+                        mimeType: input.mimeType ?? 'text/plain',
+                        body: input.content,
+                    },
+            fields:
+                'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents',
         });
 
         return response.data;
@@ -134,9 +142,8 @@ export class GoogleDriveService {
         const response = await drive.files.update({
             fileId,
             addParents: parentId,
-            removeParents: currentParents.length > 0
-                ? currentParents.join(',')
-                : undefined,
+            removeParents:
+                currentParents.length > 0 ? currentParents.join(',') : undefined,
             fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
         });
 
@@ -205,7 +212,8 @@ export class GoogleDriveService {
                 name: input.name,
                 parents: input.parentId ? [input.parentId] : undefined,
             },
-            fields: 'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+            fields:
+                'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
         });
 
         return response.data;
@@ -230,7 +238,9 @@ export class GoogleDriveService {
 
         // Google Workspace-native files must be exported instead.
         if (metadata.data.mimeType?.startsWith('application/vnd.google-apps.')) {
-            throw new Error('Google Workspace files must be retrieved with export_file.');
+            throw new Error(
+                'Google Workspace files must be retrieved with export_file.',
+            );
         }
 
         const response = await drive.files.get(
@@ -256,7 +266,9 @@ export class GoogleDriveService {
         });
 
         if (!metadata.data.mimeType?.startsWith('application/vnd.google-apps.')) {
-            throw new Error('export_file is only for Google Workspace-native files. Use download_file instead.');
+            throw new Error(
+                'export_file is only for Google Workspace-native files. Use download_file instead.',
+            );
         }
 
         const response = await drive.files.export(
@@ -281,7 +293,8 @@ export class GoogleDriveService {
             pageToken,
             q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false",
             orderBy: 'name',
-            fields: 'nextPageToken, files(id, name, mimeType, webViewLink, parents, createdTime, modifiedTime)',
+            fields:
+                'nextPageToken, files(id, name, mimeType, webViewLink, parents, createdTime, modifiedTime)',
         });
 
         return {
@@ -306,7 +319,8 @@ export class GoogleDriveService {
                 mimeType: 'application/vnd.google-apps.folder',
                 parents: input.parentId ? [input.parentId] : undefined,
             },
-            fields: 'id, name, mimeType, webViewLink, parents, createdTime, modifiedTime',
+            fields:
+                'id, name, mimeType, webViewLink, parents, createdTime, modifiedTime',
         });
 
         return response.data;
@@ -351,9 +365,8 @@ export class GoogleDriveService {
         const response = await drive.files.update({
             fileId: folderId,
             addParents: parentId,
-            removeParents: currentParents.length > 0
-                ? currentParents.join(',')
-                : undefined,
+            removeParents:
+                currentParents.length > 0 ? currentParents.join(',') : undefined,
             fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
         });
 
@@ -405,17 +418,26 @@ export class GoogleDriveService {
     }
 
     // Create a permission for a Drive file or folder.
-    async createPermission(userId: string, input: {
-        fileId: string;
-        type: 'user' | 'group' | 'domain' | 'anyone';
-        role: 'owner' | 'organizer' | 'fileOrganizer' | 'writer' | 'commenter' | 'reader';
-        emailAddress?: string;
-        domain?: string;
-        sendNotificationEmail?: boolean;
-        emailMessage?: string;
-        expirationTime?: string;
-        allowFileDiscovery?: boolean;
-    }) {
+    async createPermission(
+        userId: string,
+        input: {
+            fileId: string;
+            type: 'user' | 'group' | 'domain' | 'anyone';
+            role:
+            | 'owner'
+            | 'organizer'
+            | 'fileOrganizer'
+            | 'writer'
+            | 'commenter'
+            | 'reader';
+            emailAddress?: string;
+            domain?: string;
+            sendNotificationEmail?: boolean;
+            emailMessage?: string;
+            expirationTime?: string;
+            allowFileDiscovery?: boolean;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         // Include optional fields only when supplied by the caller.
@@ -431,40 +453,49 @@ export class GoogleDriveService {
             },
             sendNotificationEmail: input.sendNotificationEmail,
             emailMessage: input.emailMessage,
-            fields: 'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+            fields:
+                'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
         });
 
         return response.data;
     }
 
     // Get one permission by its ID.
-    async getPermission(userId: string, input: {
-        fileId: string;
-        permissionId: string;
-    }) {
+    async getPermission(
+        userId: string,
+        input: {
+            fileId: string;
+            permissionId: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.permissions.get({
             fileId: input.fileId,
             permissionId: input.permissionId,
-            fields: 'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+            fields:
+                'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
         });
 
         return response.data;
     }
 
     // List permissions on a Drive file or folder.
-    async listPermissions(userId: string, input: {
-        fileId: string;
-        pageToken?: string;
-    }) {
+    async listPermissions(
+        userId: string,
+        input: {
+            fileId: string;
+            pageToken?: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.permissions.list({
             fileId: input.fileId,
             pageSize: 100,
             pageToken: input.pageToken,
-            fields: 'nextPageToken, permissions(id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted)',
+            fields:
+                'nextPageToken, permissions(id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted)',
         });
 
         return {
@@ -474,12 +505,15 @@ export class GoogleDriveService {
     }
 
     // Update the role or expiration time of an existing permission.
-    async updatePermission(userId: string, input: {
-        fileId: string;
-        permissionId: string;
-        role: 'organizer' | 'fileOrganizer' | 'writer' | 'commenter' | 'reader';
-        expirationTime?: string;
-    }) {
+    async updatePermission(
+        userId: string,
+        input: {
+            fileId: string;
+            permissionId: string;
+            role: 'organizer' | 'fileOrganizer' | 'writer' | 'commenter' | 'reader';
+            expirationTime?: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.permissions.update({
@@ -489,17 +523,21 @@ export class GoogleDriveService {
                 role: input.role,
                 expirationTime: input.expirationTime,
             },
-            fields: 'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+            fields:
+                'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
         });
 
         return response.data;
     }
 
     // Remove a permission from a Drive file or folder.
-    async deletePermission(userId: string, input: {
-        fileId: string;
-        permissionId: string;
-    }) {
+    async deletePermission(
+        userId: string,
+        input: {
+            fileId: string;
+            permissionId: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         await drive.permissions.delete({
@@ -511,11 +549,14 @@ export class GoogleDriveService {
     }
 
     // Create a comment on a Drive file.
-    async createComment(userId: string, input: {
-        fileId: string;
-        content: string;
-        quotedFileContent?: { mimeType: string; value: string };
-    }) {
+    async createComment(
+        userId: string,
+        input: {
+            fileId: string;
+            content: string;
+            quotedFileContent?: { mimeType: string; value: string };
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.comments.create({
@@ -524,34 +565,42 @@ export class GoogleDriveService {
                 content: input.content,
                 quotedFileContent: input.quotedFileContent,
             },
-            fields: 'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, replies',
+            fields:
+                'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, replies',
         });
 
         return response.data;
     }
 
     // Get a comment by its ID.
-    async getComment(userId: string, input: {
-        fileId: string;
-        commentId: string;
-    }) {
+    async getComment(
+        userId: string,
+        input: {
+            fileId: string;
+            commentId: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.comments.get({
             fileId: input.fileId,
             commentId: input.commentId,
-            fields: 'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies',
+            fields:
+                'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies',
         });
 
         return response.data;
     }
 
     // List comments on a Drive file.
-    async listComments(userId: string, input: {
-        fileId: string;
-        pageToken?: string;
-        includeDeleted?: boolean;
-    }) {
+    async listComments(
+        userId: string,
+        input: {
+            fileId: string;
+            pageToken?: string;
+            includeDeleted?: boolean;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.comments.list({
@@ -559,7 +608,8 @@ export class GoogleDriveService {
             pageSize: 100,
             pageToken: input.pageToken,
             includeDeleted: input.includeDeleted,
-            fields: 'nextPageToken, comments(id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies)',
+            fields:
+                'nextPageToken, comments(id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies)',
         });
 
         return {
@@ -569,12 +619,15 @@ export class GoogleDriveService {
     }
 
     // Update a comment's content or resolved state.
-    async updateComment(userId: string, input: {
-        fileId: string;
-        commentId: string;
-        content?: string;
-        resolved?: boolean;
-    }) {
+    async updateComment(
+        userId: string,
+        input: {
+            fileId: string;
+            commentId: string;
+            content?: string;
+            resolved?: boolean;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.comments.update({
@@ -584,17 +637,21 @@ export class GoogleDriveService {
                 content: input.content,
                 resolved: input.resolved,
             },
-            fields: 'id, content, author, createdTime, modifiedTime, resolved, deleted, replies',
+            fields:
+                'id, content, author, createdTime, modifiedTime, resolved, deleted, replies',
         });
 
         return response.data;
     }
 
     // Delete a comment from a Drive file.
-    async deleteComment(userId: string, input: {
-        fileId: string;
-        commentId: string;
-    }) {
+    async deleteComment(
+        userId: string,
+        input: {
+            fileId: string;
+            commentId: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         await drive.comments.delete({
@@ -606,17 +663,21 @@ export class GoogleDriveService {
     }
 
     // List revisions of a Drive file.
-    async listRevisions(userId: string, input: {
-        fileId: string;
-        pageToken?: string;
-    }) {
+    async listRevisions(
+        userId: string,
+        input: {
+            fileId: string;
+            pageToken?: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.revisions.list({
             fileId: input.fileId,
             pageSize: 100,
             pageToken: input.pageToken,
-            fields: 'nextPageToken, revisions(id, mimeType, modifiedTime, keepForever, published, size, exportLinks, lastModifyingUser)',
+            fields:
+                'nextPageToken, revisions(id, mimeType, modifiedTime, keepForever, published, size, exportLinks, lastModifyingUser)',
         });
 
         return {
@@ -626,26 +687,33 @@ export class GoogleDriveService {
     }
 
     // Get metadata for a specific file revision.
-    async getRevision(userId: string, input: {
-        fileId: string;
-        revisionId: string;
-    }) {
+    async getRevision(
+        userId: string,
+        input: {
+            fileId: string;
+            revisionId: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.revisions.get({
             fileId: input.fileId,
             revisionId: input.revisionId,
-            fields: 'id, mimeType, modifiedTime, keepForever, published, size, exportLinks, lastModifyingUser',
+            fields:
+                'id, mimeType, modifiedTime, keepForever, published, size, exportLinks, lastModifyingUser',
         });
 
         return response.data;
     }
 
     // Create a shared drive with a unique request ID.
-    async createSharedDrive(userId: string, input: {
-        name: string;
-        requestId?: string;
-    }) {
+    async createSharedDrive(
+        userId: string,
+        input: {
+            name: string;
+            requestId?: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.drives.create({
@@ -658,10 +726,13 @@ export class GoogleDriveService {
     }
 
     // List shared drives available to the authenticated user.
-    async listSharedDrives(userId: string, input: {
-        pageToken?: string;
-        pageSize?: number;
-    }) {
+    async listSharedDrives(
+        userId: string,
+        input: {
+            pageToken?: string;
+            pageSize?: number;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.drives.list({
@@ -682,17 +753,21 @@ export class GoogleDriveService {
 
         const response = await drive.drives.get({
             driveId: input.driveId,
-            fields: 'id, name, colorRgb, createdTime, hidden, restrictions, capabilities',
+            fields:
+                'id, name, colorRgb, createdTime, hidden, restrictions, capabilities',
         });
 
         return response.data;
     }
 
     // Update a shared drive's name.
-    async updateSharedDrive(userId: string, input: {
-        driveId: string;
-        name: string;
-    }) {
+    async updateSharedDrive(
+        userId: string,
+        input: {
+            driveId: string;
+            name: string;
+        },
+    ) {
         const drive = await this.googleDriveClientService.getClient(userId);
 
         const response = await drive.drives.update({
@@ -713,5 +788,41 @@ export class GoogleDriveService {
         });
 
         return { driveId: input.driveId };
+    }
+
+    // Upload a file to Google Drive with size validation.
+    async uploadFile(
+        userId: string,
+        input: {
+            name: string;
+            mimeType: string;
+            dataBase64: string;
+            parentId?: string;
+        },
+    ) {
+        const data = Buffer.from(input.dataBase64, 'base64');
+
+        if (data.length === 0) {
+            throw new BadRequestException('The uploaded file is empty or invalid.');
+        }
+        if (data.length > this.maxUploadBytes) {
+            throw new BadRequestException('Maximum upload size is 10 MB.');
+        }
+
+        const drive = await this.googleDriveClientService.getClient(userId);
+        const response = await drive.files.create({
+            requestBody: {
+                name: input.name,
+                mimeType: input.mimeType,
+                parents: input.parentId ? [input.parentId] : undefined,
+            },
+            media: {
+                mimeType: input.mimeType,
+                body: Readable.from(data),
+            },
+            fields: 'id, name, mimeType, size, webViewLink, createdTime, parents',
+        });
+
+        return response.data;
     }
 }

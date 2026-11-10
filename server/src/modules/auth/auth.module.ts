@@ -19,38 +19,38 @@ import { UsersService } from '../users/users.service.js';
 import { OAuthStateService } from './services/oauth-state.service.js';
 
 @Module({
-    imports: [
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.jwtAccessSecret,
-                signOptions: {
-                    expiresIn: configService.jwtAccessTtlMs / 1000,
-                },
-            }),
-        }),
-    ],
-    controllers: [AuthController],
-    providers: [
-        SessionService,
-        LoginService,
-        LogoutService,
-        RefreshService,
-        GoogleAuthService,
-        GoogleStrategy,
-        AccessTokenGuard,
-        RefreshTokenGuard,
-        UsersService,
-        OAuthStateService,
-    ],
-    exports: [
-        JwtModule,
-        SessionService,
-        OAuthStateService,
-        GoogleAuthService,
-        RefreshService,
-        AccessTokenGuard,
-        RefreshTokenGuard,
-    ],
+  imports: [
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.jwtAccessSecret,
+        signOptions: {
+          expiresIn: configService.jwtAccessTtlMs / 1000,
+        },
+      }),
+    }),
+  ],
+  controllers: [AuthController],
+  providers: [
+    SessionService,
+    LoginService,
+    LogoutService,
+    RefreshService,
+    GoogleAuthService,
+    GoogleStrategy,
+    AccessTokenGuard,
+    RefreshTokenGuard,
+    UsersService,
+    OAuthStateService,
+  ],
+  exports: [
+    JwtModule,
+    SessionService,
+    OAuthStateService,
+    GoogleAuthService,
+    RefreshService,
+    AccessTokenGuard,
+    RefreshTokenGuard,
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

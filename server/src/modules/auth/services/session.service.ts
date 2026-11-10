@@ -5,123 +5,123 @@ import { RedisService } from '../../../redis/redis.service.js';
 import { RedisKeys } from '../../../redis/redis.keys.js';
 
 import type {
-    CreateSessionInput,
-    RotateRefreshTokenInput,
+  CreateSessionInput,
+  RotateRefreshTokenInput,
 } from '../interfaces/session.interface.js';
 
 @Injectable()
 export class SessionService {
-    constructor(
-        private readonly prisma: PrismaService,
-        private readonly redisService: RedisService,
-    ) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redisService: RedisService,
+  ) {}
 
-    /**
-     * Create a new authentication session.
-     */
-    async create(data: CreateSessionInput): Promise<{ id: string }> {
-        const session = await this.prisma.db.orm.public.AuthSession.select(
-            'id',
-        ).create({
-            userId: data.userId,
-            tokenHash: data.tokenHash,
-            expiresAt: data.expiresAt,
-        });
+  /**
+   * Create a new authentication session.
+   */
+  async create(data: CreateSessionInput): Promise<{ id: string }> {
+    const session = await this.prisma.db.orm.public.AuthSession.select(
+      'id',
+    ).create({
+      userId: data.userId,
+      tokenHash: data.tokenHash,
+      expiresAt: data.expiresAt,
+    });
 
-        await this.redisService.set(
-            RedisKeys.authSessionById(session.id),
-            JSON.stringify({
-                id: session.id,
-                userId: data.userId,
-                tokenHash: data.tokenHash,
-                expiresAt: data.expiresAt,
-            }),
-        );
+    await this.redisService.set(
+      RedisKeys.authSessionById(session.id),
+      JSON.stringify({
+        id: session.id,
+        userId: data.userId,
+        tokenHash: data.tokenHash,
+        expiresAt: data.expiresAt,
+      }),
+    );
 
-        return session;
+    return session;
+  }
+
+  /**
+   * Revoke an authentication session.
+   */
+  async revoke(sessionId: string): Promise<void> {
+    const session = await this.prisma.db.orm.public.AuthSession.where({
+      id: sessionId,
+    }).first();
+
+    await this.prisma.db.orm.public.AuthSession.where({ id: sessionId }).update(
+      {
+        revokedAt: new Date(),
+      },
+    );
+
+    if (session) {
+      await this.redisService.del(
+        RedisKeys.authSessionByToken(session.tokenHash),
+      );
     }
 
-    /**
-     * Revoke an authentication session.
-     */
-    async revoke(sessionId: string): Promise<void> {
-        const session = await this.prisma.db.orm.public.AuthSession.where({
-            id: sessionId,
-        }).first();
+    await this.redisService.del(RedisKeys.authSessionById(sessionId));
+  }
 
-        await this.prisma.db.orm.public.AuthSession.where({ id: sessionId }).update(
-            {
-                revokedAt: new Date(),
-            },
-        );
+  /**
+   * Find a session by its refresh token hash.
+   */
+  async findByTokenHash(tokenHash: string) {
+    // PostgreSQL remains authoritative for authentication.
+    const session = await this.prisma.db.orm.public.AuthSession.where({
+      tokenHash,
+    }).first();
 
-        if (session) {
-            await this.redisService.del(
-                RedisKeys.authSessionByToken(session.tokenHash),
-            );
-        }
-
-        await this.redisService.del(RedisKeys.authSessionById(sessionId));
+    if (!session) {
+      await this.redisService.del(RedisKeys.authSessionByToken(tokenHash));
+      return null;
     }
 
-    /**
-     * Find a session by its refresh token hash.
-     */
-    async findByTokenHash(tokenHash: string) {
-        // PostgreSQL remains authoritative for authentication.
-        const session = await this.prisma.db.orm.public.AuthSession.where({
-            tokenHash,
-        }).first();
+    return session;
+  }
 
-        if (!session) {
-            await this.redisService.del(RedisKeys.authSessionByToken(tokenHash));
-            return null;
-        }
+  /**
+   * Rotate an existing refresh token.
+   */
+  async rotateRefreshToken(
+    data: RotateRefreshTokenInput,
+  ): Promise<{ id: string; userId: string } | null> {
+    const session = await this.findByTokenHash(data.oldTokenHash);
 
-        return session;
+    if (
+      !session ||
+      session.revokedAt ||
+      session.expiresAt.getTime() <= Date.now()
+    ) {
+      return null;
     }
 
-    /**
-     * Rotate an existing refresh token.
-     */
-    async rotateRefreshToken(
-        data: RotateRefreshTokenInput,
-    ): Promise<{ id: string; userId: string } | null> {
-        const session = await this.findByTokenHash(data.oldTokenHash);
+    await this.prisma.db.orm.public.AuthSession.where({
+      tokenHash: data.oldTokenHash,
+    }).update({
+      tokenHash: data.newTokenHash,
+      expiresAt: data.expiresAt,
+    });
 
-        if (
-            !session ||
-            session.revokedAt ||
-            session.expiresAt.getTime() <= Date.now()
-        ) {
-            return null;
-        }
+    // Invalidate old cache.
+    await this.redisService.del(
+      RedisKeys.authSessionByToken(data.oldTokenHash),
+    );
 
-        await this.prisma.db.orm.public.AuthSession.where({
-            tokenHash: data.oldTokenHash,
-        }).update({
-            tokenHash: data.newTokenHash,
-            expiresAt: data.expiresAt,
-        });
+    await this.redisService.set(
+      RedisKeys.authSessionById(session.id),
+      JSON.stringify({
+        id: session.id,
+        userId: session.userId,
+        tokenHash: data.newTokenHash,
+        expiresAt: data.expiresAt,
+      }),
+    );
 
-        // Invalidate old cache.
-        await this.redisService.del(
-            RedisKeys.authSessionByToken(data.oldTokenHash),
-        );
-
-        await this.redisService.set(
-            RedisKeys.authSessionById(session.id),
-            JSON.stringify({
-                id: session.id,
-                userId: session.userId,
-                tokenHash: data.newTokenHash,
-                expiresAt: data.expiresAt,
-            }),
-        );
-
-        return {
-            id: session.id,
-            userId: session.userId,
-        };
-    }
+    return {
+      id: session.id,
+      userId: session.userId,
+    };
+  }
 }

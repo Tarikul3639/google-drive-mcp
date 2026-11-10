@@ -10,23 +10,14 @@ import { GoogleDriveGuard } from './guards/google-drive.guard.js';
 import { GoogleDriveStrategy } from './strategies/google-drive.strategy.js';
 
 @Module({
-    imports: [
-        PrismaModule,
-        AuthModule,
-        UsersModule,
-    ],
-    controllers: [
-        GoogleIntegrationController,
-    ],
-    providers: [
-        GoogleIntegrationService,
-        GoogleTokenService,
-        GoogleDriveGuard,
-        GoogleDriveStrategy,
-    ],
-    exports: [
-        GoogleIntegrationService,
-        GoogleTokenService,
-    ],
+  imports: [PrismaModule, AuthModule, UsersModule],
+  controllers: [GoogleIntegrationController],
+  providers: [
+    GoogleIntegrationService,
+    GoogleTokenService,
+    GoogleDriveGuard,
+    GoogleDriveStrategy,
+  ],
+  exports: [GoogleIntegrationService, GoogleTokenService],
 })
 export class GoogleIntegrationModule {}

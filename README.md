@@ -2,7 +2,7 @@
 
 Google Drive MCP is a self-hosted Google Drive integration that exposes Drive operations to MCP-compatible AI clients. It includes a Next.js web dashboard and a NestJS API/MCP server.
 
-> **Current project snapshot:** The backend MCP tool-name registry defines **36 tools**. This README documents the checked-in implementation, not Google's separate first-party Drive MCP service.
+> **Current project snapshot:** The backend MCP tool-name registry defines **37 tools**. This README documents the checked-in implementation, not Google's separate first-party Drive MCP service.
 
 ## Contents
 
@@ -101,7 +101,7 @@ Dashboard and Account currently show the unauthenticated redirect state rather t
 
 ### Drive capabilities
 
-- Search, list, inspect, create, update, copy, move, rename, trash, restore, download, and export files.
+- Search, list, inspect, create, update, binary upload (including images), copy, move, rename, trash, restore, download, and export files.
 - List, create, rename, move, trash, and restore folders.
 - Manage file permissions.
 - Create, inspect, list, update, and delete comments.
@@ -315,7 +315,7 @@ Exact UI steps vary by MCP client. Do not paste Google client secrets into an MC
 
 ## MCP tool reference
 
-The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-tools.constant.ts`. It currently defines **36 tool names**.
+The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-tools.constant.ts`. It currently defines **37 tool names**.
 
 ### Files — 13 tools
 
@@ -324,7 +324,8 @@ The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-t
 | `list_files` | List non-trashed Drive files |
 | `search_files` | Search file names and indexed content |
 | `get_file` | Read file metadata |
-| `create_file` | Create a Drive file |
+| `create_file` | Create a Drive file with optional text content |
+| `upload_file` | Upload binary content (including images) from Base64; maximum decoded size 10 MB |
 | `update_file` | Update file metadata and/or content |
 | `move_file` | Move a file between folders |
 | `rename_file` | Rename a file |

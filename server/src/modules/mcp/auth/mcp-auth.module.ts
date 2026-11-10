@@ -16,32 +16,32 @@ import { OAuthCodeService } from './services/oauth-code.service.js';
 import { ToolsModule } from '../tools/tools.module.js';
 
 @Module({
-    imports: [
-        AuthModule,
-        UsersModule,
-        ToolsModule,
-        JwtModule.registerAsync({
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.jwtAccessSecret,
-                signOptions: {
-                    expiresIn: configService.jwtAccessTtlMs / 1000,
-                    audience: configService.mcpResource,
-                },
-                verifyOptions: {
-                    audience: configService.mcpResource,
-                },
-            }),
-        }),
-    ],
-    controllers: [OAuthMetadataController, OAuthController],
-    providers: [
-        IdentityProviderTokenVerifier,
-        McpGoogleStrategy,
-        OAuthClientService,
-        OAuthAuthorizationService,
-        OAuthCodeService,
-    ],
-    exports: [IdentityProviderTokenVerifier],
+  imports: [
+    AuthModule,
+    UsersModule,
+    ToolsModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.jwtAccessSecret,
+        signOptions: {
+          expiresIn: configService.jwtAccessTtlMs / 1000,
+          audience: configService.mcpResource,
+        },
+        verifyOptions: {
+          audience: configService.mcpResource,
+        },
+      }),
+    }),
+  ],
+  controllers: [OAuthMetadataController, OAuthController],
+  providers: [
+    IdentityProviderTokenVerifier,
+    McpGoogleStrategy,
+    OAuthClientService,
+    OAuthAuthorizationService,
+    OAuthCodeService,
+  ],
+  exports: [IdentityProviderTokenVerifier],
 })
-export class McpAuthModule { }
+export class McpAuthModule {}

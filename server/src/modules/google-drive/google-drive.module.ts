@@ -21,4 +21,4 @@ import { GoogleTokenService } from '../google-integration/services/google-token.
     GoogleDriveClientService,
   ],
 })
-export class GoogleDriveModule { }
+export class GoogleDriveModule {}

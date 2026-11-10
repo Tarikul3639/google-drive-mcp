@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 import { GoogleDriveClientService } from './google-drive-client.service.js';
 
@@ -64,9 +61,7 @@ describe('GoogleDriveClientService', () => {
       ],
     }).compile();
 
-    service = module.get<GoogleDriveClientService>(
-      GoogleDriveClientService,
-    );
+    service = module.get<GoogleDriveClientService>(GoogleDriveClientService);
   });
 
   afterEach(() => {
@@ -88,9 +83,9 @@ describe('GoogleDriveClientService', () => {
     it('should throw NotFoundException when Google account does not exist', async () => {
       googleIntegrationService.findByUserId.mockResolvedValue(null);
 
-      await expect(
-        service.getClient('user-123'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(service.getClient('user-123')).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('should throw UnauthorizedException when tokens are missing', async () => {
@@ -99,9 +94,9 @@ describe('GoogleDriveClientService', () => {
         refreshToken: null,
       });
 
-      await expect(
-        service.getClient('user-123'),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.getClient('user-123')).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('should create a Google Drive client successfully', async () => {
@@ -116,9 +111,7 @@ describe('GoogleDriveClientService', () => {
       expect(client).toBeDefined();
       expect(client.files).toBeDefined();
 
-      expect(
-        googleIntegrationService.findByUserId,
-      ).toHaveBeenCalledTimes(1);
+      expect(googleIntegrationService.findByUserId).toHaveBeenCalledTimes(1);
 
       expect(googleTokenService.decrypt).toHaveBeenCalledTimes(2);
     });
@@ -135,9 +128,7 @@ describe('GoogleDriveClientService', () => {
 
       expect(firstClient).toBe(secondClient);
 
-      expect(
-        googleIntegrationService.findByUserId,
-      ).toHaveBeenCalledTimes(1);
+      expect(googleIntegrationService.findByUserId).toHaveBeenCalledTimes(1);
     });
 
     it('should return the same client for concurrent requests', async () => {
@@ -154,9 +145,7 @@ describe('GoogleDriveClientService', () => {
 
       expect(firstClient).toBe(secondClient);
 
-      expect(
-        googleIntegrationService.findByUserId,
-      ).toHaveBeenCalledTimes(1);
+      expect(googleIntegrationService.findByUserId).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -174,9 +163,7 @@ describe('GoogleDriveClientService', () => {
 
       await service.getClient('user-123');
 
-      expect(
-        googleIntegrationService.findByUserId,
-      ).toHaveBeenCalledTimes(2);
+      expect(googleIntegrationService.findByUserId).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -194,9 +181,7 @@ describe('GoogleDriveClientService', () => {
 
       await service.getClient('user-123');
 
-      expect(
-        googleIntegrationService.findByUserId,
-      ).toHaveBeenCalledTimes(2);
+      expect(googleIntegrationService.findByUserId).toHaveBeenCalledTimes(2);
     });
   });
 });

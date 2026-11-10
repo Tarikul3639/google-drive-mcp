@@ -29,9 +29,7 @@ describe('RedisService', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
 
-    vi.mocked(createClient).mockReturnValue(
-      mockRedisClient as never,
-    );
+    vi.mocked(createClient).mockReturnValue(mockRedisClient as never);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -76,10 +74,7 @@ describe('RedisService', () => {
 
     await service.set('user:123', 'John');
 
-    expect(mockRedisClient.set).toHaveBeenCalledWith(
-      'user:123',
-      'John',
-    );
+    expect(mockRedisClient.set).toHaveBeenCalledWith('user:123', 'John');
   });
 
   it('should set a value with expiration', async () => {
@@ -87,11 +82,9 @@ describe('RedisService', () => {
 
     await service.set('user:123', 'John', 300);
 
-    expect(mockRedisClient.set).toHaveBeenCalledWith(
-      'user:123',
-      'John',
-      { EX: 300 },
-    );
+    expect(mockRedisClient.set).toHaveBeenCalledWith('user:123', 'John', {
+      EX: 300,
+    });
   });
 
   it('should get a value from Redis', async () => {
