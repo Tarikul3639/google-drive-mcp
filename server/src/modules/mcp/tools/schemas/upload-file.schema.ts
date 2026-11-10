@@ -7,7 +7,7 @@ export const uploadFileSchema = z.object({
   dataBase64: z
     .string()
     .min(4)
-    .max(14 * 1024 * 1024)
+    .max(100 * 1024 * 1024)
     .regex(
       /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/,
       'dataBase64 must be valid standard Base64.',
