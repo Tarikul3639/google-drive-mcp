@@ -2,6 +2,7 @@
 import { Test } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { OfficeFileService } from './office-file.service.js';
+import { OFFICE_MIME_TYPES } from './office-file.constants.js';
 
 describe('OfficeFileService', () => {
   let service: OfficeFileService;
@@ -36,9 +37,7 @@ describe('OfficeFileService', () => {
       ],
     });
     const parsed = service.readXlsx(created.dataBase64);
-    expect(created.mimeType).toBe(
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
+    expect(created.mimeType).toBe(OFFICE_MIME_TYPES.XLSX);
     expect(parsed.sheets).toEqual([
       {
         name: 'Data',
@@ -54,9 +53,7 @@ describe('OfficeFileService', () => {
     const created = await service.createDocx({
       paragraphs: ['Hello', 'World'],
     });
-    expect(created.mimeType).toBe(
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    );
+    expect(created.mimeType).toBe(OFFICE_MIME_TYPES.DOCX);
     expect(created.dataBase64).toBeTruthy();
   });
 
@@ -65,9 +62,7 @@ describe('OfficeFileService', () => {
       title: 'Deck',
       slides: [{ title: 'Intro', body: 'Welcome' }],
     });
-    expect(created.mimeType).toBe(
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    );
+    expect(created.mimeType).toBe(OFFICE_MIME_TYPES.PPTX);
     expect(created.dataBase64).toBeTruthy();
   });
 });

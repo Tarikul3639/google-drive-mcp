@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Document, Packer, Paragraph, TextRun } from 'docx';
 import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
+import { OFFICE_MIME_TYPES } from './office-file.constants.js';
 
 // Keep the public result type independent from Mammoth's internal declaration types.
 type DocxReadResult = {
@@ -37,8 +38,7 @@ export class OfficeFileService {
     });
     const buffer = await Packer.toBuffer(document);
     return {
-      mimeType:
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      mimeType: OFFICE_MIME_TYPES.DOCX,
       dataBase64: buffer.toString('base64'),
     };
   }
@@ -80,8 +80,7 @@ export class OfficeFileService {
     }
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
     return {
-      mimeType:
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      mimeType: OFFICE_MIME_TYPES.XLSX,
       dataBase64: buffer.toString('base64'),
     };
   }
@@ -125,8 +124,7 @@ export class OfficeFileService {
       ? data
       : Buffer.from(data as ArrayBuffer);
     return {
-      mimeType:
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      mimeType: OFFICE_MIME_TYPES.PPTX,
       dataBase64: buffer.toString('base64'),
     };
   }
