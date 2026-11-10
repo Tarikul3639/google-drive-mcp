@@ -42,33 +42,41 @@ Live services:
 
 ## Screenshots
 
-Screenshots must be genuine captures of the running application. The repository currently has a screenshot guide but does not yet include verified page captures. Add the images listed below to `docs/screenshots/`; the Markdown blocks will display them automatically once files exist.
+The following screenshots were captured from the running local application in **dark mode**. Each image is embedded directly below; all image files are in `screenshots/`.
 
 ### Landing page
 
-![Google Drive MCP landing page](./docs/screenshots/home.png)
+![Google Drive MCP landing page — dark mode](./screenshots/home-dark-final.png)
 
-### Google sign-in
+### Login
 
-![Google Drive MCP Google sign-in](./docs/screenshots/login.png)
+![Google sign-in page — dark mode](./screenshots/login-dark-final2.png)
 
-### Account dashboard
+### Contact
 
-![Google Drive MCP account dashboard](./docs/screenshots/dashboard.png)
+![Contact page — dark mode](./screenshots/contact-dark-final.png)
 
-### MCP client connection setup
+### MCP connection
 
-![Google Drive MCP connection setup](./docs/screenshots/mcp-connect.png)
+![MCP connection page — dark mode](./screenshots/mcp-connect-dark-final.png)
 
-### MCP authorization consent
+### Dashboard route
 
-![Google Drive MCP consent page](./docs/screenshots/mcp-consent.png)
+![Dashboard route — dark mode; redirects to sign-in without an authenticated session](./screenshots/dashboard-dark-final.png)
 
-### Authorized clients and tool permissions
+### Account route
 
-![Google Drive MCP client access management](./docs/screenshots/client-access.png)
+![Account route — dark mode; redirects to sign-in without an authenticated session](./screenshots/account-dark-final.png)
 
-Capture with a dedicated test account, remove personal data and tokens, and never commit screenshots that expose account information. See [Screenshot capture guide](./docs/screenshots/README.md).
+### Welcome
+
+![Post-authentication welcome page — dark mode](./screenshots/auth-welcome-dark-final.png)
+
+### MCP consent
+
+![MCP consent route — dark mode; opened with a demo transaction parameter, not a verified live OAuth transaction](./screenshots/mcp-consent-dark-final.png)
+
+Dashboard and Account currently show the unauthenticated redirect state rather than authenticated content. The consent page is a route smoke-test, not a completed OAuth flow. Capture those states again after signing in with a dedicated test account and completing a real MCP OAuth flow. Review images for personal data, credentials, and tokens before publishing.
 
 ## Features
 
@@ -387,6 +395,7 @@ The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-t
 | `/dashboard` | Drive and MCP access dashboard |
 | `/account` | Account settings |
 | `/mcp/connect` | MCP connection instructions |
+| `/contact` | Contact and project links |
 | `/mcp/consent` | Client authorization consent |
 
 ## HTTP API reference

@@ -70,7 +70,7 @@ export function WelcomeCard({
             transition={{ ...transition, delay: 0.18 }}
             className="mx-auto mt-3 max-w-xs text-xs leading-6 text-muted-foreground sm:text-sm"
           >
-            Your Drivebridge account is ready. Let&apos;s get your files where
+            Your Google Drive MCP connection is ready. Let&apos;s get your files where
             your ideas are.
           </motion.p>
           <WelcomeProfile user={user} loading={loading} error={error} />

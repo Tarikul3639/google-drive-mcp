@@ -78,7 +78,7 @@ export function LoginFormPanel({
             </Button>
           )}
           <p className="mt-5 text-center text-[10px] leading-5 text-muted-foreground">
-            By continuing, you agree to use Drivebridge with the Google account
+            By continuing, you agree to use Google Drive MCP with the Google account
             you select.
           </p>
         </CardContent>

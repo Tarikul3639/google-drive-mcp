@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { motion } from "motion/react"
-import { Cable, ShieldCheck } from "lucide-react"
+import { ShieldCheck } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/features/home/components/ThemeToggle"
@@ -18,12 +18,25 @@ export function LoginBrandPanel() {
         className="absolute -bottom-20 left-12 size-85 rounded-full border border-primary-foreground/15"
       />
       <div className="relative flex items-center justify-between">
-        <Link className="flex items-center gap-3" href="/">
-          <span className="grid size-10 place-items-center rounded-[14px] bg-primary-foreground/15">
-            <Cable className="size-5" />
+        <Link
+          aria-label="Google Drive MCP home"
+          className="group flex items-center gap-2.5"
+          href="/"
+        >
+          <span className="relative block size-10 shrink-0 overflow-hidden rounded-sm">
+            <img
+              src="/google-drive-mcp-logo.svg"
+              alt=""
+              className="size-full object-cover"
+            />
           </span>
-          <span className="font-serif text-[22px] tracking-[-0.06em]">
-            drivebridge
+          <span className="flex flex-col leading-none">
+            <span className="whitespace-nowrap text-base font-semibold tracking-[-0.7px]">
+              Google Drive
+            </span>
+            <span className="mt-1 whitespace-nowrap text-xs font-semibold tracking-[0.24em] text-primary-foreground/80">
+              MCP
+            </span>
           </span>
         </Link>
         <ThemeToggle />
