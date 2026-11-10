@@ -26,6 +26,7 @@ export function DriveConnectionStatus({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
       className="flex flex-col justify-between gap-5 rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 sm:flex-row sm:items-center sm:px-5"
     >
       <div className="flex min-w-0 items-start gap-3 sm:items-center">

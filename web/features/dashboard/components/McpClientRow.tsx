@@ -46,7 +46,7 @@ export function McpClientRow({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.55, delay: index * 0.04 }}
       className="rounded-xl border bg-card"
     >

@@ -14,7 +14,7 @@ export function McpAccessHeader() {
         <motion.span
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.2, margin: "-5% 0px -5% 0px" }}
+          viewport={{ once: true, amount: 0.2, margin: "-5% 0px -5% 0px" }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="grid size-10 shrink-0 place-items-center rounded-[14px] bg-primary/10 text-primary"
         >

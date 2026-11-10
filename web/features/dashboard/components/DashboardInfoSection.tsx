@@ -35,6 +35,7 @@ export function DashboardInfoSection() {
                 key={number}
                 initial={{ opacity: 0, y: 8 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: index * 0.07 }}
                 className="rounded-[15px] border bg-muted/50 p-4"
               >

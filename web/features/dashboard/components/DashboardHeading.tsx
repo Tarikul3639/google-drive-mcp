@@ -13,6 +13,7 @@ export function DashboardHeading({ user }: { user: UserProfile }) {
         <motion.p
           initial={{ opacity: 0, y: 4 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="font-mono text-xs tracking-wider text-primary"
         >
           YOUR WORKSPACE / OVERVIEW
@@ -20,6 +21,7 @@ export function DashboardHeading({ user }: { user: UserProfile }) {
         <motion.h1
           initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ delay: 0.05 }}
           className="mt-2 max-w-full break-words font-serif text-3xl leading-tight tracking-tight sm:mt-3 sm:text-5xl lg:text-6xl"
         >
@@ -28,6 +30,7 @@ export function DashboardHeading({ user }: { user: UserProfile }) {
         <motion.p
           initial={{ opacity: 0, y: 4 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ delay: 0.1 }}
           className="mt-2 max-w-xl text-xs leading-5 text-muted-foreground sm:mt-3 sm:text-sm sm:leading-normal"
         >
@@ -37,6 +40,7 @@ export function DashboardHeading({ user }: { user: UserProfile }) {
       <motion.a
         initial={{ opacity: 0, y: 4 }}
         whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         whileHover={{ y: -2 }}
         whileTap={{ scale: 0.97 }}
         className="group flex items-center gap-2 rounded-full border border-foreground/10 px-4 py-2.5 text-xs text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground"
