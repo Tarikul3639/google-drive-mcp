@@ -1,5 +1,25 @@
 // Keep all registered MCP tool names in one place.
 export const MCP_TOOLS = {
+  // Google Workspace
+  CREATE_DOCUMENT: 'create_document',
+  GET_DOCUMENT: 'get_document',
+  INSERT_DOCUMENT_TEXT: 'insert_document_text',
+  CREATE_SPREADSHEET: 'create_spreadsheet',
+  GET_SPREADSHEET: 'get_spreadsheet',
+  GET_SPREADSHEET_VALUES: 'get_spreadsheet_values',
+  UPDATE_SPREADSHEET_VALUES: 'update_spreadsheet_values',
+  BATCH_UPDATE_SPREADSHEET: 'batch_update_spreadsheet',
+  CREATE_PRESENTATION: 'create_presentation',
+  GET_PRESENTATION: 'get_presentation',
+  BATCH_UPDATE_PRESENTATION: 'batch_update_presentation',
+
+  // Office document processing
+  READ_DOCX: 'read_docx',
+  CREATE_DOCX: 'create_docx',
+  READ_XLSX: 'read_xlsx',
+  CREATE_XLSX: 'create_xlsx',
+  CREATE_PPTX: 'create_pptx',
+
   // Files
   LIST_FILES: 'list_files',
   SEARCH_FILES: 'search_files',

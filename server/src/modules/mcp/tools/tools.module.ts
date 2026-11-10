@@ -40,12 +40,15 @@ import { ListSharedDrivesTool } from './tools/list-shared-drives.tool.js';
 import { GetSharedDriveTool } from './tools/get-shared-drive.tool.js';
 import { UpdateSharedDriveTool } from './tools/update-shared-drive.tool.js';
 import { DeleteSharedDriveTool } from './tools/delete-shared-drive.tool.js';
+import { WorkspaceTools } from './tools/workspace.tools.js';
 
 @Module({
   imports: [GoogleDriveModule],
   providers: [
     McpToolAccessService,
     McpToolRegistryService,
+    // Google Docs, Sheets, Slides and Office document MCP tools.
+    WorkspaceTools,
     // Drive Tools
     HealthCheckTool,
     ListFilesTool,

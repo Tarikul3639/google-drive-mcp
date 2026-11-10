@@ -806,7 +806,7 @@ export class GoogleDriveService {
             throw new BadRequestException('The uploaded file is empty or invalid.');
         }
         if (data.length > this.maxUploadBytes) {
-            throw new BadRequestException('Maximum upload size is 10 MB.');
+            throw new BadRequestException('Maximum upload size is 1000 MB.');
         }
 
         const drive = await this.googleDriveClientService.getClient(userId);

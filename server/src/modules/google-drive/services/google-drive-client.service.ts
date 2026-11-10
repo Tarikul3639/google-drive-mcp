@@ -5,14 +5,18 @@ import {
   UnauthorizedException,
   OnModuleDestroy,
 } from '@nestjs/common';
-import { google, type drive_v3 } from 'googleapis';
+import { google, type drive_v3, type docs_v1, type sheets_v4, type slides_v1 } from 'googleapis';
 
 import { ConfigService } from '../../../config/config.service.js';
 import { GoogleIntegrationService } from '../../google-integration/services/google-integration.service.js';
 import { GoogleTokenService } from '../../google-integration/services/google-token.service.js';
 
+// Keep all Google API clients together so Drive, Docs, Sheets and Slides share one OAuth session.
 interface CachedGoogleClient {
   drive: drive_v3.Drive;
+  docs: docs_v1.Docs;
+  sheets: sheets_v4.Sheets;
+  slides: slides_v1.Slides;
 }
 
 interface GoogleOAuthTokens {
@@ -24,13 +28,8 @@ interface GoogleOAuthTokens {
 @Injectable()
 export class GoogleDriveClientService implements OnModuleDestroy {
   private readonly logger = new Logger(GoogleDriveClientService.name);
-
   private readonly clients = new Map<string, CachedGoogleClient>();
-
-  private readonly pendingClients = new Map<
-    string,
-    Promise<CachedGoogleClient>
-  >();
+  private readonly pendingClients = new Map<string, Promise<CachedGoogleClient>>();
 
   constructor(
     private readonly configService: ConfigService,
@@ -38,40 +37,22 @@ export class GoogleDriveClientService implements OnModuleDestroy {
     private readonly googleTokenService: GoogleTokenService,
   ) {}
 
-  /**
-   * Returns an existing or newly created authenticated Drive client.
-   */
-  async getClient(userId: string): Promise<drive_v3.Drive> {
-    if (!userId) {
-      throw new UnauthorizedException('User authentication required.');
-    }
+  // Reuse cached clients and coalesce concurrent initialization for the same user.
+  private async getClients(userId: string): Promise<CachedGoogleClient> {
+    if (!userId) throw new UnauthorizedException('User authentication required.');
 
-    // Return cached client.
-    const cachedClient = this.clients.get(userId);
+    const cached = this.clients.get(userId);
+    if (cached) return cached;
 
-    if (cachedClient) {
-      return cachedClient.drive;
-    }
+    const pending = this.pendingClients.get(userId);
+    if (pending) return pending;
 
-    // Reuse an ongoing initialization request.
-    const pendingClient = this.pendingClients.get(userId);
-
-    if (pendingClient) {
-      const client = await pendingClient;
-      return client.drive;
-    }
-
-    // Initialize a new client.
-    const initialization = this.createClient(userId);
-
+    const initialization = this.createClients(userId);
     this.pendingClients.set(userId, initialization);
-
     try {
-      const client = await initialization;
-
-      this.clients.set(userId, client);
-
-      return client.drive;
+      const clients = await initialization;
+      this.clients.set(userId, clients);
+      return clients;
     } finally {
       if (this.pendingClients.get(userId) === initialization) {
         this.pendingClients.delete(userId);
@@ -79,16 +60,25 @@ export class GoogleDriveClientService implements OnModuleDestroy {
     }
   }
 
-  /**
-   * Creates a new authenticated Google Drive client.
-   */
-  private async createClient(userId: string): Promise<CachedGoogleClient> {
+  async getClient(userId: string): Promise<drive_v3.Drive> {
+    return (await this.getClients(userId)).drive;
+  }
+
+  async getDocsClient(userId: string): Promise<docs_v1.Docs> {
+    return (await this.getClients(userId)).docs;
+  }
+
+  async getSheetsClient(userId: string): Promise<sheets_v4.Sheets> {
+    return (await this.getClients(userId)).sheets;
+  }
+
+  async getSlidesClient(userId: string): Promise<slides_v1.Slides> {
+    return (await this.getClients(userId)).slides;
+  }
+
+  private async createClients(userId: string): Promise<CachedGoogleClient> {
     const account = await this.googleIntegrationService.findByUserId(userId);
-
-    if (!account) {
-      throw new NotFoundException('Google Drive account is not connected.');
-    }
-
+    if (!account) throw new NotFoundException('Google Drive account is not connected.');
     if (!account.accessToken || !account.refreshToken) {
       throw new UnauthorizedException(
         'Google Drive authorization tokens are missing. Please reconnect your account.',
@@ -97,7 +87,6 @@ export class GoogleDriveClientService implements OnModuleDestroy {
 
     const accessToken = this.googleTokenService.decrypt(account.accessToken);
     const refreshToken = this.googleTokenService.decrypt(account.refreshToken);
-
     const oauth2Client = new google.auth.OAuth2(
       this.configService.googleClientId,
       this.configService.googleClientSecret,
@@ -110,7 +99,7 @@ export class GoogleDriveClientService implements OnModuleDestroy {
       expiry_date: account.expiresAt?.getTime() ?? undefined,
     });
 
-    // Listen for newly issued OAuth tokens.
+    // Google may rotate access/refresh tokens; persist refreshed credentials encrypted.
     oauth2Client.on('tokens', (tokens) => {
       void this.persistTokens(userId, tokens).catch((error: unknown) => {
         this.logger.error(
@@ -120,62 +109,31 @@ export class GoogleDriveClientService implements OnModuleDestroy {
       });
     });
 
-    const driveClient = google.drive({
-      version: 'v3',
-      auth: oauth2Client,
-    });
-
     return {
-      drive: driveClient,
+      drive: google.drive({ version: 'v3', auth: oauth2Client }),
+      docs: google.docs({ version: 'v1', auth: oauth2Client }),
+      sheets: google.sheets({ version: 'v4', auth: oauth2Client }),
+      slides: google.slides({ version: 'v1', auth: oauth2Client }),
     };
   }
 
-  /**
-   * Encrypts and persists newly issued Google OAuth tokens.
-   */
-  private async persistTokens(
-    userId: string,
-    tokens: GoogleOAuthTokens,
-  ): Promise<void> {
-    const updateData: {
-      accessToken?: string;
-      refreshToken?: string;
-      expiresAt?: Date;
-    } = {};
-
+  private async persistTokens(userId: string, tokens: GoogleOAuthTokens): Promise<void> {
+    const updateData: { accessToken?: string; refreshToken?: string; expiresAt?: Date } = {};
     if (tokens.access_token) {
-      updateData.accessToken = this.googleTokenService.encrypt(
-        tokens.access_token,
-      );
+      updateData.accessToken = this.googleTokenService.encrypt(tokens.access_token);
     }
-
     if (tokens.refresh_token) {
-      updateData.refreshToken = this.googleTokenService.encrypt(
-        tokens.refresh_token,
-      );
+      updateData.refreshToken = this.googleTokenService.encrypt(tokens.refresh_token);
     }
-
-    if (tokens.expiry_date != null) {
-      updateData.expiresAt = new Date(tokens.expiry_date);
-    }
-
-    if (Object.keys(updateData).length === 0) {
-      return;
-    }
-
+    if (tokens.expiry_date != null) updateData.expiresAt = new Date(tokens.expiry_date);
+    if (Object.keys(updateData).length === 0) return;
     await this.googleIntegrationService.updateTokens(userId, updateData);
   }
 
-  /**
-   * Invalidates a user's cached Google Drive client.
-   */
   invalidateClient(userId: string): void {
     this.clients.delete(userId);
   }
 
-  /**
-   * Clears cached clients during module destruction.
-   */
   onModuleDestroy(): void {
     this.clients.clear();
     this.pendingClients.clear();

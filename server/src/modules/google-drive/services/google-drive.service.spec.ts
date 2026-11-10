@@ -76,7 +76,7 @@ describe('GoogleDriveService', () => {
       );
 
       expect(mockDrive.files.list).toHaveBeenCalledWith({
-        pageSize: 10,
+        pageSize: 50,
         pageToken: undefined,
         q: 'trashed = false',
         orderBy: 'modifiedTime desc',
