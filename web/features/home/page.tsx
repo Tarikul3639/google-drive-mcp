@@ -8,7 +8,7 @@ export default function HomePage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Drivebridge",
+    name: "Google Drive MCP",
     applicationCategory: "ProductivityApplication",
     operatingSystem: "Web",
     description:

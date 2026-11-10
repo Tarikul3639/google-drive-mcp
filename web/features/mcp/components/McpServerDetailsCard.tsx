@@ -39,7 +39,7 @@ export function McpServerDetailsCard({
           <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
             <img
               src={clientIcon}
-              alt="Drivebridge logo"
+              alt="Google Drive MCP logo"
               className="size-full object-cover"
             />
           </div>
@@ -103,14 +103,14 @@ export function McpServerDetailsCard({
             <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border bg-muted">
               <img
                 src={clientIcon}
-                alt="Drivebridge MCP client icon"
+                alt="Google Drive MCP client icon"
                 className="size-full object-cover"
               />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-medium">Client icon</p>
               <p className="text-[11px] text-muted-foreground">
-                JPG · 1254 × 1254
+                PNG · Max 10 KB
               </p>
             </div>
           </div>

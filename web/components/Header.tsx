@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion } from "motion/react"
-import { ArrowUpRight, Cable } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 
 import { navItems } from "../features/home/components/constants"
 import { ThemeToggle } from "../features/home/components/ThemeToggle"
@@ -38,27 +38,36 @@ export function Header() {
   return (
     <header className="relative z-20 mx-auto flex w-full max-w-360 items-center justify-between px-5 py-5 sm:px-8 lg:px-14 lg:py-7">
       <Link
-        aria-label="Drivebridge home"
-        className="group flex items-center gap-3"
+        aria-label="Google Drive MCP home"
+        className="group flex items-center gap-2.5"
         href="/"
       >
         <motion.span
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative grid size-10 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm transition-transform duration-300 group-hover:scale-105"
+          className="relative block size-8 shrink-0 overflow-hidden rounded-sm transition-transform duration-300 group-hover:scale-105 sm:size-10"
         >
-          <Cable className="size-5" strokeWidth={1.8} />
-          <span className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-background bg-destructive" />
+          <img
+            src="/google-drive-mcp-logo.svg"
+            alt=""
+            className="size-full object-cover"
+          />
         </motion.span>
 
         <motion.span
           initial={{ opacity: 0, x: -6 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.05 }}
-          className="font-serif text-[22px] leading-none font-black capitalize"
+          className="flex flex-col sm:leading-none"
         >
-          drivebridge
+          <span className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.7px] text-foreground sm:text-base">
+            Google Drive
+          </span>
+
+          <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.24em] text-primary sm:text-xs">
+            MCP
+          </span>
         </motion.span>
       </Link>
 
@@ -77,7 +86,7 @@ export function Header() {
             }}
           >
             <Link
-              className="text-[13px] text-muted-foreground transition-colors duration-200 hover:text-foreground"
+              className="text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
               href={item.href.startsWith("#") ? `/${item.href}` : item.href}
             >
               {item.label}

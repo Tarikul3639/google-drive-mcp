@@ -4,7 +4,6 @@ import Link from "next/link"
 import { motion } from "motion/react"
 import {
   ArrowUpRight,
-  Cable,
   ChevronDown,
   CircleUserRound,
   LayoutDashboard,
@@ -40,12 +39,16 @@ export function DashboardSidebar({
           <motion.span
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid size-10 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105"
+            className="block size-10 shrink-0 overflow-hidden rounded-xl transition-transform group-hover:scale-105"
           >
-            <Cable className="size-5" strokeWidth={1.8} />
+            <img
+              src="/google-drive-mcp-logo.svg"
+              alt=""
+              className="size-full object-cover"
+            />
           </motion.span>
           <span className="hidden font-serif text-[22px] font-black tracking-tight lg:inline">
-            Drivebridge
+            Google Drive MCP
           </span>
         </Link>
       </div>

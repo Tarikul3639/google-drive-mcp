@@ -2,16 +2,16 @@ import { Globe, Monitor, Plug, ShieldCheck } from "lucide-react"
 
 import { backendUrl } from "@/config/site"
 
-export const clientName = "Drivebridge"
+export const clientName = "Google Drive MCP"
 export const clientDescription =
-  "Connect Google Drive to your AI tools with Drivebridge through the Model Context Protocol."
+  "Connect Google Drive to your AI tools through the Model Context Protocol."
 export const mcpEndpoint = new URL("api/mcp", backendUrl).toString()
 export const clientConfig = JSON.stringify(
-  { mcpServers: { drivebridge: { type: "http", url: mcpEndpoint } } },
+  { mcpServers: { "google-drive-mcp": { type: "http", url: mcpEndpoint } } },
   null,
   2
 )
-export const clientIcon = "/drivebridge-icon.jpg"
+export const clientIcon = "/google-drive-mcp-logo.svg"
 
 export const connectionSteps = [
   {
@@ -32,7 +32,7 @@ export const connectionSteps = [
     icon: Globe,
     title: "Enter the connection URL",
     description:
-      "Copy the Drivebridge endpoint and paste it into your MCP client's server URL field.",
+      "Copy the Google Drive MCP endpoint and paste it into your MCP client's server URL field.",
   },
   {
     number: "04",

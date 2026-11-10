@@ -41,13 +41,58 @@ export default function McpConnectPage() {
     }
   }
 
-  function downloadIcon() {
-    const link = document.createElement("a")
-    link.href = "/drivebridge-icon.jpg"
-    link.download = "drivebridge-icon.jpg"
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
+  async function downloadIcon() {
+    const response = await fetch("/google-drive-mcp-logo.svg")
+    if (!response.ok) {
+      setCopyError("Unable to download the icon. Please try again.")
+      return
+    }
+
+    const svgBlob = await response.blob()
+    const imageUrl = URL.createObjectURL(svgBlob)
+    const image = new Image()
+
+    image.onload = async () => {
+      try {
+        let pngBlob: Blob | null = null
+
+        for (const size of [128, 112, 96, 80, 64, 48]) {
+          const canvas = document.createElement("canvas")
+          canvas.width = size
+          canvas.height = size
+          const context = canvas.getContext("2d")
+          if (!context) continue
+
+          context.drawImage(image, 0, 0, size, size)
+          pngBlob = await new Promise((resolve) =>
+            canvas.toBlob(resolve, "image/png")
+          )
+
+          if (pngBlob && pngBlob.size <= 10 * 1024) break
+        }
+
+        if (!pngBlob || pngBlob.size > 10 * 1024) {
+          setCopyError("Could not compress the PNG icon below 10 KB.")
+          return
+        }
+
+        const pngUrl = URL.createObjectURL(pngBlob)
+        const link = document.createElement("a")
+        link.href = pngUrl
+        link.download = "google-drive-mcp-logo.png"
+        link.click()
+        URL.revokeObjectURL(pngUrl)
+        setCopyError("")
+      } finally {
+        URL.revokeObjectURL(imageUrl)
+      }
+    }
+
+    image.onerror = () => {
+      URL.revokeObjectURL(imageUrl)
+      setCopyError("Unable to convert the icon to PNG.")
+    }
+    image.src = imageUrl
   }
 
   return (

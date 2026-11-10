@@ -1,6 +1,6 @@
-# Drivebridge Web Application
+# Google Drive MCP Web Application
 
-The Drivebridge web application is built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, and Redux Toolkit.
+The Google Drive MCP web application is built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, and Redux Toolkit.
 
 ## Responsibilities
 

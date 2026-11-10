@@ -19,10 +19,10 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  applicationName: "Drivebridge",
+  applicationName: "Google Drive MCP",
   title: {
-    default: "Drivebridge — Google Drive for your AI workspace",
-    template: "%s | Drivebridge",
+    default: "Google Drive MCP — Connect Google Drive to AI",
+    template: "%s | Google Drive MCP",
   },
   description:
     "Connect Google Drive to your AI tools with a clear, secure MCP connection. Find and use the files you already work with.",
@@ -40,20 +40,20 @@ export const metadata: Metadata = {
   ],
   creator: siteConfig.author.name,
   publisher: siteConfig.author.name,
-  icons: { icon: "/favicon.ico" },
+  icons: { icon: "/icon.svg" },
   openGraph: {
     type: "website",
     url: siteUrl,
-    siteName: "Drivebridge",
-    title: "Drivebridge — Google Drive for your AI workspace",
+    siteName: "Google Drive MCP",
+    title: "Google Drive MCP — Connect Google Drive to AI",
     description:
-      "A calmer way to bring your Drive files into the tools you think with.",
+      "Connect Google Drive to AI tools through a secure Model Context Protocol server.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Drivebridge — Google Drive for your AI workspace",
+    title: "Google Drive MCP — Connect Google Drive to AI",
     description:
-      "Connect Google Drive to your AI tools with a clear, secure MCP connection.",
+      "Connect Google Drive to AI tools through a secure Model Context Protocol server.",
   },
   robots: { index: true, follow: true },
 }

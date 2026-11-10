@@ -3,6 +3,7 @@ import type { FilePreview, NavItem } from "../types"
 export const navItems: NavItem[] = [
   { label: "How it works", href: "#how-it-works" },
   { label: "For your tools", href: "#for-your-tools" },
+  { label: "Contact", href: "/contact" },
 ]
 
 export const filePreviews: FilePreview[] = [

@@ -1,21 +1,17 @@
 {
-  "name": "Drivebridge",
-  "short_name": "Drivebridge",
+  "name": "Google Drive MCP",
+  "short_name": "Drive MCP",
+  "description": "Connect Google Drive to AI tools with the Model Context Protocol.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#075E57",
+  "background_color": "#075E57",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/web-app-manifest-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "src": "/google-drive-mcp-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
-  ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  ]
 }

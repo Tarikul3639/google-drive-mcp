@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation"
 import { useIsMobile } from "@/hooks/use-mobile"
 import {
   ArrowUpRight,
-  Cable,
   CircleHelp,
+  LayoutDashboard,
   Home,
   Lightbulb,
   Plug,
@@ -61,11 +61,15 @@ export function AppSidebar() {
     >
       <SidebarHeader className="border-b border-border/70 px-5 py-5">
         <Link href="/" className="group flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
-            <Cable className="size-5" strokeWidth={1.8} />
+          <span className="block size-10 shrink-0 overflow-hidden rounded-xl">
+            <img
+              src="/google-drive-mcp-logo.svg"
+              alt=""
+              className="size-full object-cover"
+            />
           </span>
           <span className="font-serif text-[22px] font-black tracking-tight">
-            Drivebridge
+            Google Drive MCP
           </span>
         </Link>
         <div className="mt-5 rounded-xl border border-border/70 bg-muted/40 p-3">
@@ -128,7 +132,7 @@ export function AppSidebar() {
                   className="h-10 rounded-lg px-3 text-[13px] data-[active=true]:bg-primary/10 data-[active=true]:font-semibold data-[active=true]:text-primary"
                 >
                   <Link href="/dashboard" onClick={() => setOpenMobile(false)}>
-                    <Cable className="size-4" />
+                    <LayoutDashboard className="size-4" />
                     <span>Dashboard</span>
                     <ArrowUpRight className="ml-auto size-3.5" />
                   </Link>
@@ -174,7 +178,7 @@ export function AppSidebar() {
             <span className="block truncate text-xs font-semibold">
               {isLoading
                 ? "Loading profile…"
-                : (user?.name ?? "Welcome to Drivebridge")}
+                : (user?.name ?? "Welcome to Google Drive MCP")}
             </span>
             <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">
               {isLoading

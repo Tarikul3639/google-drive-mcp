@@ -1,8 +1,8 @@
 import { env } from "./env"
 
 export const siteConfig = {
-  name: "Drivebridge",
-  description: "Google Drive for your AI workspace",
+  name: "Google Drive MCP",
+  description: "Connect Google Drive to AI tools through MCP",
 
   url: env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   backendUrl: env.BACKEND_URL ?? "http://localhost:5000",

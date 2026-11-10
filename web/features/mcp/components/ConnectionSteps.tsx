@@ -12,7 +12,7 @@ export function ConnectionSteps() {
           How to connect
         </h2>
         <p className="text-sm leading-6 text-muted-foreground">
-          Follow these steps to connect Drivebridge to your AI client.
+          Follow these steps to connect Google Drive MCP to your AI client.
         </p>
       </div>
       <div className="space-y-3">

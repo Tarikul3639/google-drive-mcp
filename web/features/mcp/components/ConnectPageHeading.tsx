@@ -35,7 +35,7 @@ export function ConnectPageHeading() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="max-w-xl text-sm leading-6 text-muted-foreground sm:text-base"
       >
-        Connect Drivebridge to your favorite MCP-compatible AI client using
+        Connect Google Drive MCP to your favorite MCP-compatible AI client using
         Streamable HTTP. Your Google Drive files will be available through a
         secure connection.
       </motion.p>

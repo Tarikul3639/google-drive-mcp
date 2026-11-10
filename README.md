@@ -1,6 +1,6 @@
-# Drivebridge Documentation
+# Google Drive MCP Documentation
 
-Drivebridge is a self-hosted Google Drive integration that exposes Drive operations to MCP-compatible AI clients. It includes a Next.js web dashboard and a NestJS API/MCP server.
+Google Drive MCP is a self-hosted Google Drive integration that exposes Drive operations to MCP-compatible AI clients. It includes a Next.js web dashboard and a NestJS API/MCP server.
 
 > **Current project snapshot:** The backend MCP tool-name registry defines **36 tools**. This README documents the checked-in implementation, not Google's separate first-party Drive MCP service.
 
@@ -28,7 +28,7 @@ Drivebridge is a self-hosted Google Drive integration that exposes Drive operati
 
 ## Product overview
 
-Drivebridge lets a user connect a Google account, authorize an MCP client, and manage exactly which MCP tools that client may call. The backend validates MCP OAuth access and checks both the client's authorization grant and its per-tool permissions before executing Drive actions.
+Google Drive MCP lets a user connect a Google account, authorize an MCP client, and manage exactly which MCP tools that client may call. The backend validates MCP OAuth access and checks both the client's authorization grant and its per-tool permissions before executing Drive actions.
 
 **Repository applications**
 
@@ -46,27 +46,27 @@ Screenshots must be genuine captures of the running application. The repository 
 
 ### Landing page
 
-![Drivebridge landing page](./docs/screenshots/home.png)
+![Google Drive MCP landing page](./docs/screenshots/home.png)
 
 ### Google sign-in
 
-![Drivebridge Google sign-in](./docs/screenshots/login.png)
+![Google Drive MCP Google sign-in](./docs/screenshots/login.png)
 
 ### Account dashboard
 
-![Drivebridge account dashboard](./docs/screenshots/dashboard.png)
+![Google Drive MCP account dashboard](./docs/screenshots/dashboard.png)
 
 ### MCP client connection setup
 
-![Drivebridge MCP connection setup](./docs/screenshots/mcp-connect.png)
+![Google Drive MCP connection setup](./docs/screenshots/mcp-connect.png)
 
 ### MCP authorization consent
 
-![Drivebridge MCP consent page](./docs/screenshots/mcp-consent.png)
+![Google Drive MCP consent page](./docs/screenshots/mcp-consent.png)
 
 ### Authorized clients and tool permissions
 
-![Drivebridge client access management](./docs/screenshots/client-access.png)
+![Google Drive MCP client access management](./docs/screenshots/client-access.png)
 
 Capture with a dedicated test account, remove personal data and tokens, and never commit screenshots that expose account information. See [Screenshot capture guide](./docs/screenshots/README.md).
 
@@ -125,7 +125,7 @@ flowchart TB
 1. An MCP client discovers the OAuth authorization-server metadata.
 2. The client registers through Dynamic Client Registration.
 3. The user is sent through Google authentication.
-4. Drivebridge displays the pending client request and consent details.
+4. Google Drive MCP displays the pending client request and consent details.
 5. The user approves or denies the request.
 6. The MCP client exchanges the authorization code for tokens.
 7. On a tool call, the server validates the bearer token and resolves the client grant.
@@ -280,13 +280,13 @@ Check the current Prisma CLI workflow documentation in the repository before app
 
 ## Connect an MCP client
 
-Drivebridge exposes a remote MCP endpoint protected by OAuth. Use the deployed endpoint or the local endpoint configured by your environment.
+Google Drive MCP exposes a remote MCP endpoint protected by OAuth. Use the deployed endpoint or the local endpoint configured by your environment.
 
 ### Connection information
 
 | Setting | Value |
 | --- | --- |
-| Server name | `Drivebridge` |
+| Server name | `Google Drive MCP` |
 | Transport | Streamable HTTP (confirm client compatibility) |
 | MCP resource | Value configured in `MCP_RESOURCE` |
 | Authorization server | Value configured in `MCP_AUTHORIZATION_SERVER` |
@@ -301,7 +301,7 @@ Drivebridge exposes a remote MCP endpoint protected by OAuth. Use the deployed e
 5. Review the client identity and requested access in the consent page.
 6. Approve the connection.
 7. Return to the MCP client and wait for token exchange/discovery to complete.
-8. Open the Drivebridge dashboard to manage the connected client's tool permissions.
+8. Open the Google Drive MCP dashboard to manage the connected client's tool permissions.
 
 Exact UI steps vary by MCP client. Do not paste Google client secrets into an MCP client unless that client specifically requires a separately registered OAuth client configuration.
 

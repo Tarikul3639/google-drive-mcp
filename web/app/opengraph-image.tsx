@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-export const alt = "Drivebridge — Google Drive for your AI workspace"
+export const alt = "Google Drive MCP — Connect Google Drive to AI"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -69,14 +69,14 @@ export default function OpenGraphImage() {
               alignItems: "center",
               justifyContent: "center",
               borderRadius: 17,
-              background: "#376447",
+              background: "#075E57",
               color: "white",
               fontSize: 32,
             }}
           >
-            ↗
+            G
           </div>
-          Drivebridge
+          Google Drive MCP
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div
@@ -87,7 +87,7 @@ export default function OpenGraphImage() {
               letterSpacing: 5,
             }}
           >
-            YOUR DRIVE, IN THE FLOW
+            GOOGLE DRIVE MCP
           </div>
           <div
             style={{
@@ -103,7 +103,7 @@ export default function OpenGraphImage() {
             <span>for your AI workspace.</span>
           </div>
           <div style={{ color: "#66756a", fontSize: 26 }}>
-            A clear, secure connection through MCP.
+            Connect Google Drive to your AI tools securely.
           </div>
         </div>
         <div
