@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import {
+  sharedDriveFields,
+  sharedDriveListFields,
+} from '../google-drive-fields.js';
 
 // Manages shared-drive creation, discovery, metadata, updates, and deletion.
 @Injectable()
@@ -22,7 +26,13 @@ export class SharedDrivesService {
     const response = await drive.drives.create({
       requestId: input.requestId ?? randomUUID(),
       requestBody: { name: input.name },
-      fields: 'id, name, colorRgb, createdTime, hidden',
+      fields: sharedDriveFields(
+        'id',
+        'name',
+        'colorRgb',
+        'createdTime',
+        'hidden',
+      ),
     });
 
     return response.data;
@@ -41,7 +51,7 @@ export class SharedDrivesService {
     const response = await drive.drives.list({
       pageSize: input.pageSize ?? 100,
       pageToken: input.pageToken,
-      fields: 'nextPageToken, drives(id, name, colorRgb, createdTime, hidden)',
+      fields: `${sharedDriveListFields('nextPageToken', 'drives')}, drives(${sharedDriveFields('id', 'name', 'colorRgb', 'createdTime', 'hidden')})`,
     });
 
     return {
@@ -56,8 +66,15 @@ export class SharedDrivesService {
 
     const response = await drive.drives.get({
       driveId: input.driveId,
-      fields:
-        'id, name, colorRgb, createdTime, hidden, restrictions, capabilities',
+      fields: sharedDriveFields(
+        'id',
+        'name',
+        'colorRgb',
+        'createdTime',
+        'hidden',
+        'restrictions',
+        'capabilities',
+      ),
     });
 
     return response.data;
@@ -76,7 +93,14 @@ export class SharedDrivesService {
     const response = await drive.drives.update({
       driveId: input.driveId,
       requestBody: { name: input.name },
-      fields: 'id, name, colorRgb, createdTime, hidden, restrictions',
+      fields: sharedDriveFields(
+        'id',
+        'name',
+        'colorRgb',
+        'createdTime',
+        'hidden',
+        'restrictions',
+      ),
     });
 
     return response.data;

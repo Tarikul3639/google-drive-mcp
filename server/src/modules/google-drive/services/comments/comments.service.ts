@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import {
+  driveCommentFields,
+  driveCommentListFields,
+} from '../google-drive-fields.js';
 
 // Creates, retrieves, updates, lists, and deletes comments on Drive files.
 @Injectable()
@@ -25,8 +29,16 @@ export class CommentsService {
         content: input.content,
         quotedFileContent: input.quotedFileContent,
       },
-      fields:
-        'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, replies',
+      fields: driveCommentFields(
+        'id',
+        'content',
+        'author',
+        'createdTime',
+        'modifiedTime',
+        'quotedFileContent',
+        'resolved',
+        'replies',
+      ),
     });
 
     return response.data;
@@ -45,8 +57,17 @@ export class CommentsService {
     const response = await drive.comments.get({
       fileId: input.fileId,
       commentId: input.commentId,
-      fields:
-        'id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies',
+      fields: driveCommentFields(
+        'id',
+        'content',
+        'author',
+        'createdTime',
+        'modifiedTime',
+        'quotedFileContent',
+        'resolved',
+        'deleted',
+        'replies',
+      ),
     });
 
     return response.data;
@@ -68,8 +89,17 @@ export class CommentsService {
       pageSize: 100,
       pageToken: input.pageToken,
       includeDeleted: input.includeDeleted,
-      fields:
-        'nextPageToken, comments(id, content, author, createdTime, modifiedTime, quotedFileContent, resolved, deleted, replies)',
+      fields: `${driveCommentListFields('nextPageToken', 'comments')}, comments(${driveCommentFields(
+        'id',
+        'content',
+        'author',
+        'createdTime',
+        'modifiedTime',
+        'quotedFileContent',
+        'resolved',
+        'deleted',
+        'replies',
+      )})`,
     });
 
     return {
@@ -97,8 +127,16 @@ export class CommentsService {
         content: input.content,
         resolved: input.resolved,
       },
-      fields:
-        'id, content, author, createdTime, modifiedTime, resolved, deleted, replies',
+      fields: driveCommentFields(
+        'id',
+        'content',
+        'author',
+        'createdTime',
+        'modifiedTime',
+        'resolved',
+        'deleted',
+        'replies',
+      ),
     });
 
     return response.data;

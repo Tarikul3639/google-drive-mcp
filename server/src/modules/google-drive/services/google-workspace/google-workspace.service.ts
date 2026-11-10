@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import { driveFileFields } from '../google-drive-fields.js';
 
 // Provides Google Docs, Sheets, and Slides document operations.
 @Injectable()
@@ -27,7 +28,7 @@ export class GoogleWorkspaceService {
       await drive.files.update({
         fileId: documentId,
         addParents: input.parentId,
-        fields: 'id, parents',
+        fields: driveFileFields('id', 'parents'),
       });
     }
 
@@ -46,7 +47,7 @@ export class GoogleWorkspaceService {
     const drive = await this.clients.getClient(userId);
     const file = await drive.files.get({
       fileId: documentId,
-      fields: 'id, name, webViewLink',
+      fields: driveFileFields('id', 'name', 'webViewLink'),
     });
 
     return {
@@ -109,7 +110,7 @@ export class GoogleWorkspaceService {
       await drive.files.update({
         fileId: spreadsheetId,
         addParents: input.parentId,
-        fields: 'id, parents',
+        fields: driveFileFields('id', 'parents'),
       });
     }
     return {
@@ -201,14 +202,14 @@ export class GoogleWorkspaceService {
       await drive.files.update({
         fileId: presentationId,
         addParents: input.parentId,
-        fields: 'id, parents',
+        fields: driveFileFields('id', 'parents'),
       });
     }
     // Slides API does not return a web URL; retrieve Drive's canonical webViewLink.
     const drive = await this.clients.getClient(userId);
     const file = await drive.files.get({
       fileId: presentationId,
-      fields: 'id, name, webViewLink',
+      fields: driveFileFields('id', 'name', 'webViewLink'),
     });
 
     return {

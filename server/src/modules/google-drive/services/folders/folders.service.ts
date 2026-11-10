@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import {
+  driveFileFields,
+  driveFileListFields,
+} from '../google-drive-fields.js';
 
 // Provides Google Drive folder listing, creation, organization, and lifecycle operations.
 @Injectable()
@@ -17,8 +21,15 @@ export class FoldersService {
       pageToken,
       q: "mimeType = 'application/vnd.google-apps.folder' and trashed = false",
       orderBy: 'name',
-      fields:
-        'nextPageToken, files(id, name, mimeType, webViewLink, parents, createdTime, modifiedTime)',
+      fields: `${driveFileListFields('nextPageToken')}, files(${driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'parents',
+        'createdTime',
+        'modifiedTime',
+      )})`,
     });
 
     return {
@@ -43,8 +54,15 @@ export class FoldersService {
         mimeType: 'application/vnd.google-apps.folder',
         parents: input.parentId ? [input.parentId] : undefined,
       },
-      fields:
-        'id, name, mimeType, webViewLink, parents, createdTime, modifiedTime',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'parents',
+        'createdTime',
+        'modifiedTime',
+      ),
     });
 
     return response.data;
@@ -57,7 +75,7 @@ export class FoldersService {
     // Confirm the target is a folder before renaming it.
     const metadata = await drive.files.get({
       fileId: folderId,
-      fields: 'id, mimeType',
+      fields: driveFileFields('id', 'mimeType'),
     });
     if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
       throw new Error('The specified item is not a folder.');
@@ -66,7 +84,14 @@ export class FoldersService {
     const response = await drive.files.update({
       fileId: folderId,
       requestBody: { name: newName },
-      fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'parents',
+        'modifiedTime',
+      ),
     });
 
     return response.data;
@@ -79,7 +104,7 @@ export class FoldersService {
     // Confirm the source is a folder before changing its parent.
     const metadata = await drive.files.get({
       fileId: folderId,
-      fields: 'id, mimeType, parents',
+      fields: driveFileFields('id', 'mimeType', 'parents'),
     });
     if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
       throw new Error('The specified item is not a folder.');
@@ -91,7 +116,14 @@ export class FoldersService {
       addParents: parentId,
       removeParents:
         currentParents.length > 0 ? currentParents.join(',') : undefined,
-      fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'parents',
+        'modifiedTime',
+      ),
     });
 
     return response.data;
@@ -104,7 +136,7 @@ export class FoldersService {
     // Confirm the target is a folder before moving it to trash.
     const metadata = await drive.files.get({
       fileId: folderId,
-      fields: 'id, mimeType',
+      fields: driveFileFields('id', 'mimeType'),
     });
     if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
       throw new Error('The specified item is not a folder.');
@@ -113,7 +145,14 @@ export class FoldersService {
     const response = await drive.files.update({
       fileId: folderId,
       requestBody: { trashed: true },
-      fields: 'id, name, mimeType, trashed, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'trashed',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;
@@ -126,7 +165,7 @@ export class FoldersService {
     // Confirm the target is a folder before restoring it.
     const metadata = await drive.files.get({
       fileId: folderId,
-      fields: 'id, mimeType',
+      fields: driveFileFields('id', 'mimeType'),
     });
     if (metadata.data.mimeType !== 'application/vnd.google-apps.folder') {
       throw new Error('The specified item is not a folder.');
@@ -135,7 +174,14 @@ export class FoldersService {
     const response = await drive.files.update({
       fileId: folderId,
       requestBody: { trashed: false },
-      fields: 'id, name, mimeType, trashed, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'trashed',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;

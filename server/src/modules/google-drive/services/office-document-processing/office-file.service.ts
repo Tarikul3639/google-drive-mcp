@@ -4,18 +4,15 @@ import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import { OFFICE_MIME_TYPES } from './office-file.constants.js';
 
-// Keep the public result type independent from Mammoth's internal declaration types.
-type DocxReadResult = {
-  text: string;
-  messages: Array<{ type: string; message: string }>;
-};
-
 // Office files are processed locally; methods accept and return base64 so MCP can transport binary data.
 // Reads and generates DOCX, XLSX, and PPTX files using local processing libraries.
 @Injectable()
 export class OfficeFileService {
   // Extracts readable text and parser messages from a DOCX file.
-  async readDocx(dataBase64: string): Promise<DocxReadResult> {
+  async readDocx(dataBase64: string): Promise<{
+    text: string;
+    messages: Array<{ type: 'warning' | 'error'; message: string }>;
+  }> {
     const buffer = this.decode(dataBase64);
     const result = await mammoth.extractRawText({ buffer });
     return {
@@ -25,7 +22,6 @@ export class OfficeFileService {
   }
 
   // Generates a DOCX file from the supplied paragraphs.
-
   async createDocx(input: { paragraphs: string[] }) {
     const document = new Document({
       sections: [
@@ -45,7 +41,7 @@ export class OfficeFileService {
 
   // Reads each worksheet into a two-dimensional array of cell values.
   readXlsx(dataBase64: string) {
-    const workbook = XLSX.read(this.decode(dataBase64), {
+    const workbook: XLSX.WorkBook = XLSX.read(this.decode(dataBase64), {
       type: 'buffer',
       cellDates: true,
     });
@@ -61,17 +57,15 @@ export class OfficeFileService {
   }
 
   // Generates an XLSX workbook from the supplied worksheet data.
-
   createXlsx(input: {
     sheets: Array<{
       name: string;
       rows: Array<Array<string | number | boolean | null>>;
     }>;
   }) {
-    const workbook = XLSX.utils.book_new();
-    // Handles the for operation.
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
     for (const sheet of input.sheets) {
-      const worksheet = XLSX.utils.aoa_to_sheet(sheet.rows);
+      const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheet.rows);
       XLSX.utils.book_append_sheet(
         workbook,
         worksheet,
@@ -86,7 +80,6 @@ export class OfficeFileService {
   }
 
   // Generates a PowerPoint presentation from the supplied slide content.
-
   async createPptx(input: {
     title: string;
     slides: Array<{ title?: string; body?: string }>;
@@ -97,7 +90,6 @@ export class OfficeFileService {
     presentation.subject = input.title;
     presentation.title = input.title;
     presentation.layout = 'LAYOUT_WIDE';
-    // Handles the for operation.
     for (const slideInput of input.slides) {
       const slide = presentation.addSlide();
       if (slideInput.title)

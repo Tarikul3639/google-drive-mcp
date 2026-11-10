@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import {
+  drivePermissionFields,
+  drivePermissionListFields,
+} from '../google-drive-fields.js';
 
 // Manages access permissions for Google Drive files and folders.
 @Injectable()
@@ -44,8 +48,17 @@ export class PermissionsService {
       },
       sendNotificationEmail: input.sendNotificationEmail,
       emailMessage: input.emailMessage,
-      fields:
-        'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+      fields: drivePermissionFields(
+        'id',
+        'type',
+        'role',
+        'emailAddress',
+        'domain',
+        'displayName',
+        'expirationTime',
+        'allowFileDiscovery',
+        'deleted',
+      ),
     });
 
     return response.data;
@@ -64,8 +77,17 @@ export class PermissionsService {
     const response = await drive.permissions.get({
       fileId: input.fileId,
       permissionId: input.permissionId,
-      fields:
-        'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+      fields: drivePermissionFields(
+        'id',
+        'type',
+        'role',
+        'emailAddress',
+        'domain',
+        'displayName',
+        'expirationTime',
+        'allowFileDiscovery',
+        'deleted',
+      ),
     });
 
     return response.data;
@@ -85,8 +107,17 @@ export class PermissionsService {
       fileId: input.fileId,
       pageSize: 100,
       pageToken: input.pageToken,
-      fields:
-        'nextPageToken, permissions(id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted)',
+      fields: `${drivePermissionListFields('nextPageToken', 'permissions')}, permissions(${drivePermissionFields(
+        'id',
+        'type',
+        'role',
+        'emailAddress',
+        'domain',
+        'displayName',
+        'expirationTime',
+        'allowFileDiscovery',
+        'deleted',
+      )})`,
     });
 
     return {
@@ -114,8 +145,17 @@ export class PermissionsService {
         role: input.role,
         expirationTime: input.expirationTime,
       },
-      fields:
-        'id, type, role, emailAddress, domain, displayName, expirationTime, allowFileDiscovery, deleted',
+      fields: drivePermissionFields(
+        'id',
+        'type',
+        'role',
+        'emailAddress',
+        'domain',
+        'displayName',
+        'expirationTime',
+        'allowFileDiscovery',
+        'deleted',
+      ),
     });
 
     return response.data;

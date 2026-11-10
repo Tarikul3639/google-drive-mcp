@@ -1,6 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { Readable } from 'node:stream';
 import { GoogleDriveClientService } from '../google-drive-client.service.js';
+import {
+  driveFileFields,
+  driveFileListFields,
+} from '../google-drive-fields.js';
 
 // Provides Google Drive file listing, search, metadata, content, and lifecycle operations.
 @Injectable()
@@ -20,7 +24,7 @@ export class FilesService {
       pageToken,
       q: 'trashed = false',
       orderBy: 'modifiedTime desc',
-      fields: 'nextPageToken, files(id, name, mimeType, webViewLink)',
+      fields: `${driveFileListFields('nextPageToken')}, files(${driveFileFields('id', 'name', 'mimeType', 'webViewLink')})`,
     });
 
     return {
@@ -41,7 +45,7 @@ export class FilesService {
       pageToken,
       q: `trashed = false and (name contains '${escapedQuery}' or fullText contains '${escapedQuery}')`,
       orderBy: 'modifiedTime desc',
-      fields: 'nextPageToken, files(id, name, mimeType, webViewLink)',
+      fields: `${driveFileListFields('nextPageToken')}, files(${driveFileFields('id', 'name', 'mimeType', 'webViewLink')})`,
     });
 
     return {
@@ -56,8 +60,18 @@ export class FilesService {
 
     const response = await drive.files.get({
       fileId,
-      fields:
-        'id, name, mimeType, description, size, webViewLink, createdTime, modifiedTime, parents, trashed',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'description',
+        'size',
+        'webViewLink',
+        'createdTime',
+        'modifiedTime',
+        'parents',
+        'trashed',
+      ),
     });
 
     return response.data;
@@ -88,8 +102,16 @@ export class FilesService {
               mimeType: input.mimeType ?? 'text/plain',
               body: input.content,
             },
-      fields:
-        'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'size',
+        'webViewLink',
+        'createdTime',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;
@@ -136,7 +158,7 @@ export class FilesService {
     // Read current parents so the file can be detached from its old folder.
     const currentFile = await drive.files.get({
       fileId,
-      fields: 'id, parents',
+      fields: driveFileFields('id', 'parents'),
     });
     const currentParents = currentFile.data.parents ?? [];
 
@@ -145,7 +167,14 @@ export class FilesService {
       addParents: parentId,
       removeParents:
         currentParents.length > 0 ? currentParents.join(',') : undefined,
-      fields: 'id, name, mimeType, webViewLink, parents, modifiedTime',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'parents',
+        'modifiedTime',
+      ),
     });
 
     return response.data;
@@ -160,7 +189,14 @@ export class FilesService {
       requestBody: {
         name: newName,
       },
-      fields: 'id, name, mimeType, webViewLink, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'webViewLink',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;
@@ -175,7 +211,13 @@ export class FilesService {
       requestBody: {
         trashed: true,
       },
-      fields: 'id, name, mimeType, trashed, modifiedTime',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'trashed',
+        'modifiedTime',
+      ),
     });
 
     return response.data;
@@ -190,7 +232,14 @@ export class FilesService {
       requestBody: {
         trashed: false,
       },
-      fields: 'id, name, mimeType, trashed, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'trashed',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;
@@ -213,8 +262,16 @@ export class FilesService {
         name: input.name,
         parents: input.parentId ? [input.parentId] : undefined,
       },
-      fields:
-        'id, name, mimeType, size, webViewLink, createdTime, modifiedTime, parents',
+      fields: driveFileFields(
+        'id',
+        'name',
+        'mimeType',
+        'size',
+        'webViewLink',
+        'createdTime',
+        'modifiedTime',
+        'parents',
+      ),
     });
 
     return response.data;
@@ -234,7 +291,7 @@ export class FilesService {
     // Fetch metadata first to identify the file and its MIME type.
     const metadata = await drive.files.get({
       fileId,
-      fields: 'id, name, mimeType, size',
+      fields: driveFileFields('id', 'name', 'mimeType', 'size'),
     });
 
     // Google Workspace-native files must be exported instead.
@@ -263,7 +320,7 @@ export class FilesService {
 
     const metadata = await drive.files.get({
       fileId,
-      fields: 'id, name, mimeType',
+      fields: driveFileFields('id', 'name', 'mimeType'),
     });
 
     if (!metadata.data.mimeType?.startsWith('application/vnd.google-apps.')) {
