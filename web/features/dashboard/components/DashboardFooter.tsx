@@ -15,9 +15,9 @@ export function DashboardFooter({
     <motion.div
       initial={{ opacity: 0, y: 4 }}
       whileInView={{ opacity: 1, y: 0 }}
-      className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-5 text-xs text-muted-foreground"
+      className="mt-6 flex min-w-0 flex-col items-start justify-between gap-2 border-t border-foreground/10 pt-4 text-xs text-muted-foreground sm:mt-7 sm:flex-row sm:items-center sm:gap-3 sm:pt-5"
     >
-      <span>{email}</span>
+      <span className="max-w-full break-all">{email}</span>
       <Button
         variant="link"
         size="sm"

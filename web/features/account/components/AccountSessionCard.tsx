@@ -14,8 +14,8 @@ export function AccountSessionCard({
   onSignOut: () => void
 }) {
   return (
-    <Card className="mt-4 rounded-xl">
-      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+    <Card className="mt-4 min-w-0 rounded-xl">
+      <CardContent className="flex min-w-0 flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
         <div>
           <h2 className="text-sm font-semibold">Session</h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
@@ -24,7 +24,7 @@ export function AccountSessionCard({
         </div>
         <Button
           variant="destructive"
-          className="h-10 shrink-0 rounded-full"
+          className="h-10 w-full shrink-0 rounded-full sm:w-auto"
           disabled={signingOut}
           onClick={onSignOut}
           type="button"

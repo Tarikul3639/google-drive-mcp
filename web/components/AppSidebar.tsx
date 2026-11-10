@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { motion } from "motion/react"
 import {
   ArrowUpRight,
   CircleHelp,
@@ -60,18 +61,39 @@ export function AppSidebar() {
       className="border-r border-border/70 bg-background"
     >
       <SidebarHeader className="border-b border-border/70 px-5 py-5">
-        <Link href="/" className="group flex items-center gap-3">
-          <span className="block size-10 shrink-0 overflow-hidden rounded-xl">
-            <img
-              src="/google-drive-mcp-logo.svg"
-              alt=""
-              className="size-full object-cover"
-            />
+      <Link
+        aria-label="Google Drive MCP home"
+        className="group flex items-center gap-2.5"
+        href="/"
+      >
+        <motion.span
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="relative block size-8 shrink-0 overflow-hidden rounded-sm transition-transform duration-300 group-hover:scale-105 sm:size-10"
+        >
+          <img
+            src="/google-drive-mcp-logo.svg"
+            alt=""
+            className="size-full object-cover"
+          />
+        </motion.span>
+
+        <motion.span
+          initial={{ opacity: 0, x: -6 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+          className="flex flex-col sm:leading-none"
+        >
+          <span className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.7px] text-foreground sm:text-base">
+            Google Drive
           </span>
-          <span className="font-serif text-[22px] font-black tracking-tight">
-            Google Drive MCP
+
+          <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.24em] text-primary sm:text-xs">
+            MCP
           </span>
-        </Link>
+        </motion.span>
+      </Link>
         <div className="mt-5 rounded-xl border border-border/70 bg-muted/40 p-3">
           <div className="flex items-center gap-2 text-xs font-medium text-foreground">
             <span className="size-2 rounded-full bg-emerald-500" />

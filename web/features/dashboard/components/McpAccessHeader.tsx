@@ -9,7 +9,7 @@ import { CardHeader, CardTitle } from "@/components/ui/card"
 // Present the heading and short description for authorized MCP applications.
 export function McpAccessHeader() {
   return (
-    <CardHeader className="p-5 pb-0 sm:p-7 sm:pb-0">
+    <CardHeader className="p-4 pb-0 sm:p-7 sm:pb-0">
       <div className="flex items-start gap-3">
         <motion.span
           initial={{ opacity: 0, y: 8 }}
@@ -27,10 +27,10 @@ export function McpAccessHeader() {
           >
             AUTHORIZED APPS
           </Badge>
-          <CardTitle className="mt-2 font-serif text-2xl tracking-tight">
+          <CardTitle className="mt-2 break-words font-serif text-xl tracking-tight sm:text-2xl">
             MCP client access
           </CardTitle>
-          <p className="mt-1 max-w-xl text-sm leading-5 text-muted-foreground">
+          <p className="mt-1 max-w-xl text-xs leading-5 text-muted-foreground sm:text-sm">
             Choose which tools each app can use. Revoke, restore, or permanently
             delete access.
           </p>

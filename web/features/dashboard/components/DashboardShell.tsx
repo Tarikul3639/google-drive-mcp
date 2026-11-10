@@ -8,7 +8,7 @@ import type { UserProfile } from "@/features/shared/types/api"
 
 import { DashboardSidebar } from "./DashboardSidebar"
 
-// Keep the dashboard sidebar visible at every viewport size.
+// Keep the workspace sidebar on the left at every screen size.
 export function DashboardShell({
   children,
   user,
@@ -34,14 +34,16 @@ export function DashboardShell({
   }
 
   return (
-    <div className="min-h-svh overflow-x-clip bg-muted/30 text-foreground">
+    <div className="min-h-svh w-full min-w-0 overflow-x-clip bg-muted/30 text-foreground">
       <DashboardSidebar
         pathname={pathname}
         user={user}
         signingOut={signingOut}
         onSignOut={signOut}
       />
-      <div className="relative isolate min-h-svh pl-16 lg:pl-64">
+
+      <div className="relative isolate min-h-svh min-w-0 pl-14 sm:pl-16 lg:pl-64">
+
         <div
           aria-hidden="true"
           className="pointer-events-none absolute top-20 -right-32 -z-10 size-96 rounded-full bg-primary/16 blur-3xl"
@@ -58,7 +60,7 @@ export function DashboardShell({
           aria-hidden="true"
           className="pointer-events-none absolute top-[65%] left-1/3 -z-10 size-72 rounded-full bg-primary/5 blur-3xl"
         />
-        <main className="relative mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12">
+        <main className="relative mx-auto w-full max-w-7xl min-w-0 px-3 py-5 sm:px-6 sm:py-8 lg:px-10 lg:py-12">
           {children}
         </main>
       </div>

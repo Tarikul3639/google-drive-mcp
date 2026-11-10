@@ -51,7 +51,7 @@ export function McpClientRow({
       className="rounded-xl border bg-card"
     >
       <Collapsible open={open} onOpenChange={setOpen}>
-        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 flex-col gap-3 p-3 sm:flex-row sm:items-center sm:p-4">
           <McpClientSummary client={client} allowed={allowed} open={open} />
           <McpClientControls
             client={client}

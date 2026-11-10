@@ -23,7 +23,7 @@ export function DashboardMobileNav({
   return (
     <nav
       aria-label="Workspace navigation"
-      className="flex gap-2 overflow-x-auto border-b border-border bg-background px-5 py-2.5 lg:hidden"
+      className="flex w-full min-w-0 items-center gap-1 border-b border-border bg-background px-3 py-2 sm:gap-2 sm:px-6 lg:hidden"
     >
       {items.map((item) => {
         const Icon = item.icon
@@ -32,7 +32,7 @@ export function DashboardMobileNav({
           <Link
             key={item.href}
             href={item.href}
-            className={`flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs transition-colors ${active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
+            className={`flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full px-2 py-2.5 text-[11px] transition-colors sm:flex-none sm:gap-2 sm:px-4 sm:text-xs ${active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}
           >
             <Icon className="size-4" /> {item.label}
           </Link>
@@ -41,7 +41,7 @@ export function DashboardMobileNav({
       <Button
         variant="ghost"
         size="sm"
-        className="ml-auto shrink-0 text-xs text-muted-foreground"
+        className="ml-auto shrink-0 px-2 text-[11px] text-muted-foreground sm:px-3 sm:text-xs"
         disabled={signingOut}
         onClick={onSignOut}
         type="button"

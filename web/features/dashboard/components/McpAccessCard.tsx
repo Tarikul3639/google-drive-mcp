@@ -16,9 +16,9 @@ export function McpAccessCard() {
   const actions = useMcpAccessActions()
 
   return (
-    <Card className="mt-5 rounded-lg">
+    <Card className="mt-4 min-w-0 rounded-lg sm:mt-5">
       <McpAccessHeader />
-      <CardContent className="p-5 sm:p-7">
+      <CardContent className="min-w-0 p-3 sm:p-7">
         <McpClientList
           loading={isLoading}
           clients={clients}

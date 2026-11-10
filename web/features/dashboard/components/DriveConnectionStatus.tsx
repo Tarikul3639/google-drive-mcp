@@ -28,7 +28,7 @@ export function DriveConnectionStatus({
       whileInView={{ opacity: 1, y: 0 }}
       className="flex flex-col justify-between gap-5 rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 p-4 sm:flex-row sm:items-center sm:px-5"
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-start gap-3 sm:items-center">
         <span className="grid size-9 place-items-center rounded-xl bg-primary-foreground/15">
           {connected ? (
             <Check className="size-4" />
@@ -44,7 +44,7 @@ export function DriveConnectionStatus({
                 ? "Drive is not connected"
                 : "Connection status unavailable"}
           </span>
-          <span className="mt-1 block font-mono text-xs opacity-65">
+          <span className="mt-1 block break-all font-mono text-[10px] leading-4 opacity-65 sm:text-xs">
             {connection.email ??
               (connection.connected === null
                 ? "Refresh to check the current status"
@@ -52,10 +52,10 @@ export function DriveConnectionStatus({
           </span>
         </span>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
         <Button
           variant="outline"
-          className="h-10 rounded-full border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          className="h-10 w-full rounded-full border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground sm:w-auto"
           disabled={busy}
           onClick={onRefresh}
           type="button"
@@ -76,7 +76,7 @@ export function DriveConnectionStatus({
         {connected ? (
           <Button
             variant="secondary"
-            className="hover:text-destructive-foreground h-10 rounded-full bg-primary-foreground/15 text-primary-foreground hover:bg-destructive"
+            className="h-10 w-full rounded-full bg-primary-foreground/15 text-primary-foreground hover:bg-destructive hover:text-destructive-foreground sm:w-auto"
             disabled={busy}
             onClick={onDisconnect}
             type="button"

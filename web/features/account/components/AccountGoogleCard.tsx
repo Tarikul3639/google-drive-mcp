@@ -13,8 +13,8 @@ export function AccountGoogleCard({
   onWorkspace: () => void
 }) {
   return (
-    <Card className="mt-4 rounded-xl bg-secondary">
-      <CardContent className="flex gap-4 p-5 sm:p-6">
+    <Card className="mt-4 min-w-0 rounded-xl bg-secondary">
+      <CardContent className="flex min-w-0 gap-3 p-4 sm:gap-4 sm:p-6">
         <motion.span
           whileHover={{ rotate: 8, scale: 1.05 }}
           className="grid size-10 shrink-0 place-items-center rounded-xl bg-background text-primary"

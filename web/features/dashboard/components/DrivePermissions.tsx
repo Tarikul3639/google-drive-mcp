@@ -34,7 +34,7 @@ export function DrivePermissions({
         </div>
       </div>
       <Button
-        className="mt-4 h-9 rounded-full bg-primary-foreground text-primary hover:bg-primary-foreground/85"
+        className="mt-4 h-10 w-full rounded-full bg-primary-foreground text-primary hover:bg-primary-foreground/85 sm:w-auto"
         disabled={busy}
         onClick={onConnect}
         type="button"

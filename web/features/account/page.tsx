@@ -108,7 +108,7 @@ export default function AccountPage() {
       <Button
         variant="ghost"
         size="sm"
-        className="mb-7 rounded-full text-muted-foreground"
+        className="mb-4 rounded-full text-muted-foreground sm:mb-7"
         onClick={() => router.push("/dashboard")}
       >
         <ArrowLeft className="size-4" /> Workspace overview
@@ -116,10 +116,10 @@ export default function AccountPage() {
       <p className="font-mono text-xs tracking-widest text-primary">
         YOUR WORKSPACE / ACCOUNT
       </p>
-      <h1 className="mt-3 font-serif text-4xl leading-none tracking-tight sm:text-5xl lg:text-6xl">
+      <h1 className="mt-2 break-words font-serif text-3xl leading-tight tracking-tight sm:mt-3 sm:text-5xl lg:text-6xl">
         Your details.
       </h1>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 max-w-xl text-xs leading-5 text-muted-foreground sm:mt-3 sm:text-sm sm:leading-normal">
         Manage the profile connected to your Drivebridge account.
       </p>
       <AccountProfileCard

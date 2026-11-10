@@ -26,7 +26,7 @@ export function McpClientControls({
 }) {
   const busy = busyClient === client.clientId
   return (
-    <div className="flex shrink-0 flex-wrap gap-2 sm:pl-2">
+    <div className="flex min-w-0 flex-wrap gap-2 sm:shrink-0 sm:pl-2">
       <Button
         type="button"
         variant="outline"

@@ -33,13 +33,18 @@ export function DashboardSidebar({
   onSignOut: () => void
 }) {
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 flex w-16 flex-col border-r border-border/70 bg-background text-foreground lg:w-64">
+    <aside className="fixed inset-y-0 left-0 z-30 flex w-14 flex-col border-r border-border/70 bg-background text-foreground sm:w-16 lg:w-64">
       <div className="flex items-center justify-center gap-3 border-b border-border/70 px-2 py-5 lg:justify-start lg:px-5">
-        <Link href="/" className="group flex items-center gap-3">
+        <Link
+          aria-label="Google Drive MCP home"
+          className="group flex items-center gap-2.5"
+          href="/"
+        >
           <motion.span
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="block size-10 shrink-0 overflow-hidden rounded-xl transition-transform group-hover:scale-105"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="relative block size-10 shrink-0 overflow-hidden rounded-sm transition-transform duration-300 group-hover:scale-105 sm:size-10"
           >
             <img
               src="/google-drive-mcp-logo.svg"
@@ -47,9 +52,21 @@ export function DashboardSidebar({
               className="size-full object-cover"
             />
           </motion.span>
-          <span className="hidden font-serif text-[22px] font-black tracking-tight lg:inline">
-            Google Drive MCP
-          </span>
+
+          <motion.span
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="flex-col sm:leading-none hidden lg:flex"
+          >
+            <span className="whitespace-nowrap text-[17px] font-semibold tracking-[-0.7px] text-foreground sm:text-base">
+              Google Drive
+            </span>
+
+            <span className="whitespace-nowrap text-[11px] font-semibold tracking-[0.24em] text-primary sm:text-xs">
+              MCP
+            </span>
+          </motion.span>
         </Link>
       </div>
 
@@ -77,11 +94,10 @@ export function DashboardSidebar({
                 href={item.href}
                 aria-label={item.label}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-10 items-center justify-center gap-3 rounded-lg px-1 text-[13px] transition-colors duration-200 lg:justify-start lg:px-3 ${
-                  active
-                    ? "bg-primary/10 font-semibold text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                className={`flex h-10 items-center justify-center gap-3 rounded-lg px-1 text-[13px] transition-colors duration-200 lg:justify-start lg:px-3 ${active
+                  ? "bg-primary/10 font-semibold text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  }`}
               >
                 <Icon className="size-4" strokeWidth={1.8} />
                 <span className="hidden lg:inline">{item.label}</span>

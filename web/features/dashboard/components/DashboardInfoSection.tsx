@@ -15,9 +15,9 @@ export function DashboardInfoSection() {
   ]
 
   return (
-    <div className="mt-5 grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+    <div className="mt-4 grid min-w-0 gap-4 sm:mt-5 sm:gap-5 lg:grid-cols-[1.2fr_0.8fr]">
       <Card id="connection-help" className="rounded-lg">
-        <CardHeader className="p-6 pb-0 sm:p-7 sm:pb-0">
+        <CardHeader className="p-4 pb-0 sm:p-7 sm:pb-0">
           <Badge
             variant="outline"
             className="w-fit font-mono text-xs tracking-wider text-primary"
@@ -28,7 +28,7 @@ export function DashboardInfoSection() {
             A bridge you can see.
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 sm:p-7">
+        <CardContent className="p-4 sm:p-7">
           <div className="grid gap-3 sm:grid-cols-3">
             {steps.map(([number, title, body], index) => (
               <motion.div
@@ -52,7 +52,7 @@ export function DashboardInfoSection() {
       </Card>
 
       <Card className="flex flex-col justify-between rounded-lg bg-secondary">
-        <CardContent className="flex h-full flex-col justify-between p-6 sm:p-7">
+        <CardContent className="flex h-full flex-col justify-between p-4 sm:p-7">
           <div>
             <span className="grid size-9 place-items-center rounded-xl bg-background text-primary">
               <ShieldCheck className="size-4" />

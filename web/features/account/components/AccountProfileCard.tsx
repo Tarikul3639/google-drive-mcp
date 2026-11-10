@@ -31,14 +31,14 @@ export function AccountProfileCard({
   message: string
 }) {
   return (
-    <Card className="mt-8 rounded-xl">
-      <CardHeader className="p-5 pb-0 sm:p-8 sm:pb-0">
+    <Card className="mt-6 rounded-xl sm:mt-8">
+      <CardHeader className="p-4 pb-0 sm:p-8 sm:pb-0">
         <div className="flex items-center gap-4 border-b pb-6">
           <motion.div
             initial={{ opacity: 0, y: 5 }}
             whileInView={{ opacity: 1, y: 0 }}
           >
-            <Avatar className="size-14">
+            <Avatar className="size-12 sm:size-14">
               <AvatarImage src={user.picture ?? undefined} alt="" />
               <AvatarFallback className="bg-primary/10 font-serif text-xl text-primary">
                 {user.name?.slice(0, 1) ?? user.email.slice(0, 1).toUpperCase()}
@@ -46,7 +46,7 @@ export function AccountProfileCard({
             </Avatar>
           </motion.div>
           <div className="min-w-0">
-            <CardTitle className="truncate font-serif text-xl tracking-tight">
+            <CardTitle className="truncate font-serif text-lg tracking-tight sm:text-xl">
               {user.name ?? "Your profile"}
             </CardTitle>
             <p className="mt-1 truncate text-xs text-muted-foreground">
@@ -55,7 +55,7 @@ export function AccountProfileCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-5 sm:p-8">
+      <CardContent className="p-4 sm:p-8">
         <form onSubmit={onSubmit}>
           <Label className="text-xs" htmlFor="display-name">
             Display name
@@ -72,7 +72,7 @@ export function AccountProfileCard({
               value={name}
             />
             <Button
-              className="h-11 rounded-full px-5 text-xs"
+              className="h-11 w-full rounded-full px-5 text-xs sm:w-auto"
               disabled={saving || name.trim() === (user.name ?? "")}
               type="submit"
             >

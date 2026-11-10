@@ -53,7 +53,7 @@ export function DriveConnectionCard({
   }
 
   return (
-    <Card className="relative overflow-hidden rounded-lg border-0 bg-primary text-primary-foreground">
+    <Card className="relative min-w-0 overflow-hidden rounded-lg border-0 bg-primary text-primary-foreground">
       <div
         aria-hidden="true"
         className="absolute -top-20 -right-14 size-64 rounded-full border border-primary-foreground/20"
@@ -62,8 +62,8 @@ export function DriveConnectionCard({
         aria-hidden="true"
         className="absolute -top-8 -right-2 size-44 rounded-full border border-primary-foreground/15"
       />
-      <CardHeader className="relative gap-2 p-6 sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <CardHeader className="relative gap-2 p-4 sm:p-8">
+        <div className="flex min-w-0 flex-col-reverse items-start justify-between gap-3 sm:flex-row sm:gap-4">
           <div>
             <Badge
               variant="secondary"
@@ -71,10 +71,10 @@ export function DriveConnectionCard({
             >
               GOOGLE DRIVE
             </Badge>
-            <CardTitle className="mt-3 font-serif text-3xl tracking-tight">
+            <CardTitle className="mt-2 max-w-full break-words font-serif text-2xl leading-tight tracking-tight sm:mt-3 sm:text-3xl">
               Your files, within reach.
             </CardTitle>
-            <p className="mt-2 max-w-md text-sm leading-5 opacity-75">
+            <p className="mt-2 max-w-md text-xs leading-5 opacity-75 sm:text-sm">
               Connect your Drive to make its files available to your MCP
               compatible tools.
             </p>
@@ -87,7 +87,7 @@ export function DriveConnectionCard({
           </motion.span>
         </div>
       </CardHeader>
-      <CardContent className="relative space-y-4 px-6 pb-6 sm:px-8 sm:pb-8">
+      <CardContent className="relative min-w-0 space-y-3 px-4 pb-4 sm:space-y-4 sm:px-8 sm:pb-8">
         <DriveConnectionStatus
           connection={connection}
           busy={busy}
