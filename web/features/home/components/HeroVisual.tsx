@@ -28,13 +28,15 @@ export function HeroVisual() {
   const scenario = scenarios[Math.floor(tick / STEPS) % scenarios.length]
   const duration = STEP_MS / 1000 - 0.15
 
+  // Keep a square coordinate system so the SVG paths and percentage-based
+  // cards stay aligned at every viewport width.
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={viewportSettings}
       transition={{ duration: 0.9, ease }}
-      className="relative mx-auto aspect-square w-full max-w-md"
+      className="relative mx-auto aspect-square w-full min-w-0 max-w-md"
     >
       <div
         aria-hidden="true"

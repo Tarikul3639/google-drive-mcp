@@ -18,7 +18,7 @@ export function HeroDriveCard({
   const active = step >= 2 && step <= 4
   return (
     <div
-      className={`absolute bottom-0 left-[6%] z-10 flex h-[31%] w-[88%] flex-col rounded-2xl border bg-card p-3 shadow-xl transition-colors duration-500 ${active ? "border-primary/50" : "border-border/80"}`}
+      className={`absolute bottom-0 left-[3%] z-10 flex h-[31%] w-[94%] flex-col rounded-2xl border bg-card p-2 shadow-xl transition-colors duration-500 sm:left-[6%] sm:w-[88%] sm:p-3 ${active ? "border-primary/50" : "border-border/80"}`}
     >
       <div className="flex items-center gap-2">
         <GoogleDriveLogo />
@@ -34,7 +34,8 @@ export function HeroDriveCard({
           {scanning ? "SCANNING" : "CONNECTED"}
         </span>
       </div>
-      <div className="mt-2 grid flex-1 grid-cols-4 gap-2">
+      {/* Two columns on phones keep each file tile readable; desktop stays four-up. */}
+      <div className="mt-1 grid min-h-0 flex-1 grid-cols-4 gap-1 sm:mt-2 sm:gap-2">
         {files.map((file, index) => {
           const Icon = file.icon
           const target = index === scenarioFile
@@ -55,14 +56,18 @@ export function HeroDriveCard({
                   ? { duration: 0.7, delay: index * 0.12 }
                   : { duration: 0.4 }
               }
-              className={`flex flex-col items-center justify-center gap-1 rounded-lg border px-1 py-1 text-center transition-colors duration-300 ${matched ? "border-primary bg-primary/10" : "border-border bg-muted/50"}`}
+              className={`flex min-h-0 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-lg border px-0.5 py-0.5 text-center transition-colors duration-300 sm:gap-1 sm:px-1 sm:py-1 ${matched ? "border-primary bg-primary/10" : "border-border bg-muted/50"}`}
             >
-              <Icon />
-              <span className="w-full truncate text-[9px] font-semibold text-foreground">
-                {file.name}
+              <span className="[&_svg]:size-3.5 sm:[&_svg]:size-6">
+                <Icon />
               </span>
-              <span className="font-mono text-[8px] text-muted-foreground">
-                {file.meta}
+              <span className="w-full min-w-0">
+                <span className="block w-full truncate text-[8px] font-semibold text-foreground sm:text-[9px]">
+                  {file.name}
+                </span>
+                <span className="block font-mono text-[7px] text-muted-foreground sm:text-[8px]">
+                  {file.meta}
+                </span>
               </span>
             </motion.div>
           )

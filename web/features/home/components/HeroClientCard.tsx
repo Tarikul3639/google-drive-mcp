@@ -19,24 +19,28 @@ export function HeroClientCard({
 }) {
   return (
     <div
-      className={`absolute top-0 left-[6%] z-10 flex h-[28%] w-[88%] flex-col rounded-2xl border bg-card p-3 shadow-xl transition-colors duration-500 sm:p-4 ${step === 0 || step === 5 ? "border-primary/40" : "border-border/80"}`}
+      // Let the card use a little more vertical room on phones; fixed-height
+      // desktop proportions were clipping the prompt and response at small widths.
+      className={`absolute top-0 left-[2%] z-10 flex h-[32%] w-[96%] min-w-0 flex-col rounded-2xl border bg-card p-2 shadow-xl transition-colors duration-500 sm:left-[6%] sm:h-[28%] sm:w-[88%] sm:p-4 ${step === 0 || step === 5 ? "border-primary/40" : "border-border/80"}`}
     >
-      <div className="flex items-center gap-2">
-        <span className="grid size-7 place-items-center rounded-lg bg-primary/10 text-primary">
+      <div className="flex min-w-0 shrink-0 items-center gap-2">
+        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
           <Sparkles className="size-4" />
         </span>
-        <span className="text-xs font-semibold text-foreground">AI client</span>
-        <span className="ml-auto font-mono text-[9px] text-muted-foreground">
+        <span className="shrink-0 text-xs font-semibold text-foreground">AI client</span>
+        {/* Hide the long client list on narrow screens to preserve the card header. */}
+        <span className="ml-auto hidden font-mono text-[9px] text-muted-foreground sm:inline">
           Claude · Cursor · any MCP client
         </span>
       </div>
-      <div className="mt-2 flex flex-1 flex-col justify-center gap-1.5 overflow-hidden">
+      {/* Keep message content shrinkable and allow it to wrap instead of clipping. */}
+      <div className="mt-1 flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1 overflow-hidden sm:mt-2 sm:gap-1.5">
         <motion.div
           key={`p-${tick - step}`}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease }}
-          className="ml-auto max-w-[85%] truncate rounded-xl rounded-br-sm bg-primary px-3 py-1.5 text-[11px] text-primary-foreground"
+          className="ml-auto w-fit max-w-full whitespace-normal wrap-break-word rounded-xl rounded-br-sm bg-primary px-2.5 py-1 text-[10px] leading-4 text-primary-foreground sm:max-w-[85%] sm:px-3 sm:py-1.5 sm:text-[11px]"
         >
           {prompt}
           {step === 0 ? (
@@ -49,7 +53,7 @@ export function HeroClientCard({
             </motion.span>
           ) : null}
         </motion.div>
-        <div className="h-6">
+        <div className="min-h-5 min-w-0">
           <AnimatePresence mode="wait">
             {step === 5 ? (
               <motion.div
@@ -58,10 +62,10 @@ export function HeroClientCard({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease }}
-                className="flex max-w-[92%] items-center gap-1.5 rounded-xl rounded-bl-sm bg-muted px-3 py-1.5 text-[11px] text-foreground"
+                className="flex w-fit max-w-full items-start gap-1.5 rounded-xl rounded-bl-sm bg-muted px-2.5 py-1 text-[10px] leading-4 text-foreground sm:px-3 sm:py-1.5 sm:text-[11px]"
               >
                 <Check className="size-3 shrink-0 text-primary" />
-                <span className="truncate">{answer}</span>
+                <span className="min-w-0 whitespace-normal wrap-break-word">{answer}</span>
               </motion.div>
             ) : step >= 1 ? (
               <motion.div

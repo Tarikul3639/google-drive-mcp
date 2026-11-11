@@ -9,7 +9,7 @@ import { mcpStatus } from "./hero-data"
 export function HeroMcpNode({ step, tick }: { step: number; tick: number }) {
   const active = step >= 1
   return (
-    <div className="absolute top-[35%] left-1/2 z-10 aspect-square w-[26%] -translate-x-1/2">
+    <div className="absolute top-[34%] left-1/2 z-10 aspect-square w-[24%] -translate-x-1/2 sm:top-[35%] sm:w-[26%]">
       <div
         className={`relative flex size-full flex-col items-center justify-center rounded-full border bg-card shadow-xl transition-colors duration-500 ${active ? "border-primary/60" : "border-border/80"}`}
       >
@@ -22,13 +22,13 @@ export function HeroMcpNode({ step, tick }: { step: number; tick: number }) {
             className="absolute inset-0 rounded-full border border-primary"
           />
         ) : null}
-        <span className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary sm:size-10">
+        <span className="grid size-7 place-items-center rounded-full bg-primary/10 text-primary sm:size-10">
           <McpLogo />
         </span>
-        <span className="mt-1 text-[11px] font-semibold text-foreground sm:text-xs">
+        <span className="mt-0.5 text-[9px] font-semibold text-foreground sm:mt-1 sm:text-xs">
           MCP server
         </span>
-        <span className="mt-0.5 font-mono text-[8px] text-muted-foreground sm:text-[9px]">
+        <span className="mt-0 font-mono text-[7px] text-muted-foreground sm:mt-0.5 sm:text-[9px]">
           {mcpStatus[step]}
         </span>
       </div>

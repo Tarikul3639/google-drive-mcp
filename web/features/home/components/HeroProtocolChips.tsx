@@ -16,7 +16,8 @@ export function HeroProtocolChips({
 }) {
   return (
     <>
-      <div className="absolute top-[35%] left-[3%] z-10 flex h-[26%] w-[32%] items-center">
+      {/* These side labels overlap the center node on narrow screens. */}
+      <div className="absolute top-[35%] left-[3%] z-10 hidden h-[26%] w-[32%] items-center lg:flex">
         <AnimatePresence>
           {step === 1 || step === 2 ? (
             <motion.div
@@ -37,7 +38,7 @@ export function HeroProtocolChips({
           ) : null}
         </AnimatePresence>
       </div>
-      <div className="absolute top-[35%] right-[3%] z-10 flex h-[26%] w-[32%] items-center justify-end">
+      <div className="absolute top-[35%] right-[3%] z-10 hidden h-[26%] w-[32%] items-center justify-end lg:flex">
         <span className="rounded-md bg-primary/10 px-2 py-1 font-mono text-[9px] font-semibold text-primary">
           {step === 4 || step === 5 ? "200 OK" : "HTTP"}
         </span>
