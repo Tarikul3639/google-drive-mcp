@@ -2,7 +2,7 @@
 
 Google Drive MCP is a self-hosted Google Drive integration that exposes Drive operations to MCP-compatible AI clients. It includes a Next.js web dashboard and a NestJS API/MCP server.
 
-> **Current project snapshot:** The backend MCP tool-name registry defines **37 tools**. This README documents the checked-in implementation, not Google's separate first-party Drive MCP service.
+> **Current project snapshot:** The server exposes **54 MCP tools**: 37 Google Drive management tools, 11 Google Workspace tools, 5 Office document-processing tools, and 1 health-check tool. The permission registry tracks the 53 operational tools; the health-check tool is registered separately. This README documents the checked-in implementation, not Google's separate first-party Drive MCP service.
 
 ## Contents
 
@@ -315,9 +315,9 @@ Exact UI steps vary by MCP client. Do not paste Google client secrets into an MC
 
 ## MCP tool reference
 
-The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-tools.constant.ts`. It currently defines **37 tool names**.
+The implementation registers **54 MCP tools** across the providers in `server/src/modules/mcp/tools/tools.module.ts`. Of these, 53 operational tools are listed in the permission registry at `server/src/modules/mcp/tools/constants/mcp-tools.constant.ts`; `health_check` is registered separately and is not part of per-client tool permissions.
 
-### Files — 13 tools
+### Google Drive files — 14 tools
 
 | Tool | Purpose |
 | --- | --- |
@@ -383,6 +383,40 @@ The server's canonical registry is `server/src/modules/mcp/tools/constants/mcp-t
 | `get_shared_drive` | Retrieve shared drive metadata |
 | `update_shared_drive` | Rename/update a shared drive |
 | `delete_shared_drive` | Delete a shared drive |
+
+### Google Workspace — 11 tools
+
+| Tool | Purpose |
+| --- | --- |
+| `create_document` | Create a Google Doc |
+| `get_document` | Read a Google Doc |
+| `insert_document_text` | Insert text into a Google Doc |
+| `create_spreadsheet` | Create a Google Sheet |
+| `get_spreadsheet` | Read spreadsheet metadata |
+| `get_spreadsheet_values` | Read cell values |
+| `update_spreadsheet_values` | Update cell values |
+| `batch_update_spreadsheet` | Apply batch spreadsheet updates |
+| `create_presentation` | Create a Google Slides presentation |
+| `get_presentation` | Read presentation information |
+| `batch_update_presentation` | Apply batch presentation updates |
+
+### Office document processing — 5 tools
+
+| Tool | Purpose |
+| --- | --- |
+| `read_docx` | Read a Word document |
+| `create_docx` | Create a Word document |
+| `read_xlsx` | Read an Excel workbook |
+| `create_xlsx` | Create an Excel workbook |
+| `create_pptx` | Create a PowerPoint presentation |
+
+### Health — 1 tool
+
+| Tool | Purpose |
+| --- | --- |
+| `health_check` | Check MCP server health |
+
+**Count:** 37 Google Drive management tools + 11 Google Workspace tools + 5 Office document-processing tools + 1 health-check tool = **54 MCP tools**. The first 53 are permission-registry entries; `health_check` is registered separately.
 
 **Important:** `delete_file` and `delete_shared_drive` are destructive Google Drive actions. Prefer trash operations when you only need reversible removal. Tool availability does not bypass the Google account's Drive permissions.
 
