@@ -46,7 +46,7 @@ export function DashboardShell({
         onMobileOpenChange={setMobileSidebarOpen}
       />
 
-      <div className="relative isolate min-h-svh min-w-0 pl-0 sm:pl-16 lg:pl-64">
+      <div className="relative isolate min-h-svh min-w-0 pl-0 lg:pl-64">
 
         <div
           aria-hidden="true"

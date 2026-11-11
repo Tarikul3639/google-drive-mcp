@@ -23,7 +23,7 @@ export function DashboardHeading({ user }: { user: UserProfile }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.05 }}
-          className="mt-2 max-w-full break-words font-serif text-3xl leading-tight tracking-tight sm:mt-3 sm:text-5xl lg:text-6xl"
+          className="mt-2 max-w-full wrap-break-word font-serif text-3xl leading-tight tracking-tight sm:mt-3 sm:text-5xl lg:text-6xl"
         >
           {user.name ? `Welcome, ${user.name.split(" ")[0]}.` : "Welcome back."}
         </motion.h1>

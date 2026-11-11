@@ -178,14 +178,14 @@ export function DashboardSidebar({
 
   return (
     <>
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-16 flex-col border-r border-border/70 bg-background text-foreground sm:flex lg:w-64">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-16 flex-col border-r border-border/70 bg-background text-foreground lg:flex lg:w-64">
         {renderContent()}
       </aside>
 
       <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
         <SheetContent
           side="left"
-          className="w-64 max-w-[85vw] border-r border-border/70 bg-background p-0 text-foreground sm:hidden"
+          className="w-64 max-w-[85vw] border-r border-border/70 bg-background p-0 text-foreground lg:hidden"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Dashboard navigation</SheetTitle>

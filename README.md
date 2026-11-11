@@ -36,17 +36,26 @@ Google Drive MCP lets a user connect a Google account, authorize an MCP client, 
 - `server/`: NestJS API, Google OAuth integration, Google Drive service, MCP endpoint, and OAuth authorization server.
 - `docs/`: product documentation and screenshot assets.
 
-Live services:
+Live service:
 - Web app: [googledrivemcp.vercel.app](https://googledrivemcp.vercel.app)
-- API Swagger: [googledrivemcpserver.vercel.app/api/docs](https://googledrivemcpserver.vercel.app/api/docs)
+
+The Swagger UI is available when running the backend locally at `http://localhost:5000/api/docs`; it is not hosted on the deployed API.
 
 ## Screenshots
 
 The following screenshots were captured from the running local application in **dark mode**. Each image is embedded directly below; all image files are in `screenshots/`.
 
+### Project overview
+
+![Google Drive MCP project overview](./screenshots/google-drive-mcp-overview.png)
+
 ### Landing page
 
 ![Google Drive MCP landing page — dark mode](./screenshots/home-dark-final.png)
+
+### Desktop setup
+
+![Google Drive MCP desktop setup](./screenshots/google-drive-mcp-desk-setup.png)
 
 ### Login
 
@@ -60,13 +69,17 @@ The following screenshots were captured from the running local application in **
 
 ![MCP connection page — dark mode](./screenshots/mcp-connect-dark-final.png)
 
-### Dashboard route
+### Dashboard overview
 
-![Dashboard route — dark mode; redirects to sign-in without an authenticated session](./screenshots/dashboard-dark-final.png)
+![Google Drive MCP dashboard overview](./screenshots/dashboard-overview.png)
 
-### Account route
+### Dashboard — full page
 
-![Account route — dark mode; redirects to sign-in without an authenticated session](./screenshots/account-dark-final.png)
+![Google Drive MCP dashboard full-page screenshot](./screenshots/dashboard-full-page.png)
+
+### Account page
+
+![Google Drive MCP account page](./screenshots/account-page.png)
 
 ### Welcome
 
@@ -76,7 +89,7 @@ The following screenshots were captured from the running local application in **
 
 ![MCP consent route — dark mode; opened with a demo transaction parameter, not a verified live OAuth transaction](./screenshots/mcp-consent-dark-final.png)
 
-Dashboard and Account currently show the unauthenticated redirect state rather than authenticated content. The consent page is a route smoke-test, not a completed OAuth flow. Capture those states again after signing in with a dedicated test account and completing a real MCP OAuth flow. Review images for personal data, credentials, and tokens before publishing.
+The consent page is a route smoke-test, not a completed OAuth flow. Review all screenshots for personal data, credentials, and tokens before publishing.
 
 ## Features
 

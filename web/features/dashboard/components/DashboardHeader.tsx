@@ -12,7 +12,7 @@ export function DashboardHeader({
   onOpenSidebar: () => void
 }) {
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border/70 bg-background px-3 sm:hidden">
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border/70 bg-background px-3 lg:hidden">
       <Link
         href="/"
         aria-label="Google Drive MCP home"
