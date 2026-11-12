@@ -10,3 +10,5 @@ permissions:
     skills: true
   workerd:
     build: true
+skills:
+  dirs: []

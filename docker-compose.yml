@@ -1,0 +1,100 @@
+services:
+  # PostgreSQL database service
+  postgres:
+    image: postgres:18.6-alpine
+
+    environment:
+      POSTGRES_USER: google_drive_mcp_user
+      # Read the database password from the project root .env file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: google_drive_mcp
+
+    # PostgreSQL is accessed internally by the server container.
+    # No host port is published, avoiding conflicts on port 5432.
+
+    volumes:
+      # Persist PostgreSQL data
+      - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      # Check whether PostgreSQL is ready to accept connections
+      test:
+        ["CMD-SHELL", "pg_isready -U google_drive_mcp_user -d google_drive_mcp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  # Redis cache service
+  redis:
+    image: redis:7-alpine
+
+    # Redis is accessed internally by the server container.
+    # No host port is published, avoiding conflicts on port 6379.
+
+    volumes:
+      # Persist Redis data
+      - redis_data:/data
+
+    # Enable Redis append-only persistence
+    command: redis-server --appendonly yes
+
+    healthcheck:
+      # Check whether Redis is responding
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # NestJS backend service
+  server:
+    build:
+      context: ./server
+
+    ports:
+      - "5000:5000"
+
+    # Load backend variables directly from server/.env.local
+    env_file:
+      - ./server/.env.local
+
+    environment:
+      REDIS_URL: redis://redis:6379
+
+    # Wait until PostgreSQL and Redis are healthy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Next.js frontend service
+  web:
+    build:
+      context: ./web
+
+      # Provide web/.env.local to the build securely without copying values here.
+      secrets:
+        - web_env
+
+    # Load frontend variables directly into the running container
+    env_file:
+      - ./web/.env.local
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - server
+
+# Build-time secret for Next.js environment validation.
+# The file is mounted temporarily and is not copied into the image.
+secrets:
+  web_env:
+    file: ./web/.env.local
+
+# Named volumes for persistent data storage
+volumes:
+  postgres_data:
+  redis_data:

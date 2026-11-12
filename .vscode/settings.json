@@ -1,7 +1,10 @@
 {
   "cSpell.words": [
+    "appendonly",
     "autoincrement",
     "Drivebridge",
+    "healthcheck",
+    "isready",
     "modelcontextprotocol",
     "Streamable",
     "Timestamptz"

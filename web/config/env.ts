@@ -15,7 +15,8 @@ const envSchema = z.object({
 })
 
 export const env = envSchema.parse({
-  BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  BACKEND_URL:
+    process.env.BACKEND_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL,
   NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
   NEXT_PUBLIC_AUTHOR_NAME: process.env.NEXT_PUBLIC_AUTHOR_NAME,
   NEXT_PUBLIC_AUTHOR_PORTFOLIO_URL:
